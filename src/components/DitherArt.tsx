@@ -45,7 +45,7 @@ const FIELDS: Record<string, (u: number, v: number) => number> = {
 
 type Props = { kind: keyof typeof FIELDS; mid: string; high: string };
 
-/** One-time dithered render at 1/3 CSS resolution, upscaled with nearest-neighbour. Redraws on resize only. */
+/** One-time dithered render at 1/3 CSS resolution, upscaled with nearest-neighbour. Paints when near the viewport, then only on resize. */
 export function DitherArt({ kind, mid, high }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -58,13 +58,24 @@ export function DitherArt({ kind, mid, high }: Props) {
       if (cols === c.width && rows === c.height) return;
       paintDither(c, cols, rows, FIELDS[kind], hex(mid), hex(high));
     };
-    draw();
+    let visible = false;
     const ro = new ResizeObserver(() => {
       clearTimeout(t);
-      t = window.setTimeout(draw, 120);
+      if (visible) t = window.setTimeout(draw, 120);
     });
-    ro.observe(c);
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        visible = true;
+        io.disconnect();
+        draw();
+        ro.observe(c);
+      },
+      { rootMargin: "600px 0px" },
+    );
+    io.observe(c);
     return () => {
+      io.disconnect();
       ro.disconnect();
       clearTimeout(t);
     };

@@ -1,20 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
-import { motion } from "motion/react";
 import { useInView, useIsMobile, useMagnetic, usePrefersReducedMotion, useSectionProgress } from "./lib/hooks";
 import { createHero, type Hero as HeroGL } from "./lib/heroGL";
 import { ALSO, COLORS, CONTACT_EMAIL, INCLUDED, PROCESS, PROJECT_TYPES, TIERS, WORK, type WorkItem } from "./content";
 import { DitherIcon } from "./components/DitherIcon";
 import { DitherArt } from "./components/DitherArt";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-const reveal = {
-  initial: { opacity: 0, y: 28 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.25 },
-  transition: { duration: 0.9, ease: EASE },
-};
 
 const SECTIONS = [
   { id: "offer", label: "Offer" },
@@ -26,6 +18,20 @@ const SECTIONS = [
 export function App() {
   const reduced = usePrefersReducedMotion();
   const [projectType, setProjectType] = useState(PROJECT_TYPES[0]);
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+        }
+      },
+      { rootMargin: "0px 0px -12% 0px" },
+    );
+    document.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
   useEffect(() => {
     if (reduced) return;
     const lenis = new Lenis({ autoRaf: true, lerp: 0.11, anchors: { offset: -20 } });
@@ -186,9 +192,9 @@ function Nav() {
 
   return (
     <header className={`nav ${open ? "is-open" : ""} ${light && !open ? "nav-light" : ""}`}>
-      <a href="#top" className="logo" aria-label="Senai Technology home" onClick={() => setOpen(false)}>
+      <a href="#top" className="logo" onClick={() => setOpen(false)}>
         <span className="logo-dot" aria-hidden />
-        <span className="logo-word">Senai</span>
+        <span className="logo-word">Senai</span>{" "}
         <span className="logo-thin">Technology</span>
       </a>
       <nav aria-label="Primary" className="nav-links">
@@ -259,10 +265,14 @@ function Hero({ reduced }: { reduced: boolean }) {
     let cancelled = false;
     const init = () => {
       if (cancelled) return;
-      const h = createHero(canvas, { colors: COLORS, mobile, reduced, onProgress: (p) => !cancelled && setBoot(p) });
-      if (!h) {
+      const fail = () => {
+        if (cancelled) return;
         setFailed(true);
         setBoot(1);
+      };
+      const h = createHero(canvas, { colors: COLORS, mobile, reduced, onProgress: (p) => !cancelled && setBoot(p), onFail: fail });
+      if (!h) {
+        fail();
         return;
       }
       hero.current = h;
@@ -392,16 +402,16 @@ function Offer({ reduced, onPick }: { reduced: boolean; onPick: (t: string) => v
   return (
     <section id="offer" className="section offer" aria-labelledby="offer-title">
       <div className="section-head">
-        <motion.div {...reveal}>
+        <div data-reveal>
           <Label n="01">The offer</Label>
           <h2 id="offer-title" className="h2">
             AI-built websites, <em>studio-grade.</em>
           </h2>
-        </motion.div>
-        <motion.p className="section-lede" {...reveal} transition={{ ...reveal.transition, delay: 0.1 }}>
+        </div>
+        <p data-reveal className="section-lede" style={{ ["--d" as string]: "0.1s" }}>
           Our first offer is the one you’re scrolling through: premium, animated websites designed and built
           with AI-accelerated workflows, then finished by hand. Three ways in, each scoped and quoted per project.
-        </motion.p>
+        </p>
       </div>
 
       <p className="swipe-hint" aria-hidden>Swipe for all three →</p>
@@ -411,14 +421,14 @@ function Offer({ reduced, onPick }: { reduced: boolean; onPick: (t: string) => v
         ))}
       </div>
 
-      <motion.div className="included" {...reveal}>
+      <div data-reveal className="included">
         <h3 className="included-title">Every site includes</h3>
         <ul className="included-grid">
           {INCLUDED.map((it) => (
             <IncludedItem key={it.title} {...it} reduced={reduced} />
           ))}
         </ul>
-      </motion.div>
+      </div>
     </section>
   );
 }
@@ -430,13 +440,11 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
     if (inView) setPlay((p) => p || 1);
   }, [inView]);
   return (
-    <motion.article
+    <article
+      data-reveal
       ref={ref}
       className={`tier ${tier.flagship ? "tier-flagship" : ""}`}
       onPointerEnter={() => play && setPlay((p) => p + 1)}
-      {...reveal}
-      viewport={{ once: true, amount: 0.01 }}
-      transition={{ ...reveal.transition, delay: i * 0.08 }}
     >
       <div className="tier-top">
         <DitherIcon name={tier.icon} play={play} reduced={reduced} className="tier-icon" />
@@ -458,7 +466,7 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
           <span aria-hidden>→</span>
         </a>
       </div>
-    </motion.article>
+    </article>
   );
 }
 
@@ -494,15 +502,15 @@ function Process() {
       style={{ ["--fill" as string]: fill }}
     >
       <div className="section-head">
-        <motion.div {...reveal}>
+        <div data-reveal>
           <Label n="02">Process</Label>
           <h2 id="process-title" className="h2">
             From brief to live, <em>in four beats.</em>
           </h2>
-        </motion.div>
-        <motion.p className="section-lede" {...reveal}>
+        </div>
+        <p data-reveal className="section-lede">
           Short loops, early motion, no mystery. You see a moving version of your site early and shape it with us.
-        </motion.p>
+        </p>
       </div>
       <ol className="steps">
         <span className="steps-rail" aria-hidden>
@@ -527,16 +535,16 @@ function Work() {
   return (
     <section id="work" className="section work" aria-labelledby="work-title">
       <div className="section-head">
-        <motion.div {...reveal}>
+        <div data-reveal>
           <Label n="03">Work</Label>
           <h2 id="work-title" className="h2">
             Selected work, <em>and open slots for yours.</em>
           </h2>
-        </motion.div>
-        <motion.p className="section-lede" {...reveal}>
+        </div>
+        <p data-reveal className="section-lede">
           Two real projects, plus concept placeholders that show the kind of site we’d build next. The
           placeholders are clearly marked; they aren’t client work.
-        </motion.p>
+        </p>
       </div>
       <div className="stack">
         {WORK.map((w, i) => (
@@ -602,7 +610,7 @@ function Studio({ reduced }: { reduced: boolean }) {
   return (
     <section id="studio" className="section studio" aria-labelledby="studio-title">
       <div className="studio-grid">
-        <motion.div {...reveal}>
+        <div data-reveal>
           <Label n="04">Studio</Label>
           <h2 id="studio-title" className="h2 studio-statement">
             Rhythm in the motion. <em>Texture in the pixels.</em>
@@ -616,24 +624,28 @@ function Studio({ reduced }: { reduced: boolean }) {
             <span className="ge" lang="am">ሰናይ</span>
             <span className="studio-mark-cap">Senai, in Ge’ez script</span>
           </div>
-        </motion.div>
-        <motion.div {...reveal} transition={{ ...reveal.transition, delay: 0.1 }}>
+        </div>
+        <div data-reveal style={{ ["--d" as string]: "0.1s" }}>
           <h3 className="also-title">Also from the studio</h3>
           <ul className="also">
             {ALSO.map((a) => (
               <AlsoRow key={a.title} {...a} reduced={reduced} />
             ))}
           </ul>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 }
 
 function AlsoRow({ icon, title, body, reduced }: { icon: string; title: string; body: string; reduced: boolean }) {
-  const [play, setPlay] = useState(1);
+  const [ref, inView] = useInView<HTMLLIElement>("-10% 0px", true);
+  const [play, setPlay] = useState(0);
+  useEffect(() => {
+    if (inView) setPlay((p) => p || 1);
+  }, [inView]);
   return (
-    <li onPointerEnter={() => setPlay((p) => p + 1)}>
+    <li ref={ref} onPointerEnter={() => play && setPlay((p) => p + 1)}>
       <DitherIcon name={icon} play={play} reduced={reduced} className="also-icon" />
       <h4>{title}</h4>
       <p>{body}</p>
@@ -682,7 +694,7 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
   return (
     <section id="contact" className="contact" aria-labelledby="contact-title" data-nav="light">
       <div className="contact-inner">
-        <motion.div className="contact-copy" {...reveal}>
+        <div data-reveal className="contact-copy">
           <Label n="05">Contact</Label>
           <h2 id="contact-title" className="contact-title">
             Let’s make something <em>with a pulse.</em>
@@ -701,9 +713,9 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
               <span className="sr" role="status">{copied ? "Email address copied" : ""}</span>
             </button>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.form className="form" onSubmit={onSubmit} {...reveal} aria-label="Project enquiry">
+        <form data-reveal className="form" onSubmit={onSubmit} aria-label="Project enquiry">
           <fieldset className="chips">
             <legend>What are we making?</legend>
             {PROJECT_TYPES.map((t) => (
@@ -739,7 +751,7 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
               ? `Thanks, ${who}. Your mail app should open with the message ready to send.`
               : "Submitting opens your email app with everything filled in."}
           </p>
-        </motion.form>
+        </form>
       </div>
     </section>
   );

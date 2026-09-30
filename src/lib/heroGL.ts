@@ -135,6 +135,7 @@ export type HeroOptions = {
   mobile: boolean;
   reduced: boolean;
   onProgress?: (p: number) => void;
+  onFail?: () => void;
 };
 
 const rgb = (h: string) => {
@@ -142,7 +143,8 @@ const rgb = (h: string) => {
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255] as const;
 };
 
-function compile(gl: WebGL2RenderingContext, frag: string) {
+/** Queue compile + link without waiting, so KHR_parallel_shader_compile can keep it off the main thread. */
+function begin(gl: WebGL2RenderingContext, frag: string) {
   const p = gl.createProgram()!;
   for (const [type, src] of [[gl.VERTEX_SHADER, VERT], [gl.FRAGMENT_SHADER, frag]] as const) {
     const s = gl.createShader(type)!;
@@ -151,6 +153,10 @@ function compile(gl: WebGL2RenderingContext, frag: string) {
     gl.attachShader(p, s);
   }
   gl.linkProgram(p);
+  return p;
+}
+
+function finish(gl: WebGL2RenderingContext, p: WebGLProgram) {
   if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) || "link failed");
   const u: Record<string, WebGLUniformLocation | null> = {};
   const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
@@ -161,20 +167,43 @@ function compile(gl: WebGL2RenderingContext, frag: string) {
   return { p, u };
 }
 
+type Program = ReturnType<typeof finish>;
+
 export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
-  const gl = canvas.getContext("webgl2", { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "high-performance" });
+  const attrs = { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "high-performance" } as const;
+  let gl = canvas.getContext("webgl2", { ...attrs, failIfMajorPerformanceCaveat: true });
+  let software = !gl;
+  if (!gl) gl = canvas.getContext("webgl2", attrs) as WebGL2RenderingContext | null;
   if (!gl) return null;
+  const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+  if (dbg && /swiftshader|llvmpipe|softpipe|software/i.test(String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)))) software = true;
+  // Software GL can't hold a frame rate, so it gets the same still frame as reduced motion (lens still follows the pointer).
+  const still = opts.reduced || software;
   opts.onProgress?.(0.3);
 
-  let scene: ReturnType<typeof compile>, comp: ReturnType<typeof compile>;
-  try {
-    scene = compile(gl, SCENE);
-    comp = compile(gl, COMPOSITE);
-  } catch (e) {
-    console.warn("[hero] shader failed, falling back", e);
-    return null;
-  }
-  opts.onProgress?.(0.7);
+  const parallel = gl.getExtension("KHR_parallel_shader_compile");
+  const pending$ = [begin(gl, SCENE), begin(gl, COMPOSITE)];
+  let scene!: Program, comp!: Program;
+  let ready = false;
+  let compileRaf = 0;
+  const poll = () => {
+    if (parallel && !pending$.every((p) => gl!.getProgramParameter(p, parallel.COMPLETION_STATUS_KHR))) {
+      compileRaf = requestAnimationFrame(poll);
+      return;
+    }
+    try {
+      scene = finish(gl!, pending$[0]);
+      comp = finish(gl!, pending$[1]);
+    } catch (e) {
+      console.warn("[hero] shader failed, falling back", e);
+      opts.onFail?.();
+      return;
+    }
+    ready = true;
+    opts.onProgress?.(0.7);
+    if (!running) renderOnce();
+  };
+  compileRaf = requestAnimationFrame(poll);
 
   const vao = gl.createVertexArray();
   const tex = gl.createTexture()!;
@@ -182,7 +211,7 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
   const C = { ink: rgb(opts.colors.ink), accent: rgb(opts.colors.accent), gold: rgb(opts.colors.gold), cool: rgb(opts.colors.cool) };
 
   let w = 0, h = 0, sw = 0, sh = 0, dpr = 1;
-  let quality = opts.mobile ? 0.38 : 0.5;
+  let quality = software ? 0.34 : opts.mobile ? 0.38 : 0.5;
   let raf = 0, running = false, first = true;
   let time = 2.4;
   let last = 0;
@@ -224,20 +253,21 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
   }
 
   function frame(now: number) {
+    if (!ready) return;
     const dt = last ? Math.min((now - last) / 1000, 0.05) : 0.016;
     last = now;
-    if (!opts.reduced) time += dt;
+    if (!still) time += dt;
 
     const L = layout();
     const idle = now - ptr.lastMove > 2600;
     let tx: number, ty: number;
-    if (ptr.active && !idle && !opts.reduced) {
+    if (ptr.active && !idle && !still) {
       [tx, ty] = toWorld(ptr.x, ptr.y);
     } else {
       tx = L.cx + Math.cos(time * 0.6) * 1.5 * L.s;
       ty = L.cy + Math.sin(time * 0.9) * 1.1 * L.s;
     }
-    const k = opts.reduced ? 1 : 1 - Math.pow(0.001, dt);
+    const k = still ? 1 : 1 - Math.pow(0.001, dt);
     follow.x += (tx - follow.x) * k;
     follow.y += (ty - follow.y) * k;
 
@@ -245,18 +275,16 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     let lx: number, ly: number, lr: number;
     if (ptr.active && !idle) {
       lx = ptr.x; ly = ptr.y; lr = opts.mobile ? 92 : 150;
-    } else if (!opts.reduced) {
+    } else {
       const ax = (L.cx / 2.5 / 2) * ch + cw / 2, ay = ch / 2 - (L.cy / 2.5 / 2) * ch;
       lx = ax + Math.sin(time * 0.45) * ch * 0.16 * (opts.mobile ? 0.8 : 1);
       ly = ay + Math.sin(time * 0.7 + 1) * ch * 0.1;
       lr = opts.mobile ? 72 : 110;
-    } else {
-      lx = lens.x; ly = lens.y; lr = 0;
     }
-    const lk = first || opts.reduced ? 1 : 1 - Math.pow(0.0005, dt);
+    const lk = first || still ? 1 : 1 - Math.pow(0.0005, dt);
     lens.x += (lx - lens.x) * lk;
     lens.y += (ly - lens.y) * lk;
-    lens.r += (lr - lens.r) * (opts.reduced ? 1 : lk * 0.6);
+    lens.r += (lr - lens.r) * (still ? 1 : lk * 0.6);
 
     const beat = (time * 92) / 60;
     const pulse = Math.pow(0.5 + 0.5 * Math.cos(beat * Math.PI * 2), 6);
@@ -267,7 +295,7 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     gl!.useProgram(scene.p);
     gl!.uniform2f(scene.u.uRes, sw, sh);
     gl!.uniform1f(scene.u.uTime, time);
-    gl!.uniform1f(scene.u.uPulse, opts.reduced ? 0 : pulse);
+    gl!.uniform1f(scene.u.uPulse, still ? 0 : pulse);
     gl!.uniform3f(scene.u.uFollow, follow.x, follow.y, 0.4);
     gl!.uniform2f(scene.u.uCenter, L.cx, L.cy);
     gl!.uniform1f(scene.u.uScale, L.s);
@@ -308,7 +336,15 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     frame(now);
     if (running) raf = requestAnimationFrame(loop);
   };
-  const renderOnce = () => requestAnimationFrame((n) => { last = 0; frame(n); });
+  let pending = 0;
+  const renderOnce = () => {
+    if (pending) return;
+    pending = requestAnimationFrame((n) => {
+      pending = 0;
+      last = 0;
+      frame(n);
+    });
+  };
 
   resize();
   const ro = new ResizeObserver(() => { resize(); if (!running) renderOnce(); });
@@ -316,7 +352,7 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
 
   return {
     start() {
-      if (running || opts.reduced) { renderOnce(); return; }
+      if (running || still) { renderOnce(); return; }
       running = true;
       last = 0;
       raf = requestAnimationFrame(loop);
@@ -328,15 +364,19 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     pointer(x: number, y: number, active: boolean) {
       ptr.x = x; ptr.y = y; ptr.active = active;
       if (active) ptr.lastMove = performance.now();
-      if (opts.reduced) renderOnce();
+      if (still) renderOnce();
     },
     scroll(p: number) {
-      scroll = Math.min(Math.max(p, 0), 1);
+      const next = Math.min(Math.max(p, 0), 1);
+      if (next === scroll) return;
+      scroll = next;
       if (!running) renderOnce();
     },
     destroy() {
       running = false;
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(pending);
+      cancelAnimationFrame(compileRaf);
       ro.disconnect();
       gl!.getExtension("WEBGL_lose_context")?.loseContext();
     },
