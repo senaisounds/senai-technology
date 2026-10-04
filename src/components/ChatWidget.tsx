@@ -1,27 +1,123 @@
 import { useState, useRef, useEffect } from "react";
-import { useChat } from "ai/react";
 
 type ChatState = "chat" | "lead-capture";
+
+type Message = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+};
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [chatState, setChatState] = useState<ChatState>("chat");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [leadData, setLeadData] = useState({ name: "", email: "", need: "" });
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
-    api: "/api/chat",
-    onError: (err) => {
-      console.error("[ChatWidget] Error:", err);
-    },
-  });
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isOpen]);
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: input.trim(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+    setError(null);
+
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "assistant",
+      content: "",
+    };
+    setMessages((prev) => [...prev, assistantMessage]);
+
+    try {
+      abortControllerRef.current = new AbortController();
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+        signal: abortControllerRef.current.signal,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to get response");
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) throw new Error("No response body");
+
+      let accumulatedContent = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n").filter((line) => line.trim());
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = line.slice(6);
+            if (data === "[DONE]") continue;
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.choices?.[0]?.delta?.content) {
+                accumulatedContent += parsed.choices[0].delta.content;
+              } else if (parsed.content) {
+                accumulatedContent += parsed.content;
+              } else if (typeof parsed === "string") {
+                accumulatedContent += parsed;
+              }
+            } catch {
+              accumulatedContent += data;
+            }
+          } else if (line.startsWith("0:")) {
+            const content = line.slice(3, -1);
+            accumulatedContent += content;
+          }
+        }
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessage.id ? { ...msg, content: accumulatedContent } : msg
+          )
+        );
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setError(errorMessage);
+      setMessages((prev) => prev.filter((msg) => msg.id !== assistantMessage.id));
+    } finally {
+      setIsLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,13 +126,7 @@ export function ChatWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [
-            ...messages,
-            {
-              role: "user",
-              content: `I'd like to start a project. My name is ${leadData.name}, email is ${leadData.email}, and I need: ${leadData.need}`,
-            },
-          ],
+          messages: [],
           capturedLead: leadData,
         }),
       });
@@ -52,17 +142,6 @@ export function ChatWidget() {
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
-    if (!isOpen && messages.length === 0) {
-      setTimeout(() => {
-        const welcomeMessage = {
-          id: "welcome",
-          role: "assistant" as const,
-          content:
-            "Hi! I'm here to help you learn about Senai Technology. What would you like to know? (We build AI websites, mobile apps, brands, and more!)",
-        };
-        messages.push(welcomeMessage);
-      }, 100);
-    }
   };
 
   return (
@@ -121,7 +200,7 @@ export function ChatWidget() {
                     <div className="chat-message-content">{msg.content}</div>
                   </div>
                 ))}
-                {isLoading && (
+                {isLoading && messages[messages.length - 1]?.content === "" && (
                   <div className="chat-message chat-message-assistant">
                     <div className="chat-message-content chat-typing">
                       <span />
@@ -133,9 +212,18 @@ export function ChatWidget() {
                 {error && (
                   <div className="chat-error">
                     <p>
-                      The chat isn't fully set up yet. Please{" "}
-                      <a href="#contact">use our contact form</a> or email{" "}
-                      <a href="mailto:hello@senaitechnology.com">hello@senaitechnology.com</a>!
+                      {error.includes("AI_NOT_CONFIGURED") || error.includes("not fully set up") ? (
+                        <>
+                          The chat isn't fully set up yet. Please{" "}
+                          <a href="#contact" onClick={toggleChat}>
+                            use our contact form
+                          </a>{" "}
+                          or email{" "}
+                          <a href="mailto:hello@senaitechnology.com">hello@senaitechnology.com</a>!
+                        </>
+                      ) : (
+                        error
+                      )}
                     </p>
                   </div>
                 )}
@@ -150,10 +238,10 @@ export function ChatWidget() {
                 >
                   I'm ready to start a project →
                 </button>
-                <form onSubmit={handleSubmit} className="chat-form">
+                <form onSubmit={handleSendMessage} className="chat-form">
                   <input
                     value={input}
-                    onChange={handleInputChange}
+                    onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about our services..."
                     disabled={isLoading}
                     className="chat-input"

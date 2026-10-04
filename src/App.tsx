@@ -6,6 +6,7 @@ import { useInView, useIsMobile, usePrefersReducedMotion } from "./lib/hooks";
 import { SERVICES, WORK, CONTACT_EMAIL, type WorkItem } from "./content";
 import { PALETTES, SERVICE_COLORS } from "./palette";
 import { createFluid } from "./lib/fluid";
+import { ChatWidget } from "./components/ChatWidget";
 
 const HeroScene = lazy(() => import("./components/HeroScene").then((m) => ({ default: m.HeroScene })));
 const ServicesScene = lazy(() => import("./components/ServicesScene").then((m) => ({ default: m.ServicesScene })));
@@ -39,6 +40,7 @@ export function App() {
         <Paint reduced={reduced} />
       </main>
       <Footer />
+      <ChatWidget />
       <div className="grain" aria-hidden />
     </>
   );
