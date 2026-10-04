@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useReducer, useRef, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { motion } from "motion/react";
@@ -6,6 +7,7 @@ import { useInView, useIsMobile, usePrefersReducedMotion } from "./lib/hooks";
 import { SERVICES, WORK, CONTACT_EMAIL, type WorkItem } from "./content";
 import { PALETTES, SERVICE_COLORS } from "./palette";
 import { createFluid } from "./lib/fluid";
+import { CheckPage } from "./components/CheckPage";
 
 const HeroScene = lazy(() => import("./components/HeroScene").then((m) => ({ default: m.HeroScene })));
 const ServicesScene = lazy(() => import("./components/ServicesScene").then((m) => ({ default: m.ServicesScene })));
@@ -19,6 +21,15 @@ const reveal = {
 };
 
 export function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/check" element={<CheckPage />} />
+    </Routes>
+  );
+}
+
+function HomePage() {
   const reduced = usePrefersReducedMotion();
   useEffect(() => {
     if (reduced) return;
@@ -91,7 +102,7 @@ function Hero({ reduced }: { reduced: boolean }) {
         </h1>
         <div className="hero-actions">
           <a href="#contact" className="btn btn-primary">Start a project <span aria-hidden>→</span></a>
-          <a href="#work" className="btn btn-ghost">See the work</a>
+          <a href="/check" className="btn btn-ghost">Check your website</a>
         </div>
         <p className="hint" aria-hidden>
           <span>Move to shove · Click to recolour</span>
