@@ -138,7 +138,7 @@ async function checkWebsite(targetUrl: string, apiKey?: string): Promise<CheckRe
   const metaDescMatch =
     /<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i.exec(html) ||
     /<meta[^>]*content=["']([^"']+)["'][^>]*name=["']description["']/i.exec(html);
-  const viewportMatch = /<meta[^>]*name=["']viewport["']/i.test(html);
+  const viewportMatch = /<meta[^>]*name=["']?viewport["']?[^>]*>/i.test(html);
   const ogMatch = /<meta[^>]*property=["']og:/i.test(html);
   const structuredDataMatch =
     /<script[^>]*type=["']application\/ld\+json["']/i.test(html);
