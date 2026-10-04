@@ -26,9 +26,52 @@ Node 20.19+ (Vite 8). `npm run shots` uses `playwright-core` with the system Chr
 | 3 | **Air has a surface** | `src/components/AirScene.tsx` | Height-field wave equation on ping-pong half-float render targets. Cursor movement drops ripples, and the surface refracts (with chromatic split) a big typographic texture. A slow ambient drop runs when idle. |
 | 4 | **Selected work** | `App.tsx` `Work`/`Tile`, `src/content.ts` | CSS 3D tilt, cursor-light hover and ring ripples. **OpenSlot** (past project, App Store, links to openslot.me) plus 3 tiles clearly badged "Concept · placeholder": landscaper site, pastry shop site, AI booking assistant. |
 | 5 | **Paint with us / Start a project** | `src/lib/fluid.ts`, `App.tsx` `Paint` | Hover ink-fluid sim (port of PavelDoGreat's WebGL-Fluid-Simulation) behind a front-end-only form (name / email / project). Submitting opens a `mailto:` to the **placeholder** `hello@senaitechnology.com`. |
-| 6 | Footer | `App.tsx` | "© 2026 Senai Technology, a Slotted LLC company" |
+| 6 | **AI Chat Assistant** | `src/components/ChatWidget.tsx`, `api/chat.ts` | Floating chat button that opens an AI-powered assistant panel. Answers visitor questions about Senai Technology's services, captures leads (name, email, need), and guides visitors toward booking a discovery call. Streaming responses via Vercel AI SDK + OpenAI. **Requires `OPENAI_API_KEY` env var to function; falls back gracefully if not configured.** |
+| 7 | Footer | `App.tsx` | "© 2026 Senai Technology, a Slotted LLC company" |
 
 Content (service copy, work tiles, contact email) lives in `src/content.ts`.
+
+## AI Chat Assistant
+
+The site includes a floating chat widget (`src/components/ChatWidget.tsx`) powered by OpenAI via the Vercel AI SDK.
+
+**Features:**
+- Floating button (bottom-right) that opens a chat panel
+- AI assistant that answers questions about Senai Technology's services
+- Lead capture form (name, email, what they need)
+- Streaming responses for a smooth conversational experience
+- Mobile and desktop responsive
+- Theme-agnostic styling using CSS variables (works with both main and redesign branches)
+- Graceful fallback when `OPENAI_API_KEY` is not configured
+
+**Environment Variables:**
+
+For Vercel deployment, set these in the Vercel project settings:
+
+- **`OPENAI_API_KEY`** (required) — Your OpenAI API key. The chat uses `gpt-4o-mini` for responses. Without this key, the chat shows a friendly error directing visitors to the contact form.
+- **`CHAT_LEAD_WEBHOOK_URL`** (optional) — If provided, captured leads (name, email, need) are POSTed to this webhook URL as JSON. Leads are also logged server-side for backup.
+
+**Local Development:**
+
+Create a `.env` file (not committed):
+
+```env
+OPENAI_API_KEY=sk-...
+CHAT_LEAD_WEBHOOK_URL=https://...  # optional
+```
+
+Without `OPENAI_API_KEY`, the widget still renders but shows a fallback message directing visitors to the contact form or email.
+
+**Lead Storage:**
+
+Currently, leads are:
+1. Logged to the server console (visible in Vercel function logs)
+2. Optionally sent to `CHAT_LEAD_WEBHOOK_URL` if configured
+
+This approach works without a database. For production, consider:
+- A webhook to a CRM or email service (Zapier, Make, n8n)
+- A Vercel serverless function that emails leads via SendGrid/Postmark
+- Adding Vercel Postgres or another database for persistent storage
 
 ## Stack
 
@@ -69,6 +112,7 @@ Runtime dependencies are all MIT / Apache-2.0 / ISC / BSD / Zlib / OFL (checked 
 
 - [ ] **Contact:** `hello@senaitechnology.com` is a placeholder (`src/content.ts`, `CONTACT_EMAIL`). The form has no
       backend and only builds a `mailto:` link. Wire up a form service or serverless endpoint.
+- [ ] **AI Chat:** Set `OPENAI_API_KEY` in Vercel environment variables. Configure `CHAT_LEAD_WEBHOOK_URL` for lead routing.
 - [ ] Replace the concept tiles with real case studies, and add real OpenSlot screenshots / an App Store badge.
 - [ ] Add a real OG image, favicon set and analytics (if wanted).
 - [ ] Tune effects on real GPUs. The screenshots came from SwiftShader (software) at low FPS, so ripple and fluid
