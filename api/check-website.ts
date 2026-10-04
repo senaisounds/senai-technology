@@ -3,6 +3,22 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 const TIMEOUT_MS = 25000;
 const MAX_REDIRECTS = 3;
 
+/**
+ * Website Check API
+ * 
+ * Analyzes websites for performance, SEO, and AI-search readiness.
+ * 
+ * Overall Score Weighting:
+ * - With PageSpeed Insights (PAGESPEED_API_KEY set):
+ *   40% Performance + 35% SEO + 25% AI-search
+ * - Without PageSpeed (no API key or unavailable):
+ *   60% SEO + 40% AI-search (performance excluded)
+ * 
+ * Environment Variables:
+ * - PAGESPEED_API_KEY (optional): Google PageSpeed Insights API key
+ *   When not set, performance is returned as null and excluded from scoring.
+ */
+
 interface CheckResult {
   score: number;
   performance: {
@@ -10,7 +26,7 @@ interface CheckResult {
     hasPageSpeed: boolean;
     pageSpeedScore?: number;
     mobileScore?: number;
-  };
+  } | null;
   seo: {
     score: number;
     checks: {
@@ -60,19 +76,20 @@ async function fetchPageSpeed(
   url: string,
   apiKey?: string
 ): Promise<{ desktop?: number; mobile?: number } | null> {
+  if (!apiKey) {
+    return null;
+  }
   try {
     const params = new URLSearchParams({
       url,
       category: "performance",
       strategy: "mobile",
+      key: apiKey,
     });
-    if (apiKey) {
-      params.set("key", apiKey);
-    }
     const response = await fetchWithTimeout(
       `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`,
       {},
-      30000
+      15000
     );
     if (!response.ok) return null;
     const data = await response.json();
@@ -193,26 +210,26 @@ async function checkWebsite(targetUrl: string, apiKey?: string): Promise<CheckRe
       100
   );
 
-  let performanceScore = 0;
-  let hasPageSpeed = false;
-  if (pageSpeedData && pageSpeedData.mobile !== undefined) {
-    hasPageSpeed = true;
-    performanceScore = pageSpeedData.mobile;
-  }
+  const pageSpeedData = await fetchPageSpeed(finalUrl, apiKey);
 
-  const overallScore = hasPageSpeed
-    ? Math.round((performanceScore * 0.4 + seoScore * 0.35 + aiSearchScore * 0.25))
-    : Math.round((seoScore * 0.6 + aiSearchScore * 0.4));
+  let performance: CheckResult["performance"] = null;
+  let overallScore: number;
+
+  if (pageSpeedData && pageSpeedData.mobile !== undefined) {
+    const performanceScore = pageSpeedData.mobile;
+    performance = {
+      score: performanceScore,
+      hasPageSpeed: true,
+      mobileScore: pageSpeedData.mobile,
+    };
+    overallScore = Math.round(performanceScore * 0.4 + seoScore * 0.35 + aiSearchScore * 0.25);
+  } else {
+    overallScore = Math.round(seoScore * 0.6 + aiSearchScore * 0.4);
+  }
 
   return {
     score: overallScore,
-    performance: {
-      score: performanceScore,
-      hasPageSpeed,
-      ...(hasPageSpeed && {
-        mobileScore: pageSpeedData?.mobile,
-      }),
-    },
+    performance,
     seo: {
       score: seoScore,
       checks: seoChecks,
