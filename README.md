@@ -56,6 +56,13 @@ Noto Sans Ethiopic is subset to the three glyphs of ሰናይ (`senai-geez.woff2
 
 Runtime deps: react, react-dom, lenis (all MIT).
 
+## Environment Variables
+
+The following environment variables can be configured for enhanced functionality:
+
+- **`PAGESPEED_API_KEY`** (optional): Google PageSpeed Insights API key for higher rate limits on the website check tool. The tool works without a key at lower volume.
+- **`LEAD_WEBHOOK_URL`** (optional): Webhook endpoint for lead submissions from the website check tool. If set, lead data is posted to this URL. Leads are always logged server-side regardless of webhook configuration.
+
 ## TODO before launch
 
 - [ ] **Contact:** `hello@senaitechnology.com` is a placeholder (`src/content.ts`, `CONTACT_EMAIL`). The form has no

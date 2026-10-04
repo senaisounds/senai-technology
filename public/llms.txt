@@ -118,6 +118,15 @@ We specialize in:
 Email: hello@senaitechnology.com
 Website: https://senai-technology.vercel.app
 
+## Website Check Tool
+
+We offer a free website analysis tool at https://senai-technology.vercel.app/check that evaluates:
+- Performance & mobile optimization (via Google PageSpeed Insights)
+- SEO basics (HTTPS, meta tags, headings, mobile viewport, structured data, sitemaps)
+- AI-search readiness (text content, structured data, llms.txt support)
+
+The tool provides a 0-100 score and actionable recommendations for improvement. Designed for small businesses in New York and Addis Ababa to understand their online presence.
+
 ## Geographic Reach
 
 We serve clients in:

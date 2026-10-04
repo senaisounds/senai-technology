@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Check Screenshots</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { font-size: 48px; margin-bottom: 16px; }
+        .subtitle { color: #888; font-size: 18px; margin-bottom: 48px; }
+        .grid { display: grid; gap: 40px; }
+        .screenshot {
+            background: #111;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #222;
+        }
+        .screenshot h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #4a9eff;
+        }
+        .screenshot p {
+            color: #888;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .screenshot img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .status.complete { background: #1a4d2e; color: #4ade80; }
+        .status.pending { background: #4d3319; color: #fbbf24; }
+        .summary {
+            background: #111;
+            border-radius: 12px;
+            padding: 32px;
+            border: 1px solid #222;
+            margin-bottom: 48px;
+        }
+        .summary h2 { color: #4a9eff; margin-bottom: 16px; }
+        .summary ul { margin-left: 24px; color: #aaa; line-height: 2; }
+        .summary li { margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Website Check Lead Magnet</h1>
+        <p class="subtitle">Screenshot Testing Results - October 4, 2026</p>
+
+        <div class="summary">
+            <h2>Testing Summary</h2>
+            <p style="color: #aaa; margin-bottom: 16px;">
+                <strong>Progress: 5/8 screenshots captured (62.5%)</strong>
+            </p>
+            <p style="color: #aaa; margin-bottom: 16px;">
+                Tested at http://localhost:5173 using Chrome with mobile emulation
+            </p>
+            <ul>
+                <li style="color: #4ade80;">✓ Homepage integration</li>
+                <li style="color: #4ade80;">✓ Input form (desktop & mobile)</li>
+                <li style="color: #4ade80;">✓ "No website yet" flow</li>
+                <li style="color: #4ade80;">✓ Lead capture form</li>
+                <li style="color: #fbbf24;">⚠ Loading state (requires Vercel API)</li>
+                <li style="color: #fbbf24;">⚠ Results page (requires Vercel API)</li>
+            </ul>
+        </div>
+
+        <div class="grid">
+            <div class="screenshot">
+                <span class="status complete">✓ CAPTURED</span>
+                <h2>1. Homepage Entry Point</h2>
+                <p>The new "Check your website" button integrated into the homepage, positioned below the main CTA.</p>
+                <img src="check-homepage-entry.png" alt="Homepage with Check your website button">
+            </div>
+
+            <div class="screenshot">
+                <span class="status complete">✓ CAPTURED</span>
+                <h2>2. Input Form - Desktop View</h2>
+                <p>The /check page showing the website checker form with URL input, optional business name and city fields.</p>
+                <img src="check-input-desktop.png" alt="Desktop input form">
+            </div>
+
+            <div class="screenshot">
+                <span class="status complete">✓ CAPTURED</span>
+                <h2>3. Input Form - Mobile View</h2>
+                <p>Mobile-responsive layout (iPhone SE 375px) showing the form optimized for touch input.</p>
+                <img src="check-input-mobile.png" alt="Mobile input form">
+            </div>
+
+            <div class="screenshot">
+                <span class="status complete">✓ CAPTURED</span>
+                <h2>4. "No Website Yet" Flow</h2>
+                <p>Educational page explaining benefits of having a website with compelling copy and clear CTA.</p>
+                <img src="check-no-website.png" alt="No website yet page">
+            </div>
+
+            <div class="screenshot">
+                <span class="status complete">✓ CAPTURED</span>
+                <h2>5. Lead Capture Form</h2>
+                <p>Simple consultation request form collecting name and email with promise of 2-day response.</p>
+                <img src="check-lead-form.png" alt="Lead form">
+            </div>
+
+            <div class="screenshot">
+                <span class="status pending">⚠ REQUIRES VERCEL</span>
+                <h2>6. Loading State (Not Captured)</h2>
+                <p>
+                    <strong>Reason:</strong> API endpoint /api/check-website only works on Vercel.<br>
+                    <strong>Expected content:</strong> Loading spinner, "Checking your website..." text, 15-30 second estimate.<br>
+                    <strong>Action needed:</strong> Deploy to Vercel and test with real website URL.
+                </p>
+            </div>
+
+            <div class="screenshot">
+                <span class="status pending">⚠ REQUIRES VERCEL</span>
+                <h2>7. Results Page - Desktop (Not Captured)</h2>
+                <p>
+                    <strong>Reason:</strong> Requires successful API response with website analysis data.<br>
+                    <strong>Expected content:</strong> Score badge, Performance section, SEO checklist (9 items), AI-readiness checklist (3 items).<br>
+                    <strong>Action needed:</strong> Deploy to Vercel and test with stripe.com or example.com.
+                </p>
+            </div>
+
+            <div class="screenshot">
+                <span class="status pending">⚠ REQUIRES VERCEL</span>
+                <h2>8. Results Page - Mobile (Not Captured)</h2>
+                <p>
+                    <strong>Reason:</strong> Requires successful API response.<br>
+                    <strong>Expected content:</strong> Same as desktop results but in mobile-responsive layout.<br>
+                    <strong>Action needed:</strong> Deploy to Vercel and capture with mobile emulation.
+                </p>
+            </div>
+        </div>
+
+        <div class="summary" style="margin-top: 48px;">
+            <h2>Next Steps</h2>
+            <ul>
+                <li>Deploy code to Vercel staging environment</li>
+                <li>Configure environment variables (API keys)</li>
+                <li>Test /api/check-website endpoint with real URLs</li>
+                <li>Capture missing screenshots (loading, results desktop & mobile)</li>
+                <li>Test lead submission and verify database/email integration</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

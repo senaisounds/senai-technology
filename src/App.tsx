@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { Routes, Route } from "react-router-dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { useInView, useIsMobile, useMagnetic, usePrefersReducedMotion, useSectionProgress } from "./lib/hooks";
@@ -7,6 +8,7 @@ import { ALSO, COLORS, CONTACT_EMAIL, INCLUDED, PROCESS, PROJECT_TYPES, TIERS, W
 import { DitherIcon } from "./components/DitherIcon";
 import { DitherArt } from "./components/DitherArt";
 import { ChatWidget } from "./components/ChatWidget";
+import { CheckPage } from "./components/CheckPage";
 
 
 const SECTIONS = [
@@ -17,6 +19,15 @@ const SECTIONS = [
 ];
 
 export function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/check" element={<CheckPage />} />
+    </Routes>
+  );
+}
+
+function HomePage() {
   const reduced = usePrefersReducedMotion();
   const [projectType, setProjectType] = useState(PROJECT_TYPES[0]);
   useEffect(() => {
