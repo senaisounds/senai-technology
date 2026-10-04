@@ -6,6 +6,7 @@ import { createHero, type Hero as HeroGL } from "./lib/heroGL";
 import { ALSO, COLORS, CONTACT_EMAIL, INCLUDED, PROCESS, PROJECT_TYPES, TIERS, WORK, type WorkItem } from "./content";
 import { DitherIcon } from "./components/DitherIcon";
 import { DitherArt } from "./components/DitherArt";
+import { ChatWidget } from "./components/ChatWidget";
 
 
 const SECTIONS = [
@@ -53,6 +54,7 @@ export function App() {
         <Contact reduced={reduced} projectType={projectType} setProjectType={setProjectType} />
       </main>
       <Footer />
+      <ChatWidget />
       <div className="grain" aria-hidden />
     </>
   );
