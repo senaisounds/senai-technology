@@ -1,70 +1,117 @@
 # Senai Technology
 
-> Creative technology studio building AI-powered websites, mobile apps, brand identity, and interactive experiences.
+> AI-built websites with a pulse. Creative technology studio between New York and Addis Ababa.
 
 ## About
 
-Senai Technology is a creative technology studio with headquarters in Briarcliff Manor, New York, and roots in Addis Ababa, Ethiopia. We are a Slotted LLC company founded by Senai Motley.
+Senai Technology is a creative technology studio between New York and Addis Ababa. We design and build premium, animated, AI-accelerated websites, plus mobile apps, brand identity, motion and AI tools for businesses. We are a Slotted LLC company founded by Senai Motley.
 
-## Services
+## Website Tiers
 
-We offer six core services:
+We offer three tiers for AI-built websites:
 
-### 1. AI-built websites & web apps
-Fast, beautiful sites and web apps built with AI-accelerated workflows — from launch pages to booking flows and full product dashboards.
-- Marketing sites
-- Web applications
-- E-commerce platforms
+### Launch
+**One sharp page, live fast.**
+Best for: New businesses, launches, events
 
-### 2. Mobile apps
-iOS and Android apps from first prototype to App Store release. Native feel, real-world tested — we've shipped our own.
-- iOS development
-- Android development
-- Prototyping
+Includes:
+- A single long-scroll page with tasteful motion
+- Mobile-first, responsive build
+- Contact or booking form
+- Search + social previews set up
+- Domain and hosting setup
 
-### 3. Brand identity & AI visuals
-Names, logos, type and colour systems, plus art-directed AI imagery that still looks unmistakably like you.
-- Brand identity design
-- Art direction
-- AI-generated imagery
+### Studio
+**A multi-page site with a real identity.**
+Best for: Growing brands, shops, practices
 
-### 4. Video & motion
-Launch films, social loops, product motion and 3D — cinematic content made for the feed and the big screen.
-- Motion design
-- 3D animation
-- Social media content
+Includes:
+- Everything in Launch
+- Multiple pages, shaped around your content
+- Type, colour and art direction for the web
+- Art-directed AI imagery
+- Analytics and a simple way to update content
 
-### 5. AI tools for businesses
-Chatbots, booking assistants and quiet automations that answer customers, fill calendars and give your team hours back.
-- Chatbots
-- Booking assistants
-- Business automation
+### Signature (Flagship)
+**A fully animated showcase, built to be remembered.**
+Best for: Brands that want the wow
 
-### 6. Interactive & event experiences
-Installations, live visuals and playful web toys for launches, venues and performances — things people want to touch.
-- Interactive installations
-- Live visuals
-- Event experiences
+Includes:
+- Everything in Studio
+- Custom 3D / WebGL hero like the one on our site
+- Scroll-driven storytelling and micro-interactions
+- Motion assets and AI-generated visuals
+- Performance tuning for real phones
+
+## Process
+
+### 01. Brief
+A short call about the business, the audience and the feeling the site should leave behind.
+
+### 02. Direction
+Type, colour and a motion concept, delivered as a clickable prototype you can react to early.
+
+### 03. Build
+AI-accelerated build, hand-tuned details: motion, responsiveness, performance, accessibility.
+
+### 04. Launch
+Domain, analytics and a walkthrough. Then we keep iterating together if you want to.
+
+## What's Included
+
+All tiers include:
+- **Designed in motion**: You click through a moving prototype early, not a static mockup
+- **Mobile-first**: Built for thumbs first, then scaled up. Just as smooth on a phone
+- **Fast by default**: Lean code, lazy-loaded media and effects that pause off-screen
+- **Accessible**: Semantic HTML, keyboard support and reduced-motion fallbacks
+- **Easy to find**: Titles, descriptions and social cards set up for search and sharing
+- **Clean handover**: A walkthrough at launch so you know how everything fits together
 
 ## Portfolio
 
+### Senai Technology (Live - 2026)
+**Studio website · WebGL, React**
+The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.
+
 ### OpenSlot (Shipped)
-Mobile app for iOS - An event & performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; available on the App Store.
+**Mobile app · iOS**
+An event and performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; on the App Store.
 Link: https://openslot.me
 
 ### Concept Projects
-- **Greenline Landscaping**: Website for local service - A fast, photo-led site with instant quote requests and seasonal service pages for a Hudson Valley landscaper.
-- **Buna & Butter**: Pastry shop website - A warm, editorial bakery site with pre-orders, a daily-bake menu and a nod to Ethiopian coffee ceremony.
-- **Slot**: AI booking assistant - A friendly assistant that answers questions, checks availability and books appointments over web chat and SMS.
+We showcase placeholder concepts demonstrating our capabilities:
+- Local service websites with instant quote requests
+- Café & bakery sites with pre-orders and daily menus
+- AI booking assistants for appointment scheduling
+
+## Other Services
+
+Beyond websites, we also offer:
+
+### Mobile apps
+iOS and Android, from first prototype to App Store release. We've shipped our own.
+
+### Brand identity & AI visuals
+Names, logos, type and colour systems, plus art-directed AI imagery that still looks like you.
+
+### Video & motion
+Launch films, social loops, product motion and 3D for the feed and the big screen.
+
+### AI tools for businesses
+Chatbots, booking assistants and quiet automations that give your team hours back.
+
+### Interactive & event experiences
+Installations, live visuals and web toys for launches, venues and performances.
 
 ## Technology Stack
 
 We specialize in:
 - React and modern web frameworks
-- Three.js for 3D experiences
-- AI/ML integration
+- Three.js and WebGL for 3D experiences
+- AI/ML integration and AI-accelerated workflows
 - Mobile development (iOS/Android)
 - Motion design and animation
+- Performance optimization
 
 ## Contact
 
