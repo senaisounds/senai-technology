@@ -1,0 +1,84 @@
+# Senai Technology
+
+> Creative technology studio building AI-powered websites, mobile apps, brand identity, and interactive experiences.
+
+## About
+
+Senai Technology is a creative technology studio with headquarters in Briarcliff Manor, New York, and roots in Addis Ababa, Ethiopia. We are a Slotted LLC company founded by Senai Motley.
+
+## Services
+
+We offer six core services:
+
+### 1. AI-built websites & web apps
+Fast, beautiful sites and web apps built with AI-accelerated workflows — from launch pages to booking flows and full product dashboards.
+- Marketing sites
+- Web applications
+- E-commerce platforms
+
+### 2. Mobile apps
+iOS and Android apps from first prototype to App Store release. Native feel, real-world tested — we've shipped our own.
+- iOS development
+- Android development
+- Prototyping
+
+### 3. Brand identity & AI visuals
+Names, logos, type and colour systems, plus art-directed AI imagery that still looks unmistakably like you.
+- Brand identity design
+- Art direction
+- AI-generated imagery
+
+### 4. Video & motion
+Launch films, social loops, product motion and 3D — cinematic content made for the feed and the big screen.
+- Motion design
+- 3D animation
+- Social media content
+
+### 5. AI tools for businesses
+Chatbots, booking assistants and quiet automations that answer customers, fill calendars and give your team hours back.
+- Chatbots
+- Booking assistants
+- Business automation
+
+### 6. Interactive & event experiences
+Installations, live visuals and playful web toys for launches, venues and performances — things people want to touch.
+- Interactive installations
+- Live visuals
+- Event experiences
+
+## Portfolio
+
+### OpenSlot (Shipped)
+Mobile app for iOS - An event & performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; available on the App Store.
+Link: https://openslot.me
+
+### Concept Projects
+- **Greenline Landscaping**: Website for local service - A fast, photo-led site with instant quote requests and seasonal service pages for a Hudson Valley landscaper.
+- **Buna & Butter**: Pastry shop website - A warm, editorial bakery site with pre-orders, a daily-bake menu and a nod to Ethiopian coffee ceremony.
+- **Slot**: AI booking assistant - A friendly assistant that answers questions, checks availability and books appointments over web chat and SMS.
+
+## Technology Stack
+
+We specialize in:
+- React and modern web frameworks
+- Three.js for 3D experiences
+- AI/ML integration
+- Mobile development (iOS/Android)
+- Motion design and animation
+
+## Contact
+
+Email: hello@senaitechnology.com
+Website: https://senai-technology.vercel.app
+
+## Geographic Reach
+
+We serve clients in:
+- New York, United States
+- Addis Ababa, Ethiopia
+- Global clients remotely
+
+---
+
+This file follows the llms.txt format for making websites more readable by AI crawlers and large language models.
+Learn more: https://llmstxt.org/

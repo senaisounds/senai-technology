@@ -5,8 +5,15 @@ import "@fontsource-variable/inter";
 import "./styles.css";
 import { App } from "./App";
 
-createRoot(document.getElementById("root")!).render(
+const rootEl = document.getElementById("root")!;
+const prerenderEl = document.getElementById("prerender");
+
+createRoot(rootEl).render(
   <StrictMode>
     <App />
   </StrictMode>,
 );
+
+if (prerenderEl) {
+  prerenderEl.remove();
+}
