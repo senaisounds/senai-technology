@@ -1,0 +1,28 @@
+# robots.txt for Senai Technology
+User-agent: *
+Allow: /
+
+# AI crawlers and answer engines
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+# Sitemaps
+Sitemap: https://senai-technology.vercel.app/sitemap.xml
+
+# Additional resources for AI
+# See /llms.txt for structured information about this site
