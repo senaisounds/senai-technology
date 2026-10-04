@@ -6,17 +6,284 @@
     <title>Senai Technology — AI-built websites with a pulse | Creative technology studio</title>
     <meta name="description" content="Senai Technology is a creative technology studio between New York and Addis Ababa. We design and build premium, animated, AI-accelerated websites, plus mobile apps, brand identity, motion and AI tools for businesses." />
     <meta name="theme-color" content="#0b0a09" />
+    <link rel="canonical" href="https://senai-technology.vercel.app/" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://senai-technology.vercel.app/" />
     <meta property="og:title" content="Senai Technology — Websites with a pulse" />
     <meta property="og:description" content="AI-built websites, studio-grade. A creative technology studio between New York and Addis Ababa. A Slotted LLC company." />
-    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://senai-technology.vercel.app/og-image.png" />
+    <meta property="og:site_name" content="Senai Technology" />
+    
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://senai-technology.vercel.app/" />
+    <meta name="twitter:title" content="Senai Technology — Websites with a pulse" />
+    <meta name="twitter:description" content="AI-built websites, studio-grade. A creative technology studio between New York and Addis Ababa. A Slotted LLC company." />
+    <meta name="twitter:image" content="https://senai-technology.vercel.app/og-image.png" />
+    
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    
+    <!-- Preload critical fonts -->
     <link rel="preload" href="/fonts/instrument-sans-wdth.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossorigin />
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Senai Technology",
+      "description": "Creative technology studio between New York and Addis Ababa. We design and build premium, animated, AI-accelerated websites, plus mobile apps, brand identity, motion and AI tools for businesses.",
+      "url": "https://senai-technology.vercel.app",
+      "logo": "https://senai-technology.vercel.app/favicon.svg",
+      "image": "https://senai-technology.vercel.app/og-image.png",
+      "email": "hello@senaitechnology.com",
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "New York",
+          "addressCountry": "US"
+        },
+        {
+          "@type": "City",
+          "name": "Addis Ababa",
+          "addressCountry": "ET"
+        }
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Briarcliff Manor",
+        "addressRegion": "NY",
+        "addressCountry": "US"
+      },
+      "serviceType": [
+        "AI-built Websites",
+        "Web Development",
+        "Mobile App Development",
+        "Brand Identity Design",
+        "AI Solutions",
+        "Video Production",
+        "Interactive Experiences"
+      ],
+      "knowsAbout": [
+        "Artificial Intelligence",
+        "Web Development",
+        "Mobile Development",
+        "Brand Design",
+        "Motion Design",
+        "Three.js",
+        "React",
+        "WebGL"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Senai Motley"
+      },
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "Slotted LLC"
+      }
+    }
+    </script>
+    <style>
+      /* Hide prerendered content once React hydrates */
+      #root:not(:empty) + #prerender { display: none; }
+      
+      /* Prerender styles */
+      #prerender { 
+        font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        color: #f2ece1;
+        background: #0b0a09;
+        padding: 1rem;
+      }
+      #prerender .skip { position: absolute; left: -9999px; }
+      #prerender header { padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+      #prerender nav a { margin-left: 1.5rem; color: #f2ece1; text-decoration: none; }
+      #prerender nav a:hover { color: #ff5a1f; }
+      #prerender main { max-width: 1200px; margin: 0 auto; }
+      #prerender section { margin: 4rem 0; }
+      #prerender h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; margin: 1rem 0; line-height: 1.1; }
+      #prerender h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 600; margin: 2rem 0 1rem; }
+      #prerender h3 { font-size: 1.5rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: #ff5a1f; }
+      #prerender h4 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+      #prerender p { margin: 1rem 0; opacity: 0.9; max-width: 70ch; }
+      #prerender ul { margin: 1rem 0; padding-left: 1.5rem; list-style: disc; }
+      #prerender li { margin: 0.5rem 0; }
+      #prerender a { color: #ff5a1f; text-decoration: underline; }
+      #prerender .btn { 
+        display: inline-block; 
+        padding: 0.875rem 1.75rem; 
+        background: #ff5a1f; 
+        color: #f2ece1; 
+        text-decoration: none; 
+        border-radius: 8px;
+        margin: 0.5rem 1rem 0.5rem 0;
+        font-weight: 500;
+      }
+      #prerender .btn:hover { background: #e74e15; }
+      #prerender .tier { 
+        border: 1px solid rgba(242, 236, 225, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+      }
+      #prerender .tier.flagship { border-color: #ff5a1f; }
+      #prerender .work-item {
+        border-top: 1px solid rgba(242, 236, 225, 0.2);
+        padding: 2rem 0;
+      }
+      #prerender footer { padding: 2rem 0; text-align: center; opacity: 0.7; border-top: 1px solid rgba(242, 236, 225, 0.2); margin-top: 4rem; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="prerender">
+      <a class="skip" href="#main">Skip to content</a>
+      <header>
+        <a href="#top" style="font-weight: 600;">Senai Technology</a>
+        <nav>
+          <a href="#tiers">Tiers</a>
+          <a href="#process">Process</a>
+          <a href="#work">Work</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </header>
+      <main id="main">
+        <section id="top">
+          <p style="opacity: 0.7;">Creative technology studio · New York ⇄ Addis Ababa</p>
+          <h1>Websites with a pulse.</h1>
+          <p>AI-built, studio-grade. Premium animated sites that feel alive, plus mobile apps, brand identity, motion and AI tools for businesses.</p>
+          <p>
+            <a href="#contact" class="btn">Start a project →</a>
+            <a href="#tiers" class="btn" style="background: transparent; border: 1px solid #ff5a1f;">See the tiers</a>
+          </p>
+        </section>
+        
+        <section id="tiers">
+          <p style="opacity: 0.7;">Three ways in</p>
+          <h2>Choose your tier</h2>
+          
+          <div class="tier">
+            <h3>Launch</h3>
+            <p style="font-style: italic; opacity: 0.8;">One sharp page, live fast.</p>
+            <p><strong>Best for:</strong> New businesses, launches, events</p>
+            <h4>Includes:</h4>
+            <ul>
+              <li>A single long-scroll page with tasteful motion</li>
+              <li>Mobile-first, responsive build</li>
+              <li>Contact or booking form</li>
+              <li>Search + social previews set up</li>
+              <li>Domain and hosting setup</li>
+            </ul>
+          </div>
+          
+          <div class="tier">
+            <h3>Studio</h3>
+            <p style="font-style: italic; opacity: 0.8;">A multi-page site with a real identity.</p>
+            <p><strong>Best for:</strong> Growing brands, shops, practices</p>
+            <h4>Includes:</h4>
+            <ul>
+              <li>Everything in Launch</li>
+              <li>Multiple pages, shaped around your content</li>
+              <li>Type, colour and art direction for the web</li>
+              <li>Art-directed AI imagery</li>
+              <li>Analytics and a simple way to update content</li>
+            </ul>
+          </div>
+          
+          <div class="tier flagship">
+            <h3>Signature ✨</h3>
+            <p style="font-style: italic; opacity: 0.8;">A fully animated showcase, built to be remembered.</p>
+            <p><strong>Best for:</strong> Brands that want the wow</p>
+            <h4>Includes:</h4>
+            <ul>
+              <li>Everything in Studio</li>
+              <li>Custom 3D / WebGL hero like the one above</li>
+              <li>Scroll-driven storytelling and micro-interactions</li>
+              <li>Motion assets and AI-generated visuals</li>
+              <li>Performance tuning for real phones</li>
+            </ul>
+          </div>
+        </section>
+        
+        <section id="process">
+          <h2>How we work</h2>
+          
+          <h4>01. Brief</h4>
+          <p>A short call about the business, the audience and the feeling the site should leave behind.</p>
+          
+          <h4>02. Direction</h4>
+          <p>Type, colour and a motion concept, delivered as a clickable prototype you can react to early.</p>
+          
+          <h4>03. Build</h4>
+          <p>AI-accelerated build, hand-tuned details: motion, responsiveness, performance, accessibility.</p>
+          
+          <h4>04. Launch</h4>
+          <p>Domain, analytics and a walkthrough. Then we keep iterating together if you want to.</p>
+        </section>
+        
+        <section id="work">
+          <h2>Selected work</h2>
+          
+          <article class="work-item">
+            <h3>Senai Technology</h3>
+            <p><strong>Studio website · WebGL, React</strong> — 2026</p>
+            <p>The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.</p>
+            <p><a href="#top">You're looking at it</a></p>
+          </article>
+          
+          <article class="work-item">
+            <h3>OpenSlot</h3>
+            <p><strong>Mobile app · iOS</strong> — Past project</p>
+            <p>An event and performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; on the App Store.</p>
+            <p><a href="https://openslot.me" target="_blank" rel="noopener">openslot.me ↗</a></p>
+          </article>
+        </section>
+        
+        <section id="studio">
+          <h2>We also do</h2>
+          
+          <article>
+            <h4>Mobile apps</h4>
+            <p>iOS and Android, from first prototype to App Store release. We've shipped our own.</p>
+          </article>
+          
+          <article>
+            <h4>Brand identity & AI visuals</h4>
+            <p>Names, logos, type and colour systems, plus art-directed AI imagery that still looks like you.</p>
+          </article>
+          
+          <article>
+            <h4>Video & motion</h4>
+            <p>Launch films, social loops, product motion and 3D for the feed and the big screen.</p>
+          </article>
+          
+          <article>
+            <h4>AI tools for businesses</h4>
+            <p>Chatbots, booking assistants and quiet automations that give your team hours back.</p>
+          </article>
+          
+          <article>
+            <h4>Interactive & event experiences</h4>
+            <p>Installations, live visuals and web toys for launches, venues and performances.</p>
+          </article>
+        </section>
+        
+        <section id="contact">
+          <h2>Start a project.</h2>
+          <p>Tell us what you're dreaming up — a site, an app, a brand, a film, an AI assistant or something that doesn't have a name yet.</p>
+          <p>Email: <a href="mailto:hello@senaitechnology.com">hello@senaitechnology.com</a></p>
+        </section>
+      </main>
+      <footer>
+        <p>© 2026 Senai Technology, a Slotted LLC company</p>
+        <p>New York · Addis Ababa</p>
+      </footer>
+    </div>
     <noscript>Senai Technology — creative technology studio between New York and Addis Ababa. AI-built websites, mobile apps, brand identity and AI visuals, video and motion, AI tools for businesses, interactive experiences. Contact: hello@senaitechnology.com</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
