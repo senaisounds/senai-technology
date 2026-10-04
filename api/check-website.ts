@@ -179,8 +179,6 @@ async function checkWebsite(targetUrl: string, apiKey?: string): Promise<CheckRe
     llmsTxtExists = false;
   }
 
-  const pageSpeedData = await fetchPageSpeed(finalUrl, apiKey);
-
   const seoChecks = {
     https: isHttps,
     title: !!titleMatch && titleMatch[1].trim().length > 0,
