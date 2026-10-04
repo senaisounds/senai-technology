@@ -1,0 +1,140 @@
+# Senai Technology
+
+> AI-built websites with a pulse. Creative technology studio between New York and Addis Ababa.
+
+## About
+
+Senai Technology is a creative technology studio between New York and Addis Ababa. We design and build premium, animated, AI-accelerated websites, plus mobile apps, brand identity, motion and AI tools for businesses. We are a Slotted LLC company founded by Senai Motley.
+
+## Website Tiers
+
+We offer three tiers for AI-built websites:
+
+### Launch
+**One sharp page, live fast.**
+Best for: New businesses, launches, events
+
+Includes:
+- A single long-scroll page with tasteful motion
+- Mobile-first, responsive build
+- Contact or booking form
+- Search + social previews set up
+- Domain and hosting setup
+
+### Studio
+**A multi-page site with a real identity.**
+Best for: Growing brands, shops, practices
+
+Includes:
+- Everything in Launch
+- Multiple pages, shaped around your content
+- Type, colour and art direction for the web
+- Art-directed AI imagery
+- Analytics and a simple way to update content
+
+### Signature (Flagship)
+**A fully animated showcase, built to be remembered.**
+Best for: Brands that want the wow
+
+Includes:
+- Everything in Studio
+- Custom 3D / WebGL hero like the one on our site
+- Scroll-driven storytelling and micro-interactions
+- Motion assets and AI-generated visuals
+- Performance tuning for real phones
+
+## Process
+
+### 01. Brief
+A short call about the business, the audience and the feeling the site should leave behind.
+
+### 02. Direction
+Type, colour and a motion concept, delivered as a clickable prototype you can react to early.
+
+### 03. Build
+AI-accelerated build, hand-tuned details: motion, responsiveness, performance, accessibility.
+
+### 04. Launch
+Domain, analytics and a walkthrough. Then we keep iterating together if you want to.
+
+## What's Included
+
+All tiers include:
+- **Designed in motion**: You click through a moving prototype early, not a static mockup
+- **Mobile-first**: Built for thumbs first, then scaled up. Just as smooth on a phone
+- **Fast by default**: Lean code, lazy-loaded media and effects that pause off-screen
+- **Accessible**: Semantic HTML, keyboard support and reduced-motion fallbacks
+- **Easy to find**: Titles, descriptions and social cards set up for search and sharing
+- **Clean handover**: A walkthrough at launch so you know how everything fits together
+
+## Portfolio
+
+### Senai Technology (Live - 2026)
+**Studio website · WebGL, React**
+The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.
+
+### OpenSlot (Shipped)
+**Mobile app · iOS**
+An event and performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; on the App Store.
+Link: https://openslot.me
+
+### Concept Projects
+We showcase placeholder concepts demonstrating our capabilities:
+- Local service websites with instant quote requests
+- Café & bakery sites with pre-orders and daily menus
+- AI booking assistants for appointment scheduling
+
+## Other Services
+
+Beyond websites, we also offer:
+
+### Mobile apps
+iOS and Android, from first prototype to App Store release. We've shipped our own.
+
+### Brand identity & AI visuals
+Names, logos, type and colour systems, plus art-directed AI imagery that still looks like you.
+
+### Video & motion
+Launch films, social loops, product motion and 3D for the feed and the big screen.
+
+### AI tools for businesses
+Chatbots, booking assistants and quiet automations that give your team hours back.
+
+### Interactive & event experiences
+Installations, live visuals and web toys for launches, venues and performances.
+
+## Technology Stack
+
+We specialize in:
+- React and modern web frameworks
+- Three.js and WebGL for 3D experiences
+- AI/ML integration and AI-accelerated workflows
+- Mobile development (iOS/Android)
+- Motion design and animation
+- Performance optimization
+
+## Contact
+
+Email: hello@senaitechnology.com
+Website: https://senai-technology.vercel.app
+
+## Website Check Tool
+
+We offer a free website analysis tool at https://senai-technology.vercel.app/check that evaluates:
+- Performance & mobile optimization (via Google PageSpeed Insights)
+- SEO basics (HTTPS, meta tags, headings, mobile viewport, structured data, sitemaps)
+- AI-search readiness (text content, structured data, llms.txt support)
+
+The tool provides a 0-100 score and actionable recommendations for improvement. Designed for small businesses in New York and Addis Ababa to understand their online presence.
+
+## Geographic Reach
+
+We serve clients in:
+- New York, United States
+- Addis Ababa, Ethiopia
+- Global clients remotely
+
+---
+
+This file follows the llms.txt format for making websites more readable by AI crawlers and large language models.
+Learn more: https://llmstxt.org/

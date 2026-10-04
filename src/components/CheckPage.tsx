@@ -1,12 +1,5 @@
 import { useState } from "react";
-import { motion } from "motion/react";
 import "./CheckPage.css";
-
-const reveal = {
-  initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const },
-};
 
 interface CheckResult {
   score: number;
@@ -111,9 +104,9 @@ export function CheckPage() {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "var(--blue)";
-    if (score >= 60) return "var(--yellow)";
-    return "var(--red)";
+    if (score >= 80) return "#3b5bff";
+    if (score >= 60) return "#e7b75f";
+    return "#ff5a1f";
   };
 
   const getScoreLabel = (score: number) => {
@@ -126,9 +119,10 @@ export function CheckPage() {
   return (
     <div className="check-page">
       <nav className="check-nav">
-        <a href="/" className="logo" aria-label="Senai Technology home">
+        <a href="/" className="logo">
           <span className="logo-dot" />
-          Senai<span className="thin">Technology</span>
+          <span className="logo-word">Senai</span>
+          <span className="logo-thin">Technology</span>
         </a>
         <a href="/#contact" className="btn btn-ghost btn-sm">
           Start a project
@@ -137,14 +131,16 @@ export function CheckPage() {
 
       <main className="check-main">
         {stage === "input" && (
-          <motion.div className="check-intro" {...reveal}>
-            <p className="kicker">
-              <span className="pill">Free check</span> See how your website scores
+          <div className="check-intro animate-in">
+            <p className="label">
+              <span className="label-n">Free Check</span>
+              <span className="label-line" />
+              See how your website scores
             </p>
-            <h1 className="display-md">
-              Website + AI&#8209;search check<span className="accent-dot">.</span>
+            <h1 className="check-title">
+              Website + AI&#8209;search check<span style={{ color: "var(--accent)" }}>.</span>
             </h1>
-            <p className="lede">
+            <p className="check-lede">
               Get a clear 0–100 score covering speed, mobile performance, SEO basics, and
               AI-search readiness. Built for small businesses in New York and Addis Ababa.
             </p>
@@ -191,8 +187,12 @@ export function CheckPage() {
               {error && <p className="error">{error}</p>}
 
               <div className="form-actions">
-                <button type="submit" className="btn btn-primary btn-lg">
-                  Check my website <span aria-hidden>→</span>
+                <button type="submit" className="btn btn-primary">
+                  Check my website
+                  <span className="btn-arrow">
+                    <span aria-hidden>→</span>
+                    <span aria-hidden>→</span>
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -208,11 +208,11 @@ export function CheckPage() {
               This check typically takes 15–30 seconds. We analyze speed, mobile
               performance, SEO, and AI-search readiness.
             </p>
-          </motion.div>
+          </div>
         )}
 
         {stage === "loading" && (
-          <motion.div className="check-loading" {...reveal}>
+          <div className="check-loading animate-in">
             <div className="loader" />
             <h2>Checking your website...</h2>
             <p>
@@ -221,23 +221,24 @@ export function CheckPage() {
               SEO, and AI-search readiness.
             </p>
             <p className="muted">This usually takes 15–30 seconds</p>
-          </motion.div>
+          </div>
         )}
 
         {stage === "results" && result && (
-          <motion.div className="check-results" {...reveal}>
+          <div className="check-results animate-in">
             <div className="results-header">
               <div className="score-badge" style={{ ["--score-color" as string]: getScoreColor(result.score) }}>
                 <div className="score-number">{result.score}</div>
                 <div className="score-label">{getScoreLabel(result.score)}</div>
               </div>
               <div>
-                <p className="kicker">
-                  <span className="pill">Your score</span>
+                <p className="label">
+                  <span className="label-n">Your Score</span>
+                  <span className="label-line" />
                 </p>
-                <h2 className="display-md">
+                <h2 className="check-title">
                   {businessName || "Your website"} scored {result.score} / 100
-                  <span className="accent-dot">.</span>
+                  <span style={{ color: "var(--accent)" }}>.</span>
                 </h2>
                 <p className="result-url">{result.url.replace(/^https?:\/\//, "")}</p>
               </div>
@@ -347,24 +348,29 @@ export function CheckPage() {
                 you exactly what to fix — or build you a new site that scores 90+.
               </p>
               <button
-                className="btn btn-primary btn-lg"
+                className="btn btn-primary"
                 onClick={() => setStage("lead-form")}
               >
-                Get free consultation <span aria-hidden>→</span>
+                Get free consultation
+                <span className="btn-arrow">
+                  <span aria-hidden>→</span>
+                  <span aria-hidden>→</span>
+                </span>
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {stage === "no-website" && (
-          <motion.div className="no-website" {...reveal}>
-            <p className="kicker">
-              <span className="pill">No website yet</span>
+          <div className="no-website animate-in">
+            <p className="label">
+              <span className="label-n">No Website Yet</span>
+              <span className="label-line" />
             </p>
-            <h2 className="display-md">
-              You're not alone<span className="accent-dot">.</span>
+            <h2 className="check-title">
+              You're not alone<span style={{ color: "var(--accent)" }}>.</span>
             </h2>
-            <p className="lede">
+            <p className="check-lede">
               40% of small businesses still don't have a website. Here's what you're
               missing:
             </p>
@@ -372,35 +378,43 @@ export function CheckPage() {
             <div className="missing-list">
               <div className="missing-item">
                 <div className="missing-icon">🔍</div>
-                <h4>Search visibility</h4>
-                <p>
-                  Customers search "best [your service] near me" every day. Without a
-                  website, they'll find your competitors instead.
-                </p>
+                <div>
+                  <h4>Search visibility</h4>
+                  <p>
+                    Customers search "best [your service] near me" every day. Without a
+                    website, they'll find your competitors instead.
+                  </p>
+                </div>
               </div>
               <div className="missing-item">
                 <div className="missing-icon">🤖</div>
-                <h4>AI assistant discovery</h4>
-                <p>
-                  ChatGPT, Perplexity, and Google's AI now answer questions like "find me
-                  a plumber in Brooklyn" with websites, not just phone numbers.
-                </p>
+                <div>
+                  <h4>AI assistant discovery</h4>
+                  <p>
+                    ChatGPT, Perplexity, and Google's AI now answer questions like "find me
+                    a plumber in Brooklyn" with websites, not just phone numbers.
+                  </p>
+                </div>
               </div>
               <div className="missing-item">
                 <div className="missing-icon">📱</div>
-                <h4>24/7 storefront</h4>
-                <p>
-                  A website works when you're closed, showing your services, prices, and
-                  booking options while you sleep.
-                </p>
+                <div>
+                  <h4>24/7 storefront</h4>
+                  <p>
+                    A website works when you're closed, showing your services, prices, and
+                    booking options while you sleep.
+                  </p>
+                </div>
               </div>
               <div className="missing-item">
                 <div className="missing-icon">💼</div>
-                <h4>Professional credibility</h4>
-                <p>
-                  83% of customers check a business's website before visiting. No website
-                  = less trust.
-                </p>
+                <div>
+                  <h4>Professional credibility</h4>
+                  <p>
+                    83% of customers check a business's website before visiting. No website
+                    = less trust.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -411,24 +425,29 @@ export function CheckPage() {
                 Get a free consultation and see exactly what your site could look like.
               </p>
               <button
-                className="btn btn-primary btn-lg"
+                className="btn btn-primary"
                 onClick={() => setStage("lead-form")}
               >
-                Get free consultation <span aria-hidden>→</span>
+                Get free consultation
+                <span className="btn-arrow">
+                  <span aria-hidden>→</span>
+                  <span aria-hidden>→</span>
+                </span>
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {stage === "lead-form" && !leadSubmitted && (
-          <motion.div className="lead-form-wrapper" {...reveal}>
-            <p className="kicker">
-              <span className="pill">Almost there</span>
+          <div className="lead-form-wrapper animate-in">
+            <p className="label">
+              <span className="label-n">Almost There</span>
+              <span className="label-line" />
             </p>
-            <h2 className="display-md">
-              Book your free consultation<span className="accent-dot">.</span>
+            <h2 className="check-title">
+              Book your free consultation<span style={{ color: "var(--accent)" }}>.</span>
             </h2>
-            <p className="lede">
+            <p className="check-lede">
               We'll reply within two business days with times and a clear plan.
             </p>
 
@@ -465,27 +484,31 @@ export function CheckPage() {
 
               {error && <p className="error">{error}</p>}
 
-              <button type="submit" className="btn btn-primary btn-lg btn-block">
-                Send it <span aria-hidden>→</span>
+              <button type="submit" className="btn btn-primary btn-block">
+                Send it
+                <span className="btn-arrow">
+                  <span aria-hidden>→</span>
+                  <span aria-hidden>→</span>
+                </span>
               </button>
             </form>
-          </motion.div>
+          </div>
         )}
 
         {stage === "lead-form" && leadSubmitted && (
-          <motion.div className="lead-success" {...reveal}>
+          <div className="lead-success animate-in">
             <div className="success-icon">✓</div>
-            <h2 className="display-md">
-              Thanks, {leadName}<span className="accent-dot">!</span>
+            <h2 className="check-title">
+              Thanks, {leadName}<span style={{ color: "var(--accent)" }}>!</span>
             </h2>
-            <p className="lede">
+            <p className="check-lede">
               We'll email you at <strong>{leadEmail}</strong> within two business days
               with times and next steps.
             </p>
             <a href="/" className="btn btn-ghost">
               Back to home
             </a>
-          </motion.div>
+          </div>
         )}
       </main>
 

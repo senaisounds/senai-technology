@@ -1,15 +1,20 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import "@fontsource-variable/bricolage-grotesque/wdth.css";
-import "@fontsource-variable/inter";
 import "./styles.css";
 import { App } from "./App";
 
-createRoot(document.getElementById("root")!).render(
+const rootEl = document.getElementById("root")!;
+const prerenderEl = document.getElementById("prerender");
+
+createRoot(rootEl).render(
   <StrictMode>
     <BrowserRouter>
       <App />
     </BrowserRouter>
   </StrictMode>,
 );
+
+if (prerenderEl) {
+  prerenderEl.remove();
+}
