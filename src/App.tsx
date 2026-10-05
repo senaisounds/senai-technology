@@ -7,6 +7,7 @@ import { createHero, type Hero as HeroGL } from "./lib/heroGL";
 import { ALSO, COLORS, CONTACT_EMAIL, INCLUDED, PROCESS, PROJECT_TYPES, TIERS, WORK, type WorkItem } from "./content";
 import { DitherIcon } from "./components/DitherIcon";
 import { DitherArt } from "./components/DitherArt";
+import { TierTexture } from "./components/TierTexture";
 import { ChatWidget } from "./components/ChatWidget";
 import { CheckPage } from "./components/CheckPage";
 
@@ -252,7 +253,7 @@ function Nav() {
               {s.label}
             </a>
           ))}
-          <a href="#contact" className="menu-cta" onClick={() => setOpen(false)}>Start a project →</a>
+          <a href="#contact" className="menu-cta" onClick={() => setOpen(false)}>Start a project <span className="nudge" aria-hidden>→</span></a>
         </nav>
         <Clocks />
       </div>
@@ -452,13 +453,25 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
   useEffect(() => {
     if (inView) setPlay((p) => p || 1);
   }, [inView]);
+  const onMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (reduced || e.pointerType !== "mouse") return;
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--tx", `${e.clientX - r.left}px`);
+    el.style.setProperty("--ty", `${e.clientY - r.top}px`);
+  };
   return (
     <article
       data-reveal
       ref={ref}
       className={`tier ${tier.flagship ? "tier-flagship" : ""}`}
-      onPointerEnter={() => play && setPlay((p) => p + 1)}
+      onPointerEnter={(e) => {
+        onMove(e);
+        if (play) setPlay((p) => p + 1);
+      }}
+      onPointerMove={onMove}
     >
+      <TierTexture tier={i} />
       <div className="tier-top">
         <DitherIcon name={tier.icon} play={play} reduced={reduced} className="tier-icon" />
         <span className="tier-n">0{i + 1}</span>
@@ -476,7 +489,7 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
         <span className="tier-price">Quoted per project</span>
         <a href="#contact" className="tier-link" onClick={() => onPick(tier.id)}>
           <Roll>{`Start with ${tier.name}`}</Roll>
-          <span aria-hidden>→</span>
+          <span className="nudge" aria-hidden>→</span>
         </a>
       </div>
     </article>
@@ -777,7 +790,7 @@ function Footer() {
     <footer className="footer">
       <div className="footer-top">
         <p className="footer-cta">
-          Got an idea? <a href="#contact">Start a project →</a>
+          Got an idea? <a href="#contact" className="draw">Start a project <span className="nudge" aria-hidden>→</span></a>
         </p>
         <Clocks />
       </div>
@@ -787,7 +800,7 @@ function Footer() {
       <div className="footer-row">
         <p>© 2026 Senai Technology, a Slotted LLC company</p>
         <p>New York ⇄ Addis Ababa</p>
-        <p><a href="#top">Back to top ↑</a></p>
+        <p><a href="#top" className="draw">Back to top <span className="nudge nudge-up" aria-hidden>↑</span></a></p>
       </div>
     </footer>
   );
