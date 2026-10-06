@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { useInView, useIsMobile, useMagnetic, usePrefersReducedMotion, useSectionProgress } from "./lib/hooks";
@@ -591,7 +591,9 @@ function WorkCard({ item, i, total }: { item: WorkItem; i: number; total: number
   };
   const placeholder = item.status === "placeholder";
   const external = item.href?.startsWith("http");
+  const isHash = item.href?.startsWith("#");
   const badge = placeholder ? "Placeholder · concept" : item.status === "live" ? "Live · this site" : "Shipped · App Store";
+  
   return (
     <article
       className={`card ${placeholder ? "card-placeholder" : ""}`}
@@ -607,7 +609,7 @@ function WorkCard({ item, i, total }: { item: WorkItem; i: number; total: number
             <p className="card-kind">{item.kind} · {item.year}</p>
             <h3 className="card-title">{item.title}</h3>
             <p className="card-blurb">{item.blurb}</p>
-            {item.href && (
+            {item.href && (external || isHash ? (
               <a
                 className="card-link"
                 href={item.href}
@@ -616,7 +618,12 @@ function WorkCard({ item, i, total }: { item: WorkItem; i: number; total: number
                 <Roll>{item.linkLabel || "Visit"}</Roll>
                 <span aria-hidden>{external ? "↗" : "↑"}</span>
               </a>
-            )}
+            ) : (
+              <Link className="card-link" to={item.href}>
+                <Roll>{item.linkLabel || "Visit"}</Roll>
+                <span aria-hidden>↑</span>
+              </Link>
+            ))}
             {placeholder && <p className="card-slot">This slot is open. <a href="#contact">Your project here →</a></p>}
           </div>
         </div>

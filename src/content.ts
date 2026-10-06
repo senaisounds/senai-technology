@@ -101,6 +101,17 @@ export const WORK: WorkItem[] = [
     tone: { bg: "#0d0b1c", mid: "#3b5bff", high: "#e7b75f" },
   },
   {
+    title: "NORA FLUX — DJ/Artist Site",
+    kind: "Music website · Concept",
+    year: "2026 showcase",
+    blurb: "Placeholder concept: a premium, music-driven artist site with beat-synced visuals, interactive track player, tour dates, and EPK. Showcases the 'Signature' tier craft for DJs and electronic music artists.",
+    status: "placeholder",
+    href: "/work/dj",
+    linkLabel: "Explore the showcase",
+    art: "local",
+    tone: { bg: "#0a0514", mid: "#667eea", high: "#f093fb" },
+  },
+  {
     title: "Local service website",
     kind: "Website · Concept",
     year: "Open slot",

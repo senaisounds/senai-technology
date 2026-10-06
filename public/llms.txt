@@ -78,63 +78,63 @@ The site you're on. A raymarched liquid form rendered through an ordered dither,
 An event and performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; on the App Store.
 Link: https://openslot.me
 
-### Concept Projects
-We showcase placeholder concepts demonstrating our capabilities:
-- Local service websites with instant quote requests
-- Café & bakery sites with pre-orders and daily menus
-- AI booking assistants for appointment scheduling
+### NORA FLUX DJ/Artist Site (Showcase - 2026)
+**Music website · Concept** (`/work/dj`)
+A premium showcase for DJs and electronic music artists featuring beat-synced visuals, interactive track player, tour dates, photo gallery, EPK section, and booking form. Demonstrates the 'Signature' tier craft.
+This is a placeholder concept, not a real client project.
 
-## Other Services
+### Local service website (Concept)
+**Website · Concept**
+Placeholder concept, not a client project: a fast, photo-led site with instant quote requests and seasonal service pages for a local business.
 
-Beyond websites, we also offer:
+### Café & bakery website (Concept)
+**Website · Concept**
+Placeholder concept, not a client project: a warm, editorial site with pre-orders, a daily menu and a nod to the Ethiopian coffee ceremony.
 
-### Mobile apps
+### AI booking assistant (Concept)
+**AI tool · Concept**
+Placeholder concept, not a client project: a friendly assistant that answers questions, checks availability and books appointments over web chat and SMS.
+
+## Additional Services
+
+### Mobile Apps
 iOS and Android, from first prototype to App Store release. We've shipped our own.
 
-### Brand identity & AI visuals
+### Brand Identity & AI Visuals
 Names, logos, type and colour systems, plus art-directed AI imagery that still looks like you.
 
-### Video & motion
+### Video & Motion
 Launch films, social loops, product motion and 3D for the feed and the big screen.
 
-### AI tools for businesses
+### AI Tools for Businesses
 Chatbots, booking assistants and quiet automations that give your team hours back.
 
-### Interactive & event experiences
+### Interactive & Event Experiences
 Installations, live visuals and web toys for launches, venues and performances.
 
-## Technology Stack
+## Routes
 
-We specialize in:
-- React and modern web frameworks
-- Three.js and WebGL for 3D experiences
-- AI/ML integration and AI-accelerated workflows
-- Mobile development (iOS/Android)
-- Motion design and animation
-- Performance optimization
+- `/` - Main homepage with offer, process, work, studio, and contact sections
+- `/check` - Website quality check tool - free website audit and recommendations
+- `/work/dj` - DJ/artist showcase demonstrating Signature tier capabilities
+
+## Technology
+
+Built with:
+- React 19 + TypeScript
+- Vite for build tooling
+- React Router for client-side routing
+- Custom WebGL hero with liquid raymarching and dithering
+- Lenis for smooth scroll
+- Vercel AI SDK for chat assistant
+- Canvas-based visualizations and animations
+- Responsive design with mobile-first approach
+- Reduced-motion accessibility
 
 ## Contact
 
-Email: hello@senaitechnology.com
-Website: https://senai-technology.vercel.app
+- Email: hello@senaitechnology.com
+- Website: https://senai-technology.vercel.app
 
-## Website Check Tool
-
-We offer a free website analysis tool at https://senai-technology.vercel.app/check that evaluates:
-- Performance & mobile optimization (via Google PageSpeed Insights)
-- SEO basics (HTTPS, meta tags, headings, mobile viewport, structured data, sitemaps)
-- AI-search readiness (text content, structured data, llms.txt support)
-
-The tool provides a 0-100 score and actionable recommendations for improvement. Designed for small businesses in New York and Addis Ababa to understand their online presence.
-
-## Geographic Reach
-
-We serve clients in:
-- New York, United States
-- Addis Ababa, Ethiopia
-- Global clients remotely
-
----
-
-This file follows the llms.txt format for making websites more readable by AI crawlers and large language models.
-Learn more: https://llmstxt.org/
+© 2026 Senai Technology, a Slotted LLC company
+New York ⇄ Addis Ababa
