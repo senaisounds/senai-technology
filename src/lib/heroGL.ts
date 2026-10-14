@@ -124,18 +124,24 @@ void main() {
   vec4 dith = level < 1.0 ? vec4(0.0) : level < 2.0 ? vec4(uAccent, 1.0) : vec4(uInk, 1.0);
 
   // hidden word: sampled per cell so it's built from the same dither cells; the reveal edge is itself ordered-dithered
-  float word = texture(uMask, (cc - uMaskRect.xy) / uMaskRect.zw).r;
-  float near = (1.0 - smoothstep(uReveal.z * 0.3, uReveal.z, length(cc - uReveal.xy))) * uReveal.w;
-  if (word > 0.5 && near > bayer8(cell + 5.0)) {
-    dith = level < 1.0 ? vec4(uAccent, 1.0) * 0.5 : vec4(0.0);
+#ifdef REVEAL
+  vec2 mu = (cc - uMaskRect.xy) / uMaskRect.zw;
+  if (uReveal.w > 0.0 && mu == clamp(mu, 0.0, 1.0)) {
+    float near = (1.0 - smoothstep(uReveal.z * 0.3, uReveal.z, length(cc - uReveal.xy))) * uReveal.w;
+    if (texture(uMask, mu).r > 0.5 && near > bayer8(cell + 5.0)) {
+      dith = level < 1.0 ? vec4(uAccent, 1.0) * 0.5 : vec4(0.0);
+    }
   }
+#endif
 
   float dist = length(fc - uLens.xy);
   float m = uLens.z > 0.5 ? 1.0 - smoothstep(uLens.z - 1.5, uLens.z + 0.5, dist) : 0.0;
   vec2 lp = uLens.xy + (fc - uLens.xy) * 0.86;
   vec4 clean = texture(uScene, lp / uRes);
   clean.rgb = clean.rgb / (1.0 + clean.rgb * 0.35);
-  clean.rgb *= 1.0 - 0.35 * texture(uMask, (lp - uMaskRect.xy) / uMaskRect.zw).r * uReveal.w;
+#ifdef REVEAL
+  if (uReveal.w > 0.0) clean.rgb *= 1.0 - 0.35 * texture(uMask, (lp - uMaskRect.xy) / uMaskRect.zw).r * uReveal.w;
+#endif
   vec4 col = mix(dith, clean, m);
   float ring = uLens.z > 0.5 ? (1.0 - smoothstep(0.0, 1.4, abs(dist - uLens.z))) * 0.7 : 0.0;
   col = col * (1.0 - ring) + vec4(uInk, 1.0) * ring;
@@ -195,7 +201,8 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
   opts.onProgress?.(0.3);
 
   const parallel = gl.getExtension("KHR_parallel_shader_compile");
-  const pending$ = [begin(gl, SCENE), begin(gl, COMPOSITE)];
+  // software GL keeps the plain still frame: the reveal makes its compile and every composite pass cost a long task
+  const pending$ = [begin(gl, SCENE), begin(gl, software ? COMPOSITE : COMPOSITE.replace("\n", "\n#define REVEAL\n"))];
   let scene!: Program, comp!: Program;
   let ready = false;
   let compileRaf = 0;
@@ -253,15 +260,23 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     if (!running) renderOnce();
   };
   const GE = '700 200px "Senai Geez"';
-  document.fonts
-    .load(GE, "ሰናይ")
-    .then((f) => (f.length ? paintMask("ሰናይ", GE) : paintMask("SENAI", '700 180px "Instrument Sans Variable", sans-serif')))
-    .catch(() => paintMask("SENAI", "700 180px sans-serif"));
+  // the word only shows on interaction or scroll, so it's painted in a later idle period, outside the init task
+  const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+  const maskIdle = software ? 0 : (ric ?? ((cb: () => void) => window.setTimeout(cb, 1200)))(
+    () =>
+      void document.fonts
+        .load(GE, "ሰናይ")
+        .then((f) => (f.length ? paintMask("ሰናይ", GE) : paintMask("SENAI", '700 180px "Instrument Sans Variable", sans-serif')))
+        .catch(() => paintMask("SENAI", "700 180px sans-serif")),
+    { timeout: 2500 },
+  );
   const C = { ink: rgb(opts.colors.ink), accent: rgb(opts.colors.accent), gold: rgb(opts.colors.gold), cool: rgb(opts.colors.cool) };
 
   let w = 0, h = 0, sw = 0, sh = 0, dpr = 1;
   let quality = software ? 0.34 : opts.mobile ? 0.38 : 0.5;
   let raf = 0, running = false, first = true;
+  // in still mode time and the follow point are frozen, so the raymarch only needs redoing when the size changes
+  let sceneDirty = true;
   let time = 2.4;
   let last = 0;
   let slowFrames = 0;
@@ -287,6 +302,7 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE);
     gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
     gl!.framebufferTexture2D(gl!.FRAMEBUFFER, gl!.COLOR_ATTACHMENT0, gl!.TEXTURE_2D, tex, 0);
+    sceneDirty = true;
   }
 
   /** CSS px (top-left origin) -> world units on the z = 0 plane (camera half-height there is 2.5). */
@@ -336,13 +352,13 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     lens.y += (ly - lens.y) * lk;
     lens.r += (lr - lens.r) * (still ? 1 : lk * 0.6);
 
-    // Reveal: full around an active pointer (wider when it moves fast), a faint hint while idle, and the whole word
+    // Reveal: full around an active pointer (wider when it moves fast), a faint hint while idle (not in the still frame), and the whole word
     // surfaces as the hero scrolls away, which is also the touch equivalent.
     ptr.speed *= Math.exp(-dt * 5);
     const fast = Math.min(ptr.speed / 1400, 1);
     const leave = Math.min(Math.max((scroll - 0.01) / 0.14, 0), 1);
     const leaveE = leave * leave * (3 - 2 * leave);
-    const ra = Math.max(ptr.active && !idle ? 1 : 0.22, leaveE);
+    const ra = Math.max(ptr.active && !idle ? 1 : still ? 0 : 0.22, leaveE);
     const rr = lens.r * (2.1 + 0.7 * fast) + leaveE * Math.hypot(cw, ch);
     const rk = still ? 1 : 1 - Math.pow(0.02, dt);
     reveal.amount += (ra - reveal.amount) * rk;
@@ -354,19 +370,22 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     const pulse = Math.pow(0.5 + 0.5 * Math.cos(beat * Math.PI * 2), 6);
 
     gl!.bindVertexArray(vao);
-    gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
-    gl!.viewport(0, 0, sw, sh);
-    gl!.useProgram(scene.p);
-    gl!.uniform2f(scene.u.uRes, sw, sh);
-    gl!.uniform1f(scene.u.uTime, time);
-    gl!.uniform1f(scene.u.uPulse, still ? 0 : pulse);
-    gl!.uniform3f(scene.u.uFollow, follow.x, follow.y, 0.4);
-    gl!.uniform2f(scene.u.uCenter, L.cx, L.cy);
-    gl!.uniform1f(scene.u.uScale, L.s);
-    gl!.uniform3fv(scene.u.uAccent, C.accent);
-    gl!.uniform3fv(scene.u.uGold, C.gold);
-    gl!.uniform3fv(scene.u.uCool, C.cool);
-    gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+    if (!still || sceneDirty) {
+      sceneDirty = false;
+      gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
+      gl!.viewport(0, 0, sw, sh);
+      gl!.useProgram(scene.p);
+      gl!.uniform2f(scene.u.uRes, sw, sh);
+      gl!.uniform1f(scene.u.uTime, time);
+      gl!.uniform1f(scene.u.uPulse, still ? 0 : pulse);
+      gl!.uniform3f(scene.u.uFollow, follow.x, follow.y, 0.4);
+      gl!.uniform2f(scene.u.uCenter, L.cx, L.cy);
+      gl!.uniform1f(scene.u.uScale, L.s);
+      gl!.uniform3fv(scene.u.uAccent, C.accent);
+      gl!.uniform3fv(scene.u.uGold, C.gold);
+      gl!.uniform3fv(scene.u.uCool, C.cool);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+    }
 
     gl!.bindFramebuffer(gl!.FRAMEBUFFER, null);
     gl!.viewport(0, 0, w, h);
@@ -448,6 +467,8 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     },
     destroy() {
       destroyed = true;
+      if (ric) (window as unknown as { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(maskIdle);
+      else clearTimeout(maskIdle);
       running = false;
       cancelAnimationFrame(raf);
       cancelAnimationFrame(pending);
