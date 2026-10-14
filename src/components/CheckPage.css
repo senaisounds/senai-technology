@@ -54,11 +54,11 @@
 }
 
 .check-title {
+  font-family: var(--display);
   font-weight: 600;
-  font-stretch: 82%;
-  font-size: clamp(48px, 7vw, 92px);
+  font-size: clamp(50px, 7.2vw, 96px);
   line-height: 0.92;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.02em;
   margin: 0 0 24px;
   text-wrap: balance;
 }

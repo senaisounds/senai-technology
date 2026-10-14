@@ -27,6 +27,7 @@
     
     <!-- Preload critical fonts -->
     <link rel="preload" href="/fonts/instrument-sans-wdth.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/cormorant-garamond-600.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossorigin />
     
@@ -131,7 +132,7 @@
         padding: 1.5rem;
         margin: 1.5rem 0;
       }
-      #prerender .tier.flagship { border-color: #ff5a1f; }
+      #prerender .tier.recommended { border-color: #ff5a1f; }
       #prerender .work-item {
         border-top: 1px solid rgba(242, 236, 225, 0.2);
         padding: 2rem 0;
@@ -181,13 +182,13 @@
             </ul>
           </div>
           
-          <div class="tier">
-            <h3>Studio</h3>
+          <div class="tier recommended">
+            <h3>Studio <small>(Recommended)</small></h3>
             <p style="font-style: italic; opacity: 0.8;">A multi-page site with a real identity.</p>
             <p><strong>Best for:</strong> Growing brands, shops, practices</p>
             <h4>Includes:</h4>
             <ul>
-              <li>Everything in Launch</li>
+              <li>Everything in Launch, plus:</li>
               <li>Multiple pages, shaped around your content</li>
               <li>Type, colour and art direction for the web</li>
               <li>Art-directed AI imagery</li>
@@ -195,13 +196,13 @@
             </ul>
           </div>
           
-          <div class="tier flagship">
-            <h3>Signature ✨</h3>
+          <div class="tier">
+            <h3>Signature <small>(Flagship)</small></h3>
             <p style="font-style: italic; opacity: 0.8;">A fully animated showcase, built to be remembered.</p>
             <p><strong>Best for:</strong> Brands that want the wow</p>
             <h4>Includes:</h4>
             <ul>
-              <li>Everything in Studio</li>
+              <li>Everything in Studio, plus:</li>
               <li>Custom 3D / WebGL hero like the one above</li>
               <li>Scroll-driven storytelling and micro-interactions</li>
               <li>Motion assets and AI-generated visuals</li>

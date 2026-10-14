@@ -14,8 +14,12 @@ export type Tier = {
   name: string;
   tagline: string;
   fit: string;
+  /** name of the tier whose features this one includes, shown as "Everything in …, plus" */
+  inherits?: string;
   includes: string[];
   icon: "motion" | "app" | "play";
+  /** the highlighted pick: badge, accent frame, filled CTA */
+  recommended?: boolean;
   flagship?: boolean;
 };
 
@@ -33,15 +37,18 @@ export const TIERS: Tier[] = [
     name: "Studio",
     tagline: "A multi-page site with a real identity.",
     fit: "Growing brands, shops, practices",
-    includes: ["Everything in Launch", "Multiple pages, shaped around your content", "Type, colour and art direction for the web", "Art-directed AI imagery", "Analytics and a simple way to update content"],
+    inherits: "Launch",
+    includes: ["Multiple pages, shaped around your content", "Type, colour and art direction for the web", "Art-directed AI imagery", "Analytics and a simple way to update content"],
     icon: "app",
+    recommended: true,
   },
   {
     id: "Signature site",
     name: "Signature",
     tagline: "A fully animated showcase, built to be remembered.",
     fit: "Brands that want the wow",
-    includes: ["Everything in Studio", "Custom 3D / WebGL hero like the one above", "Scroll-driven storytelling and micro-interactions", "Motion assets and AI-generated visuals", "Performance tuning for real phones"],
+    inherits: "Studio",
+    includes: ["Custom 3D / WebGL hero like the one above", "Scroll-driven storytelling and micro-interactions", "Motion assets and AI-generated visuals", "Performance tuning for real phones"],
     icon: "play",
     flagship: true,
   },

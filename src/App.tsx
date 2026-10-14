@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Routes, Route } from "react-router-dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
@@ -9,8 +9,9 @@ import { DitherIcon } from "./components/DitherIcon";
 import { DitherArt } from "./components/DitherArt";
 import { TierTexture } from "./components/TierTexture";
 import { ChatWidget } from "./components/ChatWidget";
-import { CheckPage } from "./components/CheckPage";
 
+// the /check tool isn't needed on the homepage, so it stays off the critical path
+const CheckPage = lazy(() => import("./components/CheckPage").then((m) => ({ default: m.CheckPage })));
 
 const SECTIONS = [
   { id: "offer", label: "Offer" },
@@ -23,7 +24,7 @@ export function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/check" element={<CheckPage />} />
+      <Route path="/check" element={<Suspense fallback={null}><CheckPage /></Suspense>} />
     </Routes>
   );
 }
@@ -428,7 +429,6 @@ function Offer({ reduced, onPick }: { reduced: boolean; onPick: (t: string) => v
         </p>
       </div>
 
-      <p className="swipe-hint" aria-hidden>Swipe for all three →</p>
       <div className="tiers">
         {TIERS.map((t, i) => (
           <TierCard key={t.id} tier={t} i={i} reduced={reduced} onPick={onPick} />
@@ -460,11 +460,12 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
     el.style.setProperty("--tx", `${e.clientX - r.left}px`);
     el.style.setProperty("--ty", `${e.clientY - r.top}px`);
   };
+  const listId = `tier-${tier.name.toLowerCase()}-list`;
   return (
     <article
       data-reveal
       ref={ref}
-      className={`tier ${tier.flagship ? "tier-flagship" : ""}`}
+      className={`tier ${tier.recommended ? "tier-rec" : ""} ${tier.flagship ? "tier-flagship" : ""}`}
       onPointerEnter={(e) => {
         onMove(e);
         if (play) setPlay((p) => p + 1);
@@ -474,20 +475,35 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
       <TierTexture tier={i} />
       <div className="tier-top">
         <DitherIcon name={tier.icon} play={play} reduced={reduced} className="tier-icon" />
-        <span className="tier-n">0{i + 1}</span>
+        <span className="tier-badges">
+          {tier.recommended && <span className="tier-flag tier-flag-rec">Recommended</span>}
+          {tier.flagship && <span className="tier-flag">Flagship</span>}
+          <span className="tier-n">0{i + 1}</span>
+        </span>
       </div>
-      {tier.flagship && <span className="tier-flag">Flagship</span>}
-      <h3 className="tier-name">{tier.name}</h3>
-      <p className="tier-tag">{tier.tagline}</p>
-      <p className="tier-fit"><span>Good for</span> {tier.fit}</p>
-      <ul className="tier-list">
-        {tier.includes.map((x) => (
-          <li key={x}>{x}</li>
-        ))}
-      </ul>
+      <div className="tier-head">
+        <h3 className="tier-name">{tier.name}</h3>
+        <p className="tier-tag">{tier.tagline}</p>
+        <p className="tier-fit"><span>Good for</span> {tier.fit}</p>
+      </div>
+      <div className="tier-body">
+        <p className="tier-list-title" id={listId}>What’s included</p>
+        {tier.inherits && (
+          <p className="tier-inherits">
+            <span aria-hidden>↳</span> Everything in {tier.inherits}, plus
+          </p>
+        )}
+        <ul className="tier-list" aria-labelledby={listId}>
+          {tier.includes.map((x) => (
+            <li key={x}>{x}</li>
+          ))}
+        </ul>
+      </div>
       <div className="tier-foot">
-        <span className="tier-price">Quoted per project</span>
-        <a href="#contact" className="tier-link" onClick={() => onPick(tier.id)}>
+        <p className="tier-price">
+          Quoted per project <span>Reply within 2 business days</span>
+        </p>
+        <a href="#contact" className={`tier-cta ${tier.recommended ? "tier-cta-primary" : ""}`} onClick={() => onPick(tier.id)}>
           <Roll>{`Start with ${tier.name}`}</Roll>
           <span className="nudge" aria-hidden>→</span>
         </a>
