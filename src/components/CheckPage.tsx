@@ -37,7 +37,7 @@ type Stage = "input" | "loading" | "results" | "no-website" | "lead-form";
 
 export function CheckPage() {
   const [stage, setStage] = useState<Stage>("input");
-  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState(() => new URLSearchParams(window.location.search).get("url") ?? "");
   const [businessName, setBusinessName] = useState("");
   const [city, setCity] = useState("");
   const [result, setResult] = useState<CheckResult | null>(null);
