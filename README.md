@@ -34,7 +34,7 @@ so captures show the still frame (with the lens) rather than the animation.
 
 Vite 8 · React 19 · TypeScript 5 · raw WebGL2 (no three.js) · Lenis (smooth scroll). Scroll reveals use one IntersectionObserver plus CSS (`[data-reveal]`).
 Fonts are self-hosted in `public/fonts` and preloaded: the Latin subsets of Instrument Sans (variable, width axis), Instrument Serif italic and Geist Mono,
-plus Cormorant Garamond 600 for display headlines only (a static instance subset to ASCII + typographic punctuation, about 10 KB).
+plus Cormorant Garamond 600 for display headlines only (a static instance subset to ASCII + typographic punctuation with kerning only, about 9 KB).
 Its `@font-face` pins ascent/descent, and three `local()` fallback faces (Times New Roman / Liberation Serif, Noto Serif, DejaVu Serif) carry
 `size-adjust` and metric overrides measured against the site's own headlines, so the swap doesn't shift layout.
 Microsoft's Michelangelus was the first choice, but its EULA grants no distribution rights and Microsoft's font FAQ forbids self-hosting or WOFF2 conversion.
