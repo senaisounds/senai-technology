@@ -33,7 +33,11 @@ so captures show the still frame (with the lens) rather than the animation.
 ## Stack
 
 Vite 8 · React 19 · TypeScript 5 · raw WebGL2 (no three.js) · Lenis (smooth scroll). Scroll reveals use one IntersectionObserver plus CSS (`[data-reveal]`).
-Fonts are self-hosted in `public/fonts` and preloaded: the Latin subsets of Instrument Sans (variable, width axis), Instrument Serif italic and Geist Mono.
+Fonts are self-hosted in `public/fonts` and preloaded: the Latin subsets of Instrument Sans (variable, width axis), Instrument Serif italic and Geist Mono,
+plus Cormorant Garamond 600 for display headlines only (a static instance subset to ASCII + typographic punctuation, about 10 KB).
+Its `@font-face` pins ascent/descent, and three `local()` fallback faces (Times New Roman / Liberation Serif, Noto Serif, DejaVu Serif) carry
+`size-adjust` and metric overrides measured against the site's own headlines, so the swap doesn't shift layout.
+Microsoft's Michelangelus was the first choice, but its EULA grants no distribution rights and Microsoft's font FAQ forbids self-hosting or WOFF2 conversion.
 Noto Sans Ethiopic is subset to the three glyphs of ሰናይ (`senai-geez.woff2`, about 2 KB).
 
 ## Performance and accessibility
@@ -51,7 +55,7 @@ Noto Sans Ethiopic is subset to the three glyphs of ሰናይ (`senai-geez.woff2
 
 | Source | License | Used for |
 |--------|---------|----------|
-| Fonts: Instrument Sans, Instrument Serif, Geist Mono (files from Fontsource), Noto Sans Ethiopic (subset) | SIL OFL 1.1 | Type |
+| Fonts: Instrument Sans, Instrument Serif, Geist Mono (files from Fontsource), Noto Sans Ethiopic (subset), Cormorant Garamond (google/fonts, subset; license in `public/fonts/OFL-cormorant-garamond.txt`) | SIL OFL 1.1 | Type |
 | Bayer-matrix `bayer2/4/8` recursion | Common public-domain shader idiom | Ordered dither in `heroGL.ts` |
 
 Runtime deps: react, react-dom, lenis (all MIT).
