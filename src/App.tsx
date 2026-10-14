@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Routes, Route } from "react-router-dom";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
@@ -9,8 +9,9 @@ import { DitherIcon } from "./components/DitherIcon";
 import { DitherArt } from "./components/DitherArt";
 import { TierTexture } from "./components/TierTexture";
 import { ChatWidget } from "./components/ChatWidget";
-import { CheckPage } from "./components/CheckPage";
 
+// the /check tool isn't needed on the homepage, so it stays off the critical path
+const CheckPage = lazy(() => import("./components/CheckPage").then((m) => ({ default: m.CheckPage })));
 
 const SECTIONS = [
   { id: "offer", label: "Offer" },
@@ -23,7 +24,7 @@ export function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/check" element={<CheckPage />} />
+      <Route path="/check" element={<Suspense fallback={null}><CheckPage /></Suspense>} />
     </Routes>
   );
 }
