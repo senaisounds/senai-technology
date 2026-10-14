@@ -202,7 +202,7 @@ function Nav() {
   const links = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   useEffect(() => {
-    const els = NAV.map((s) => document.getElementById(s.id)).filter(Boolean) as HTMLElement[];
+    const els = [...NAV.map((s) => s.id), "contact"].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
@@ -739,7 +739,7 @@ function Studio() {
             </div>
             <figcaption>
               <b>Senai Motley</b>
-              <span>Founder · design, code and sound</span>
+              <span>Founder · design and code</span>
               <span>A Slotted LLC company</span>
             </figcaption>
           </figure>

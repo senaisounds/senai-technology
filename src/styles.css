@@ -530,7 +530,7 @@ details[open] .faq-x::after { rotate: 0deg; }
 .form-note { margin: 0; font-size: 13px; color: var(--mute); }
 
 /* ---------- footer ---------- */
-.footer { padding: clamp(56px, 9vh, 96px) var(--pad) 28px; border-top: 1px solid var(--line); overflow: hidden; }
+.footer { padding: clamp(48px, 8vh, 88px) var(--pad) clamp(88px, 10vh, 104px); border-top: 1px solid var(--line); overflow: hidden; }
 .footer-cols { display: grid; grid-template-columns: repeat(3, 1fr) 1.4fr; gap: 32px; }
 .footer-h { margin: 0 0 16px; font-family: var(--mono); font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); }
 .footer-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 15px; }
@@ -598,7 +598,6 @@ a:is(:hover, :focus-visible) .nudge-up { translate: 0 -3px; }
 @media (max-width: 760px) {
   .hero { min-height: 600px; }
   .hero-top { top: 80px; }
-  .hero-top .clocks { display: none; }
   .hero-title { font-size: clamp(60px, 18vw, 104px); }
   .hero-row { margin-top: 20px; }
   .hero-actions { width: 100%; }
@@ -634,7 +633,8 @@ a:is(:hover, :focus-visible) .nudge-up { translate: 0 -3px; }
   .check-band-form .btn { width: 100%; }
   .form-row { grid-template-columns: 1fr; }
   .footer-cols { grid-template-columns: 1fr 1fr; }
-  .footer-word { font-size: clamp(88px, 30vw, 160px); }
+  .footer-word { font-size: 25vw; }
+  .hero-top { display: none; }
 }
 
 /* ---------- reduced motion ---------- */
@@ -648,6 +648,7 @@ a:is(:hover, :focus-visible) .nudge-up { translate: 0 -3px; }
   [data-reveal] { opacity: 1; transform: none; }
 }
 /* ---------- Chat Widget ---------- */
+html.menu-open :is(.chat-toggle, .chat-panel) { display: none; }
 .chat-toggle {
   position: fixed;
   bottom: 24px;
