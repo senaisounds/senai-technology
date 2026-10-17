@@ -1,4 +1,4 @@
-// Headless screenshots via playwright-core + system Chrome with SwiftShader WebGL.
+// Headless screenshots of every homepage section via playwright-core + system Chrome with SwiftShader WebGL.
 // Usage: node scripts/screenshots.mjs [baseUrl] [outDir]
 import { chromium } from "playwright-core";
 import fs from "node:fs";
@@ -16,6 +16,22 @@ const browser = await chromium.launch({
 const logs = [];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
+const SECTIONS = [
+  ["2-intro", ".intro", 0],
+  ["3-work", "#work", 0],
+  ["4-case-study", ".case", -90],
+  ["5-open-slots", ".slots", -90],
+  ["6-pricing", "#pricing", 0],
+  ["7-pricing-tiers", ".tiers", -110],
+  ["8-pricing-more", ".pricing-more", -90],
+  ["9-process", "#process", 0],
+  ["10-studio", "#studio", 0],
+  ["11-faq", "#faq", 0],
+  ["12-check-band", ".check-band", -120],
+  ["13-contact", "#contact", 0],
+  ["14-footer", ".footer", 0],
+];
+
 async function open(viewport, { mobile = false, reduced = false } = {}) {
   const ctx = await browser.newContext({
     viewport,
@@ -30,69 +46,37 @@ async function open(viewport, { mobile = false, reduced = false } = {}) {
   page.on("pageerror", (e) => logs.push(`[${tag}] pageerror: ${e.message}`));
   await page.goto(BASE, { waitUntil: "networkidle" });
   await page.waitForFunction(() => document.fonts.status === "loaded");
-  await wait(3500);
+  await wait(2500);
   return { ctx, page };
 }
 const scrollTo = async (page, y) => {
-  await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), y);
-  await wait(400);
-  await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), y);
+  for (let i = 0; i < 2; i++) {
+    await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), y);
+    await wait(350);
+  }
 };
 const top = (page, sel) => page.evaluate((s) => document.querySelector(s).getBoundingClientRect().top + window.scrollY, sel);
 const shot = (page, name, fullPage = false) => page.screenshot({ path: OUT + name, fullPage });
 
+async function sections(page, prefix) {
+  for (const [name, sel, off] of SECTIONS) {
+    await scrollTo(page, (await top(page, sel)) + off);
+    await wait(1300);
+    await shot(page, `${prefix}-${name}.png`);
+  }
+}
+
 // ---- desktop ----
 {
   const { ctx, page } = await open({ width: 1440, height: 900 });
-  for (let i = 0; i <= 20; i++) { await page.mouse.move(700 + i * 16, 330 + Math.sin(i / 4) * 40); await wait(40); }
+  for (let i = 0; i <= 20; i++) { await page.mouse.move(820 + i * 14, 360 + Math.sin(i / 4) * 40); await wait(40); }
   await wait(1200);
   await shot(page, "desktop-1-hero.png");
-
-  await scrollTo(page, await top(page, "#offer"));
-  await wait(1800);
-  await shot(page, "desktop-2-offer.png");
-
-  await scrollTo(page, (await top(page, ".included")) - 120);
-  await wait(1500);
-  await shot(page, "desktop-3-included.png");
-
-  const proc = await top(page, "#process");
-  await scrollTo(page, proc - 60);
-  await wait(1500);
-  await shot(page, "desktop-4-process.png");
-
-  const work = await top(page, "#work");
-  await scrollTo(page, work + 40);
-  await wait(1500);
-  await shot(page, "desktop-5-work-head.png");
-  await scrollTo(page, (await top(page, ".stack")) - 84);
-  await wait(1200);
-  await page.mouse.move(1000, 420);
-  await wait(250);
-  await page.mouse.move(1040, 400);
+  await sections(page, "desktop");
+  await scrollTo(page, (await top(page, ".tier-rec")) - 120);
+  await page.mouse.move(720, 420);
   await wait(900);
-  await shot(page, "desktop-6-work-card.png");
-  const cards = await page.$$eval(".card", (els) => els.map((e) => e.getBoundingClientRect().top + window.scrollY));
-  await scrollTo(page, cards[2] + 200);
-  await wait(1200);
-  await page.mouse.move(1100, 480);
-  await wait(250);
-  await page.mouse.move(1060, 450);
-  await wait(900);
-  await shot(page, "desktop-7-work-placeholder.png");
-
-  await scrollTo(page, (await top(page, "#studio")) + 20);
-  await wait(1500);
-  await shot(page, "desktop-8-studio.png");
-
-  await scrollTo(page, await top(page, "#contact"));
-  await wait(1500);
-  await shot(page, "desktop-9-contact.png");
-
-  await scrollTo(page, 1e6);
-  await wait(1000);
-  await shot(page, "desktop-10-footer.png");
-
+  await shot(page, "desktop-7b-tier-hover.png");
   await scrollTo(page, 0);
   await wait(1200);
   await shot(page, "desktop-full.png", true);
@@ -102,25 +86,16 @@ const shot = (page, name, fullPage = false) => page.screenshot({ path: OUT + nam
 // ---- mobile ----
 {
   const { ctx, page } = await open({ width: 390, height: 844 }, { mobile: true });
-  await shot(page, "mobile-1-hero.png");
-  await scrollTo(page, (await top(page, ".tiers")) - 100);
+  await shot(page, "mobile-1-hero-poster.png");
+  await sections(page, "mobile");
+  await scrollTo(page, 0);
   await wait(1500);
-  await shot(page, "mobile-2-offer.png");
-  await scrollTo(page, (await top(page, "#process")) + 300);
-  await wait(1200);
-  await shot(page, "mobile-3-process.png");
-  await scrollTo(page, (await top(page, ".stack")) - 72);
-  await wait(1200);
-  await shot(page, "mobile-4-work.png");
-  await scrollTo(page, (await top(page, "#contact")) + 40);
-  await wait(1200);
-  await shot(page, "mobile-5-contact.png");
+  await shot(page, "mobile-1b-hero-live.png");
   await page.click(".nav-menu");
   await wait(900);
-  await shot(page, "mobile-6-menu.png");
+  await shot(page, "mobile-15-menu.png");
   await page.click(".nav-menu");
-  await scrollTo(page, 0);
-  await wait(1000);
+  await wait(400);
   await shot(page, "mobile-full.png", true);
   await ctx.close();
 }

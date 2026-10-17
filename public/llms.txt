@@ -21,7 +21,7 @@ Includes:
 - Search + social previews set up
 - Domain and hosting setup
 
-### Studio
+### Studio (Recommended)
 **A multi-page site with a real identity.**
 Best for: Growing brands, shops, practices
 
@@ -67,11 +67,24 @@ All tiers include:
 - **Easy to find**: Titles, descriptions and social cards set up for search and sharing
 - **Clean handover**: A walkthrough at launch so you know how everything fits together
 
+## Pricing and payments
+
+Every tier is quoted per project after a short brief; we reply to every enquiry within two business days.
+- Clients in the United States pay by card or invoice through Stripe.
+- Clients in Ethiopia pay locally in birr through Chapa.
+
+## FAQ
+
+- **How much does a website cost?** Every project is quoted after a short brief, because scope varies a lot. The three tiers tell you what each level includes.
+- **What does "AI-built" mean?** AI-accelerated workflows for drafts, code and imagery; every detail is then reviewed and finished by hand.
+- **How long does it take?** It depends on the tier and your content. Launch is the quickest; you get a timeline with the quote.
+- **Can I update the site myself?** Studio and Signature include a simple way to update content, and every site ends with a walkthrough.
+
 ## Portfolio
 
 ### Senai Technology (Live - 2026)
 **Studio website · WebGL, React**
-The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.
+The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath and the word ሰናይ hidden in the pixels. Raw WebGL2, no Three.js. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.
 
 ### OpenSlot (Shipped)
 **Mobile app · iOS**
@@ -107,7 +120,7 @@ Installations, live visuals and web toys for launches, venues and performances.
 
 We specialize in:
 - React and modern web frameworks
-- Three.js and WebGL for 3D experiences
+- WebGL and 3D for the web (raw WebGL2, Three.js where a project needs it)
 - AI/ML integration and AI-accelerated workflows
 - Mobile development (iOS/Android)
 - Motion design and animation

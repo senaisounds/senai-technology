@@ -1,24 +1,16 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Routes, Route } from "react-router-dom";
-import Lenis from "lenis";
-import "lenis/dist/lenis.css";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useInView, useIsMobile, useMagnetic, usePrefersReducedMotion, useSectionProgress } from "./lib/hooks";
 import { createHero, type Hero as HeroGL } from "./lib/heroGL";
-import { ALSO, COLORS, CONTACT_EMAIL, INCLUDED, PROCESS, PROJECT_TYPES, TIERS, WORK, type WorkItem } from "./content";
+import { ALSO, COLORS, CONTACT_EMAIL, FAQ, INCLUDED, NAV, PAYMENTS, PROCESS, PROJECT_TYPES, TIERS, WORK, type CaseStudy } from "./content";
 import { DitherIcon } from "./components/DitherIcon";
 import { DitherArt } from "./components/DitherArt";
+import { HeroPoster } from "./components/HeroPoster";
 import { TierTexture } from "./components/TierTexture";
 import { ChatWidget } from "./components/ChatWidget";
 
 // the /check tool isn't needed on the homepage, so it stays off the critical path
 const CheckPage = lazy(() => import("./components/CheckPage").then((m) => ({ default: m.CheckPage })));
-
-const SECTIONS = [
-  { id: "offer", label: "Offer" },
-  { id: "process", label: "Process" },
-  { id: "work", label: "Work" },
-  { id: "studio", label: "Studio" },
-];
 
 export function App() {
   return (
@@ -29,9 +21,19 @@ export function App() {
   );
 }
 
+const ric = (cb: () => void, timeout: number) => {
+  const w = window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+  if (w.requestIdleCallback) {
+    const id = w.requestIdleCallback(cb, { timeout });
+    return () => w.cancelIdleCallback?.(id);
+  }
+  const id = window.setTimeout(cb, 200);
+  return () => clearTimeout(id);
+};
+
 function HomePage() {
   const reduced = usePrefersReducedMotion();
-  const [projectType, setProjectType] = useState(PROJECT_TYPES[0]);
+  const [projectType, setProjectType] = useState(PROJECT_TYPES[1]);
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) => {
@@ -41,15 +43,26 @@ function HomePage() {
           io.unobserve(e.target);
         }
       },
-      { rootMargin: "0px 0px -12% 0px" },
+      { rootMargin: "0px 0px -10% 0px" },
     );
     document.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
   useEffect(() => {
-    if (reduced) return;
-    const lenis = new Lenis({ autoRaf: true, lerp: 0.11, anchors: { offset: -20 } });
-    return () => lenis.destroy();
+    // touch scrolling is native anyway, so smooth scroll (and its chunk) only loads for fine pointers
+    if (reduced || !matchMedia("(pointer: fine)").matches) return;
+    let lenis: { destroy(): void } | null = null;
+    let dead = false;
+    const cancel = ric(() => {
+      Promise.all([import("lenis"), import("lenis/dist/lenis.css")]).then(([{ default: Lenis }]) => {
+        if (!dead) lenis = new Lenis({ autoRaf: true, lerp: 0.11, anchors: { offset: -20 } });
+      });
+    }, 2000);
+    return () => {
+      dead = true;
+      cancel();
+      lenis?.destroy();
+    };
   }, [reduced]);
 
   return (
@@ -59,16 +72,17 @@ function HomePage() {
       <Nav />
       <main id="main">
         <Hero reduced={reduced} />
-        <Ticker />
-        <Offer reduced={reduced} onPick={setProjectType} />
-        <Process />
+        <Intro />
         <Work />
-        <Studio reduced={reduced} />
+        <Pricing reduced={reduced} onPick={setProjectType} />
+        <Process />
+        <Studio />
+        <Faq />
+        <CheckBand />
         <Contact reduced={reduced} projectType={projectType} setProjectType={setProjectType} />
       </main>
       <Footer />
       <ChatWidget />
-      <div className="grain" aria-hidden />
     </>
   );
 }
@@ -85,16 +99,22 @@ function Roll({ children }: { children: string }) {
   );
 }
 
-function Btn({ href, children, variant = "primary", onClick }: { href: string; children: string; variant?: "primary" | "ghost"; onClick?: () => void }) {
+function Btn({ href, children, variant = "primary", onClick }: { href: string; children: string; variant?: "primary" | "ghost" | "ink"; onClick?: () => void }) {
   const ref = useMagnetic<HTMLAnchorElement>(0.2);
-  return (
-    <a ref={ref} href={href} className={`btn btn-${variant}`} onClick={onClick}>
+  const inner = (
+    <>
       <Roll>{children}</Roll>
       <span className="btn-arrow" aria-hidden>
         <span>→</span>
         <span>→</span>
       </span>
-    </a>
+    </>
+  );
+  const cls = `btn btn-${variant}`;
+  return href.startsWith("/") ? (
+    <Link ref={ref} to={href} className={cls} onClick={onClick}>{inner}</Link>
+  ) : (
+    <a ref={ref} href={href} className={cls} onClick={onClick}>{inner}</a>
   );
 }
 
@@ -105,6 +125,22 @@ function Label({ n, children }: { n: string; children: ReactNode }) {
       <span className="label-line" aria-hidden />
       {children}
     </p>
+  );
+}
+
+function SectionHead({ n, label, id, title, lede }: { n: string; label: string; id: string; title: ReactNode; lede?: ReactNode }) {
+  return (
+    <div className="sec-head">
+      <div data-reveal>
+        <Label n={n}>{label}</Label>
+        <h2 id={id} className="h2">{title}</h2>
+      </div>
+      {lede && (
+        <p data-reveal className="lede" style={{ ["--d" as string]: "0.08s" }}>
+          {lede}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -150,7 +186,6 @@ function ScrollBar() {
     const on = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
-    update();
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
@@ -167,7 +202,7 @@ function Nav() {
   const links = useRef<Record<string, HTMLAnchorElement | null>>({});
 
   useEffect(() => {
-    const els = [...SECTIONS.map((s) => s.id), "contact"].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const els = [...NAV.map((s) => s.id), "contact"].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
@@ -207,9 +242,9 @@ function Nav() {
 
   return (
     <header className={`nav ${open ? "is-open" : ""} ${light && !open ? "nav-light" : ""}`}>
-      <a href="#top" className="logo" onClick={() => setOpen(false)}>
+      <a href="#top" className="logo" onClick={() => setOpen(false)} aria-label="Senai Technology, back to top">
         <span className="logo-dot" aria-hidden />
-        <span className="logo-word">Senai</span>{" "}
+        <span className="logo-word">Senai</span>
         <span className="logo-thin">Technology</span>
       </a>
       <nav aria-label="Primary" className="nav-links">
@@ -218,7 +253,7 @@ function Nav() {
           aria-hidden
           style={pill ? { transform: `translateX(${pill.x}px)`, width: pill.w, opacity: 1 } : { opacity: 0 }}
         />
-        {SECTIONS.map((s) => (
+        {NAV.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
@@ -233,30 +268,34 @@ function Nav() {
         ))}
       </nav>
       <div className="nav-right">
+        <Link to="/check" className="nav-check">
+          <Roll>Free site check</Roll>
+        </Link>
         <a href="#contact" className="nav-cta">
           <Roll>Start a project</Roll>
         </a>
-        <button
-          className="nav-menu"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          onClick={() => setOpen((o) => !o)}
-        >
+        <button className="nav-menu" aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen((o) => !o)}>
           <span className="sr">{open ? "Close menu" : "Open menu"}</span>
           <span className="burger" aria-hidden />
         </button>
       </div>
       <div id="mobile-menu" className="menu-sheet" hidden={!open}>
         <nav aria-label="Mobile">
-          {[...SECTIONS, { id: "contact", label: "Contact" }].map((s, i) => (
+          {[...NAV, { id: "contact", label: "Contact" }].map((s, i) => (
             <a key={s.id} href={`#${s.id}`} onClick={() => setOpen(false)} style={{ ["--i" as string]: i }}>
-              <span className="menu-n">0{i + 1}</span>
+              <span className="menu-n">{String(i + 1).padStart(2, "0")}</span>
               {s.label}
             </a>
           ))}
-          <a href="#contact" className="menu-cta" onClick={() => setOpen(false)}>Start a project <span className="nudge" aria-hidden>→</span></a>
         </nav>
-        <Clocks />
+        <div className="menu-foot">
+          <a href="#contact" className="btn btn-primary btn-block" onClick={() => setOpen(false)}>
+            <span>Start a project</span>
+            <span className="btn-arrow" aria-hidden><span>→</span></span>
+          </a>
+          <Link to="/check" className="menu-check" onClick={() => setOpen(false)}>Free website check →</Link>
+          <Clocks />
+        </div>
       </div>
     </header>
   );
@@ -264,7 +303,7 @@ function Nav() {
 
 /* ---------------------------------------------------------------- hero */
 
-const BOOT = ["Booting WebGL", "Compiling shaders", "Rendering first frame", "Scene live"];
+const BOOT = ["Waiting for the needle", "Compiling shaders", "Rendering first frame", "Now playing"];
 
 function Hero({ reduced }: { reduced: boolean }) {
   const [ref, inView] = useInView<HTMLElement>("0px");
@@ -278,8 +317,9 @@ function Hero({ reduced }: { reduced: boolean }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     let cancelled = false;
+    let cancelIdle = () => {};
     const init = () => {
-      if (cancelled) return;
+      if (cancelled || hero.current) return;
       const fail = () => {
         if (cancelled) return;
         setFailed(true);
@@ -293,12 +333,19 @@ function Hero({ reduced }: { reduced: boolean }) {
       hero.current = h;
       h.start();
     };
-    // keep shader compilation off the critical path so the headline paints first
-    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
-    const id = ric ? ric(init, { timeout: 700 }) : window.setTimeout(init, 200);
+    // Touch devices show the dithered poster until the first interaction, so shader compilation never competes with
+    // first paint on a phone. Fine pointers start the shader in the first idle period.
+    const events = ["pointerdown", "touchstart", "scroll", "keydown", "wheel"] as const;
+    const wake = () => {
+      events.forEach((e) => window.removeEventListener(e, wake));
+      cancelIdle = ric(init, 300);
+    };
+    if (matchMedia("(pointer: coarse)").matches) events.forEach((e) => window.addEventListener(e, wake, { passive: true }));
+    else cancelIdle = ric(init, 900);
     return () => {
       cancelled = true;
-      if (!ric) clearTimeout(id);
+      cancelIdle();
+      events.forEach((e) => window.removeEventListener(e, wake));
       hero.current?.destroy();
       hero.current = null;
     };
@@ -335,111 +382,234 @@ function Hero({ reduced }: { reduced: boolean }) {
     hero.current?.pointer(e.clientX - r.left, e.clientY - r.top, active);
   };
 
+  const live = boot >= 1 && !failed;
   const stage = boot >= 1 ? 3 : boot >= 0.7 ? 2 : boot >= 0.3 ? 1 : 0;
-  const live = boot >= 1;
+  const status = failed ? "Still frame" : live ? (mobile ? "Drag to find ሰናይ" : "Move to find ሰናይ") : BOOT[stage];
 
   return (
     <section
       id="top"
       ref={ref}
-      className={`hero ${failed ? "hero-fallback" : ""} ${live ? "is-live" : ""}`}
+      className={`hero ${live ? "is-live" : ""}`}
       onPointerMove={(e) => onPointer(e, true)}
       onPointerDown={(e) => onPointer(e, true)}
       onPointerLeave={(e) => onPointer(e, false)}
       aria-labelledby="hero-title"
     >
+      <HeroPoster />
       <canvas ref={canvasRef} className="hero-canvas" aria-hidden />
-      <div className="hero-grid" aria-hidden />
+      <div className="hero-top">
+        <p className="cat">SNY—001 <span>Side A</span></p>
+        <Clocks />
+      </div>
       <div className="hero-inner">
         <p className="hero-kicker">
           <span className="ge" lang="am">ሰናይ</span>
-          Creative technology studio · New York ⇄ Addis Ababa
+          <span>Creative technology studio · New York ⇄ Addis Ababa</span>
         </p>
         <h1 id="hero-title" className="hero-title">
           <span className="line"><span>Websites</span></span>
           <span className="line"><span>with a <em>pulse.</em></span></span>
         </h1>
-        <p className="hero-sub">
-          We design and build AI-accelerated websites with motion, polish and a point of view: the craft of a
-          high-end studio, at the speed of AI.
-        </p>
-        <div className="hero-actions">
-          <Btn href="#contact">Start a project</Btn>
-          <Btn href="#work" variant="ghost">See the work</Btn>
+        <div className="hero-row">
+          <p className="hero-sub">
+            AI-built, studio-grade websites with motion, polish and a point of view. The craft of a high-end studio, at
+            the speed of AI.
+          </p>
+          <div className="hero-actions">
+            <Btn href="#contact">Start a project</Btn>
+            <Btn href="/check" variant="ghost">Score your site free</Btn>
+          </div>
         </div>
       </div>
-      <Clocks className="hero-clocks" />
       <div className="hud" aria-hidden>
         <div className="hud-row">
-          <span>Scene 01</span>
-          <span>Liquid / dither</span>
+          <span className="hud-dot" />
+          <span>{status}</span>
+          <span className="hud-pct">92 BPM</span>
         </div>
         <div className="hud-bar">
-          <span style={{ transform: `scaleX(${boot})` }} />
+          <span style={{ transform: `scaleX(${failed ? 1 : boot})` }} />
         </div>
-        <div className="hud-row hud-status">
-          <span className="hud-dot" />
-          <span>{failed ? "Static fallback" : live ? (mobile ? "Drag to focus the lens" : "Move to focus the lens") : BOOT[stage]}</span>
-          <span className="hud-pct">{String(Math.round(boot * 100)).padStart(3, "0")}%</span>
+        <div className="hud-row hud-meta">
+          <span>Liquid / dither</span>
+          <span>WebGL2 · no libraries</span>
         </div>
       </div>
-      <a href="#offer" className="scroll-cue" aria-label="Scroll to the offer">
-        <span />
-      </a>
     </section>
   );
 }
 
-/* ---------------------------------------------------------------- ticker */
+/* ---------------------------------------------------------------- intro */
 
-function Ticker() {
-  const words = ["AI-built websites", "WebGL & 3D", "Motion design", "Brand identity", "Mobile apps", "AI visuals", "Booking assistants", "Event experiences"];
-  const row = (k: string) =>
-    words.map((w, i) => (
-      <span key={k + i}>
-        {w}
-        <i aria-hidden />
-      </span>
-    ));
+function Intro() {
   return (
-    <div className="ticker" aria-hidden>
-      <div className="ticker-track">
-        {row("a")}
-        {row("b")}
+    <section className="intro paper" data-nav="light" aria-label="About the studio">
+      <div className="intro-grid">
+        <p data-reveal className="intro-statement">
+          We make websites the way records get made: a strong idea, a rhythm you can feel, and hours of finishing by
+          hand. <span className="intro-muted">AI does the heavy lifting so the craft gets the time.</span>
+        </p>
+        <ul data-reveal className="intro-facts" style={{ ["--d" as string]: "0.1s" }}>
+          <li><span>Based</span> New York ⇄ Addis Ababa</li>
+          <li><span>Offer</span> AI-built websites, three tiers</li>
+          <li><span>Pricing</span> Quoted per project</li>
+          <li><span>Payments</span> Stripe (US) · Chapa (Ethiopia)</li>
+          <li><span>Reply</span> Within two business days</li>
+        </ul>
       </div>
-    </div>
+    </section>
   );
 }
 
-/* ---------------------------------------------------------------- offer */
+/* ---------------------------------------------------------------- work */
 
-function Offer({ reduced, onPick }: { reduced: boolean; onPick: (t: string) => void }) {
+const statusLabel = (c: CaseStudy) => (c.status === "placeholder" ? "Placeholder · open slot" : c.status === "live" ? "Live" : "Shipped · App Store");
+
+function Work() {
+  const real = WORK.filter((w) => w.status !== "placeholder");
+  const slots = WORK.filter((w) => w.status === "placeholder");
   return (
-    <section id="offer" className="section offer" aria-labelledby="offer-title">
-      <div className="section-head">
-        <div data-reveal>
-          <Label n="01">The offer</Label>
-          <h2 id="offer-title" className="h2">
-            AI-built websites, <em>studio-grade.</em>
-          </h2>
-        </div>
-        <p data-reveal className="section-lede" style={{ ["--d" as string]: "0.1s" }}>
-          Our first offer is the one you’re scrolling through: premium, animated websites designed and built
-          with AI-accelerated workflows, then finished by hand. Three ways in, each scoped and quoted per project.
-        </p>
+    <section id="work" className="sec work" aria-labelledby="work-title">
+      <SectionHead
+        n="01"
+        label="Selected work"
+        id="work-title"
+        title={<>The tracklist, <em>so far.</em></>}
+        lede="Two real projects, plus open slots for what we build next. Anything marked placeholder is a concept, not client work."
+      />
+      <ol className="tracklist" data-reveal>
+        {WORK.map((w, i) => (
+          <li key={w.slug} className={w.status === "placeholder" ? "is-slot" : ""}>
+            <a href={`#case-${w.slug}`}>
+              <span className="track-n">{String(i + 1).padStart(2, "0")}</span>
+              <span className="track-title">{w.title}</span>
+              <span className="track-kind">{w.kind}</span>
+              <span className="track-year">{w.year}</span>
+              <span className={`badge ${w.status === "placeholder" ? "badge-ph" : "badge-real"}`}>{w.status === "placeholder" ? "Open slot" : statusLabel(w)}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <div className="cases">
+        {real.map((c, i) => (
+          <CaseStudyBlock key={c.slug} c={c} i={i} />
+        ))}
       </div>
+      <div className="slots">
+        <h3 className="slots-title" data-reveal>Open slots</h3>
+        <ul className="slots-grid">
+          {slots.map((c, i) => (
+            <li key={c.slug} id={`case-${c.slug}`} className="slot" data-reveal style={{ ["--d" as string]: `${i * 0.07}s`, ["--bg" as string]: c.tone.bg }}>
+              <div className="slot-art">
+                <DitherArt kind={c.art} mid={c.tone.mid} high={c.tone.high} />
+                <span className="stamp">Placeholder image</span>
+              </div>
+              <span className="badge badge-ph">Placeholder · concept</span>
+              <h4>{c.title}</h4>
+              <p>{c.summary}</p>
+              <a href="#contact" className="draw">Your project here <span className="nudge" aria-hidden>→</span></a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
 
+function CaseStudyBlock({ c, i }: { c: CaseStudy; i: number }) {
+  const external = c.href?.startsWith("http");
+  return (
+    <article id={`case-${c.slug}`} className="case" style={{ ["--bg" as string]: c.tone.bg }} aria-labelledby={`case-${c.slug}-title`}>
+      <div className="case-art" data-reveal>
+        {c.images?.length ? (
+          <img src={c.images[0].src} alt={c.images[0].alt} width={c.images[0].width} height={c.images[0].height} loading="lazy" decoding="async" />
+        ) : (
+          <DitherArt kind={c.art} mid={c.tone.mid} high={c.tone.high} />
+        )}
+        <span className="case-n" aria-hidden>{String(i + 1).padStart(2, "0")}</span>
+      </div>
+      <div className="case-body" data-reveal style={{ ["--d" as string]: "0.08s" }}>
+        <div className="case-top">
+          <span className="badge badge-real">{statusLabel(c)}</span>
+          <span className="case-kind">{c.kind} · {c.year}</span>
+        </div>
+        <h3 id={`case-${c.slug}-title`} className="case-title">{c.title}</h3>
+        <p className="case-summary">{c.summary}</p>
+        <dl className="case-meta">
+          <div><dt>Role</dt><dd>{c.role.join(", ")}</dd></div>
+          <div><dt>Scope</dt><dd>{c.services.join(", ")}</dd></div>
+        </dl>
+        <div className="case-notes">
+          {c.brief && <p><span>Brief</span>{c.brief}</p>}
+          {c.approach && <p><span>Approach</span>{c.approach}</p>}
+          {c.outcome && <p><span>Outcome</span>{c.outcome}</p>}
+        </div>
+        {c.href && (
+          <a className="case-link" href={c.href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+            <Roll>{c.linkLabel || "Visit"}</Roll>
+            <span aria-hidden>{external ? "↗" : "↑"}</span>
+          </a>
+        )}
+      </div>
+    </article>
+  );
+}
+
+/* ---------------------------------------------------------------- pricing */
+
+function Pricing({ reduced, onPick }: { reduced: boolean; onPick: (t: string) => void }) {
+  return (
+    <section id="pricing" className="sec paper pricing" data-nav="light" aria-labelledby="pricing-title">
+      <SectionHead
+        n="02"
+        label="Pricing"
+        id="pricing-title"
+        title={<>Three ways in. <em>Studio is the sweet spot.</em></>}
+        lede="Premium, animated websites designed and built with AI-accelerated workflows, then finished by hand. Each is scoped and quoted per project."
+      />
       <div className="tiers">
         {TIERS.map((t, i) => (
           <TierCard key={t.id} tier={t} i={i} reduced={reduced} onPick={onPick} />
         ))}
       </div>
-
-      <div data-reveal className="included">
-        <h3 className="included-title">Every site includes</h3>
-        <ul className="included-grid">
-          {INCLUDED.map((it) => (
-            <IncludedItem key={it.title} {...it} reduced={reduced} />
+      <div className="pricing-more">
+        <div data-reveal className="included">
+          <h3 className="h4">Every site includes</h3>
+          <ol>
+            {INCLUDED.map((it, i) => (
+              <li key={it.title}>
+                <span className="inc-n">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <h4>{it.title}</h4>
+                  <p>{it.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div data-reveal className="pay" style={{ ["--d" as string]: "0.08s" }}>
+          <h3 className="h4">Paying is local</h3>
+          <ul>
+            {PAYMENTS.map((p) => (
+              <li key={p.via}>
+                <span className="pay-via">{p.via}</span>
+                <span className="pay-region">{p.region}</span>
+                <p>{p.body}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="pay-note">Payment details arrive with your quote. Not sure which tier? <a href="#faq" className="draw">Read the FAQ</a> or <Link to="/check" className="draw">check your current site</Link>.</p>
+        </div>
+      </div>
+      <div className="beyond" data-reveal>
+        <h3 className="h4">Beyond websites</h3>
+        <ul>
+          {ALSO.map((a) => (
+            <li key={a.title}>
+              <h4>{a.title}</h4>
+              <p>{a.body}</p>
+            </li>
           ))}
         </ul>
       </div>
@@ -465,12 +635,14 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
     <article
       data-reveal
       ref={ref}
-      className={`tier ${tier.recommended ? "tier-rec" : ""} ${tier.flagship ? "tier-flagship" : ""}`}
+      className={`tier ${tier.recommended ? "tier-rec" : ""}`}
+      style={{ ["--d" as string]: `${i * 0.07}s` }}
       onPointerEnter={(e) => {
         onMove(e);
         if (play) setPlay((p) => p + 1);
       }}
       onPointerMove={onMove}
+      aria-label={`${tier.name}${tier.recommended ? ", recommended" : ""}`}
     >
       <TierTexture tier={i} />
       <div className="tier-top">
@@ -512,56 +684,28 @@ function TierCard({ tier, i, reduced, onPick }: { tier: (typeof TIERS)[number]; 
   );
 }
 
-function IncludedItem({ icon, title, body, reduced }: { icon: string; title: string; body: string; reduced: boolean }) {
-  const [ref, inView] = useInView<HTMLLIElement>("-10% 0px", true);
-  const [play, setPlay] = useState(0);
-  useEffect(() => {
-    if (inView) setPlay((p) => p || 1);
-  }, [inView]);
-  return (
-    <li ref={ref} onPointerEnter={() => play && setPlay((p) => p + 1)}>
-      <DitherIcon name={icon} play={play} reduced={reduced} />
-      <div>
-        <h4>{title}</h4>
-        <p>{body}</p>
-      </div>
-    </li>
-  );
-}
-
 /* ---------------------------------------------------------------- process */
 
 function Process() {
   const [fill, setFill] = useState(0);
-  const ref = useSectionProgress<HTMLElement>((p) => setFill(Math.round(Math.min(Math.max((p - 0.18) / 0.42, 0), 1) * 100) / 100));
+  const ref = useSectionProgress<HTMLElement>((p) => setFill(Math.round(Math.min(Math.max((p - 0.15) / 0.45, 0), 1) * 100) / 100));
   return (
-    <section
-      id="process"
-      ref={ref}
-      className="section process"
-      aria-labelledby="process-title"
-      data-nav="light"
-      style={{ ["--fill" as string]: fill }}
-    >
-      <div className="section-head">
-        <div data-reveal>
-          <Label n="02">Process</Label>
-          <h2 id="process-title" className="h2">
-            From brief to live, <em>in four beats.</em>
-          </h2>
-        </div>
-        <p data-reveal className="section-lede">
-          Short loops, early motion, no mystery. You see a moving version of your site early and shape it with us.
-        </p>
-      </div>
-      <ol className="steps">
-        <span className="steps-rail" aria-hidden>
-          <span />
-        </span>
+    <section id="process" ref={ref} className="sec process" aria-labelledby="process-title" style={{ ["--fill" as string]: fill }}>
+      <SectionHead
+        n="03"
+        label="Process"
+        id="process-title"
+        title={<>From brief to live, <em>in four beats.</em></>}
+        lede="Short loops, early motion, no mystery. You see a moving version of your site early and shape it with us."
+      />
+      <ol className="beats">
+        <span className="beats-rail" aria-hidden><span /></span>
         {PROCESS.map((s, i) => (
           <li key={s.n} className={fill >= i / 4 + 0.02 ? "on" : ""}>
-            <span className="step-node" aria-hidden />
-            <span className="step-n">{s.n}</span>
+            <span className="beat-bar" aria-hidden>
+              {[0, 1, 2, 3].map((k) => <i key={k} className={k === i ? "acc" : ""} />)}
+            </span>
+            <span className="beat-n">{s.n} / 04</span>
             <h3>{s.title}</h3>
             <p>{s.body}</p>
           </li>
@@ -571,127 +715,97 @@ function Process() {
   );
 }
 
-/* ---------------------------------------------------------------- work */
-
-function Work() {
-  return (
-    <section id="work" className="section work" aria-labelledby="work-title">
-      <div className="section-head">
-        <div data-reveal>
-          <Label n="03">Work</Label>
-          <h2 id="work-title" className="h2">
-            Selected work, <em>and open slots for yours.</em>
-          </h2>
-        </div>
-        <p data-reveal className="section-lede">
-          Two real projects, plus concept placeholders that show the kind of site we’d build next. The
-          placeholders are clearly marked; they aren’t client work.
-        </p>
-      </div>
-      <div className="stack">
-        {WORK.map((w, i) => (
-          <WorkCard key={w.title} item={w} i={i} total={WORK.length} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function WorkCard({ item, i, total }: { item: WorkItem; i: number; total: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const onMove = (e: React.PointerEvent) => {
-    const el = ref.current!;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    el.style.setProperty("--my", `${e.clientY - r.top}px`);
-  };
-  const placeholder = item.status === "placeholder";
-  const external = item.href?.startsWith("http");
-  const badge = placeholder ? "Placeholder · concept" : item.status === "live" ? "Live · this site" : "Shipped · App Store";
-  return (
-    <article
-      className={`card ${placeholder ? "card-placeholder" : ""}`}
-      style={{ ["--i" as string]: i, ["--bg" as string]: item.tone.bg, ["--mid" as string]: item.tone.mid, ["--high" as string]: item.tone.high }}
-    >
-      <div className="card-inner">
-        <div className="card-meta">
-          <div className="card-top">
-            <span className={`badge ${placeholder ? "badge-ph" : "badge-real"}`}>{badge}</span>
-            <span className="card-count">{String(i + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
-          </div>
-          <div>
-            <p className="card-kind">{item.kind} · {item.year}</p>
-            <h3 className="card-title">{item.title}</h3>
-            <p className="card-blurb">{item.blurb}</p>
-            {item.href && (
-              <a
-                className="card-link"
-                href={item.href}
-                {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              >
-                <Roll>{item.linkLabel || "Visit"}</Roll>
-                <span aria-hidden>{external ? "↗" : "↑"}</span>
-              </a>
-            )}
-            {placeholder && <p className="card-slot">This slot is open. <a href="#contact">Your project here →</a></p>}
-          </div>
-        </div>
-        <div className="card-art" ref={ref} onPointerMove={onMove}>
-          <div className="card-smooth" aria-hidden />
-          <DitherArt kind={item.art} mid={item.tone.mid} high={item.tone.high} />
-          {placeholder && <span className="card-stamp" aria-hidden>Placeholder</span>}
-        </div>
-      </div>
-    </article>
-  );
-}
-
 /* ---------------------------------------------------------------- studio */
 
-function Studio({ reduced }: { reduced: boolean }) {
+function Studio() {
   return (
-    <section id="studio" className="section studio" aria-labelledby="studio-title">
+    <section id="studio" className="sec paper studio" data-nav="light" aria-labelledby="studio-title">
       <div className="studio-grid">
-        <div data-reveal>
-          <Label n="04">Studio</Label>
-          <h2 id="studio-title" className="h2 studio-statement">
-            Rhythm in the motion. <em>Texture in the pixels.</em>
-          </h2>
-          <p className="studio-body">
-            Senai Technology is the creative technology company of Senai Motley: Ethiopian-American, working
-            between New York and Addis Ababa. Music and art sit at the centre of how we build, so every site gets
-            a beat, a texture and a point of view, not a template.
-          </p>
-          <div className="studio-mark" aria-hidden>
-            <span className="ge" lang="am">ሰናይ</span>
-            <span className="studio-mark-cap">Senai, in Ge’ez script</span>
-          </div>
+        <div className="studio-mark" data-reveal aria-hidden>
+          <span className="ge" lang="am">ሰናይ</span>
+          <span className="studio-mark-cap">Senai, in Ge’ez script</span>
         </div>
-        <div data-reveal style={{ ["--d" as string]: "0.1s" }}>
-          <h3 className="also-title">Also from the studio</h3>
-          <ul className="also">
-            {ALSO.map((a) => (
-              <AlsoRow key={a.title} {...a} reduced={reduced} />
-            ))}
-          </ul>
+        <div className="studio-copy" data-reveal style={{ ["--d" as string]: "0.08s" }}>
+          <Label n="04">Studio</Label>
+          <h2 id="studio-title" className="h2">Rhythm in the motion. <em>Texture in the pixels.</em></h2>
+          <p className="studio-body">
+            Senai Technology is the creative technology company of Senai Motley: Ethiopian-American, working between
+            New York and Addis Ababa. Music and art sit at the centre of how we build, so every site gets a beat, a
+            texture and a point of view, not a template.
+          </p>
+          <figure className="founder">
+            <div className="founder-photo" role="img" aria-label="Placeholder for a founder portrait">
+              <span>Placeholder · founder portrait</span>
+            </div>
+            <figcaption>
+              <b>Senai Motley</b>
+              <span>Founder · design and code</span>
+              <span>A Slotted LLC company</span>
+            </figcaption>
+          </figure>
         </div>
       </div>
     </section>
   );
 }
 
-function AlsoRow({ icon, title, body, reduced }: { icon: string; title: string; body: string; reduced: boolean }) {
-  const [ref, inView] = useInView<HTMLLIElement>("-10% 0px", true);
-  const [play, setPlay] = useState(0);
-  useEffect(() => {
-    if (inView) setPlay((p) => p || 1);
-  }, [inView]);
+/* ---------------------------------------------------------------- faq */
+
+function Faq() {
   return (
-    <li ref={ref} onPointerEnter={() => play && setPlay((p) => p + 1)}>
-      <DitherIcon name={icon} play={play} reduced={reduced} className="also-icon" />
-      <h4>{title}</h4>
-      <p>{body}</p>
-    </li>
+    <section id="faq" className="sec paper faq" data-nav="light" aria-labelledby="faq-title">
+      <div className="faq-grid">
+        <div data-reveal>
+          <Label n="05">FAQ</Label>
+          <h2 id="faq-title" className="h2">Questions, <em>answered.</em></h2>
+          <p className="lede">Anything else? The assistant in the corner knows the studio, or write to <a className="draw" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+        </div>
+        <div className="faq-list" data-reveal style={{ ["--d" as string]: "0.08s" }}>
+          {FAQ.map((f, i) => (
+            <details key={f.q} name="faq" open={i === 0}>
+              <summary>
+                <span className="faq-n">{String(i + 1).padStart(2, "0")}</span>
+                <span className="faq-q">{f.q}</span>
+                <span className="faq-x" aria-hidden />
+              </summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- website check band */
+
+function CheckBand() {
+  const navigate = useNavigate();
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const url = String(new FormData(e.currentTarget).get("url") || "").trim();
+    navigate(url ? `/check?url=${encodeURIComponent(url)}` : "/check");
+    window.scrollTo(0, 0);
+  };
+  return (
+    <section className="check-band" aria-labelledby="check-band-title">
+      <div data-reveal className="check-band-copy">
+        <p className="label"><span className="label-n">Free</span><span className="label-line" aria-hidden />Website check</p>
+        <h2 id="check-band-title" className="h2">How does your site <em>score?</em></h2>
+        <p>Speed, search and AI-search readiness, in under a minute. No sign-up.</p>
+      </div>
+      <form data-reveal className="check-band-form" onSubmit={onSubmit} style={{ ["--d" as string]: "0.08s" }}>
+        <label>
+          <span className="sr">Your website address</span>
+          <input name="url" type="text" inputMode="url" autoComplete="url" placeholder="yourbusiness.com" />
+        </label>
+        <button type="submit" className="btn btn-ink">
+          <Roll>Check it</Roll>
+          <span className="btn-arrow" aria-hidden><span>→</span><span>→</span></span>
+        </button>
+        <Link to="/check" className="check-band-alt draw">No website yet? Start here</Link>
+      </form>
+    </section>
   );
 }
 
@@ -734,16 +848,16 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
   };
 
   return (
-    <section id="contact" className="contact" aria-labelledby="contact-title" data-nav="light">
+    <section id="contact" className="contact" aria-labelledby="contact-title">
       <div className="contact-inner">
         <div data-reveal className="contact-copy">
-          <Label n="05">Contact</Label>
+          <Label n="06">Contact</Label>
           <h2 id="contact-title" className="contact-title">
             Let’s make something <em>with a pulse.</em>
           </h2>
-          <p className="contact-lede">
-            Tell us what you’re dreaming up: a site, an app, a brand, a film, an AI assistant or something that
-            doesn’t have a name yet. We reply within two business days.
+          <p className="lede">
+            Tell us what you’re dreaming up: a site, an app, a brand, a film, an AI assistant or something that doesn’t
+            have a name yet. We reply within two business days.
           </p>
           <div className="contact-email">
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
@@ -755,9 +869,14 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
               <span className="sr" role="status">{copied ? "Email address copied" : ""}</span>
             </button>
           </div>
+          <ol className="contact-next">
+            <li><span>01</span>You send a few lines about the project.</li>
+            <li><span>02</span>We reply within two business days and set up a short brief call.</li>
+            <li><span>03</span>You get a scope, a timeline and a quote.</li>
+          </ol>
         </div>
 
-        <form data-reveal className="form" onSubmit={onSubmit} aria-label="Project enquiry">
+        <form data-reveal className="form" onSubmit={onSubmit} aria-label="Project enquiry" style={{ ["--d" as string]: "0.08s" }}>
           <fieldset className="chips">
             <legend>What are we making?</legend>
             {PROJECT_TYPES.map((t) => (
@@ -804,18 +923,46 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
 function Footer() {
   return (
     <footer className="footer">
-      <div className="footer-top">
-        <p className="footer-cta">
-          Got an idea? <a href="#contact" className="draw">Start a project <span className="nudge" aria-hidden>→</span></a>
-        </p>
-        <Clocks />
+      <div className="footer-cols">
+        <div className="footer-col">
+          <h2 className="footer-h">Index</h2>
+          <ul>
+            {[...NAV, { id: "contact", label: "Contact" }].map((s) => (
+              <li key={s.id}><a href={`#${s.id}`} className="draw">{s.label}</a></li>
+            ))}
+          </ul>
+        </div>
+        <div className="footer-col">
+          <h2 className="footer-h">Tools</h2>
+          <ul>
+            <li><Link to="/check" className="draw">Free website check</Link></li>
+            <li><a href="/llms.txt" className="draw">llms.txt</a></li>
+            <li><a href="https://openslot.me" className="draw" target="_blank" rel="noopener noreferrer">OpenSlot ↗</a></li>
+          </ul>
+        </div>
+        <div className="footer-col">
+          <h2 className="footer-h">Contact</h2>
+          <ul>
+            <li><a href={`mailto:${CONTACT_EMAIL}`} className="draw">{CONTACT_EMAIL}</a></li>
+            <li>New York ⇄ Addis Ababa</li>
+            <li><Clocks /></li>
+          </ul>
+        </div>
+        <div className="footer-col footer-colophon">
+          <h2 className="footer-h">Liner notes</h2>
+          <p>
+            Set in Cormorant Garamond, Instrument Sans and Geist Mono, with Noto Sans Ethiopic for ሰናይ. Hero rendered in
+            raw WebGL2 through an ordered dither. Built AI-accelerated, finished by hand.
+          </p>
+        </div>
       </div>
       <div className="footer-word" aria-hidden>
-        Senai<span>Technology</span>
+        <span>Senai</span>
+        <span className="ge" lang="am">ሰናይ</span>
       </div>
       <div className="footer-row">
         <p>© 2026 Senai Technology, a Slotted LLC company</p>
-        <p>New York ⇄ Addis Ababa</p>
+        <p>Payments via Stripe (US) and Chapa (Ethiopia)</p>
         <p><a href="#top" className="draw">Back to top <span className="nudge nudge-up" aria-hidden>↑</span></a></p>
       </div>
     </footer>
