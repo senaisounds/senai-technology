@@ -29,12 +29,12 @@ function HomePage() {
 
       <main id="main">
         <Hero />
-        <Work />
-        <Pricing selectedPlan={selectedPlan} onSelectPlan={setSelectedPlan} />
-        <About />
-        <Process />
-        <Faq />
-        <Contact />
+        <div data-reveal><Work /></div>
+        <div data-reveal><Pricing selectedPlan={selectedPlan} onSelectPlan={setSelectedPlan} /></div>
+        <div data-reveal><About /></div>
+        <div data-reveal><Process /></div>
+        <div data-reveal><Faq /></div>
+        <div data-reveal><Contact /></div>
       </main>
 
       <Footer />
@@ -57,18 +57,18 @@ function Hero() {
         />
       </div>
       <div className="hero-grid">
-        <h1 id="hero-title" className="hero-title">
-          <span className="hero-line-1">SENAI</span>
-          <span className="hero-line-2">
+        <h1 id="hero-title" className="hero-title" style={{ opacity: 1 }}>
+          <span className="hero-line-1" style={{ opacity: 1 }}>SENAI</span>
+          <span className="hero-line-2" style={{ opacity: 1 }}>
             <span className="ge" lang="am">ሰናይ</span>
           </span>
         </h1>
         <div className="hero-middle">
-          <p className="hero-tagline">
+          <p className="hero-tagline" style={{ opacity: 1 }}>
             Creative technology studio. AI-built websites with music, art, and motion. 
             New York ⇄ Addis Ababa.
           </p>
-          <a href="#contact" className="hero-cta">
+          <a href="#contact" className="hero-cta" style={{ opacity: 1 }}>
             Start a project →
           </a>
         </div>
@@ -86,7 +86,7 @@ function Work() {
     <section id="work" className="work" aria-labelledby="work-heading">
       <h2 className="work-heading" id="work-heading">Recent: </h2>
       <span className="work-names">
-        {realWork[0].title}, {realWork[1]?.title || "OpenSlot"}
+        {realWork[0].title}
       </span>
       <p className="work-meta">
         {realWork.length} projects · 2024–2026
@@ -121,8 +121,7 @@ function Pricing({ selectedPlan, onSelectPlan }: { selectedPlan: number; onSelec
           <div className="pricing-period">per project</div>
         </div>
         <p className="pricing-details">
-          {tier.tagline} {tier.fit}.{" "}
-          {tier.includes.slice(0, 3).join(". ")}.
+          {tier.tagline} Good for: {tier.fit}.
         </p>
         <a href="#contact" className="pricing-action">
           Start with {tier.name}
@@ -225,12 +224,8 @@ function Contact() {
       <h2 id="contact-heading" className="sr">Contact</h2>
       
       <div className="contact-row">
-        Senai Technology
-      </div>
-      
-      <div className="contact-row">
         <a href="https://maps.google.com/?q=New+York,NY">
-          New York, NY
+          New York
         </a>
       </div>
       
@@ -241,12 +236,12 @@ function Contact() {
       </div>
       
       <div className="contact-row">
-        Mon–Fri, 9AM–6PM EST
+        Mon–Fri 9AM–6PM
       </div>
       
       <div className="contact-row">
         <a href={`mailto:${CONTACT_EMAIL}`}>
-          {CONTACT_EMAIL}
+          Contact us
         </a>
       </div>
       
