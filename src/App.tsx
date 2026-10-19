@@ -57,18 +57,18 @@ function Hero() {
         />
       </div>
       <div className="hero-grid">
-        <h1 id="hero-title" className="hero-title" style={{ opacity: 1 }}>
-          <span className="hero-line-1" style={{ opacity: 1 }}>SENAI</span>
-          <span className="hero-line-2" style={{ opacity: 1 }}>
+        <h1 id="hero-title" className="hero-title">
+          <span className="hero-line-1">SENAI</span>
+          <span className="hero-line-2">
             <span className="ge" lang="am">ሰናይ</span>
           </span>
         </h1>
         <div className="hero-middle">
-          <p className="hero-tagline" style={{ opacity: 1 }}>
+          <p className="hero-tagline">
             Creative technology studio. AI-built websites with music, art, and motion. 
             New York ⇄ Addis Ababa.
           </p>
-          <a href="#contact" className="hero-cta" style={{ opacity: 1 }}>
+          <a href="#contact" className="hero-cta">
             Start a project →
           </a>
         </div>
@@ -136,23 +136,36 @@ function Pricing({ selectedPlan, onSelectPlan }: { selectedPlan: number; onSelec
 function About() {
   return (
     <section id="about" className="section section-tight" aria-labelledby="about-heading">
-      <h2 id="about-heading" className="process-heading">
+      <h2 id="about-heading" className="process-heading" style={{ marginBottom: "2rem" }}>
         About the studio
       </h2>
-      <p style={{ fontSize: "var(--step-lead)", lineHeight: 1.4, maxWidth: "40ch", marginBottom: "3rem" }}>
-        Ethiopian-American DJ and builder. Music and art sit at the center of how we build. 
-        Every site gets a beat, a texture and a point of view.
+      <p style={{ fontSize: "var(--step-lead)", lineHeight: 1.4, maxWidth: "50ch", marginBottom: "3rem" }}>
+        Senai Technology is the creative technology company of Senai Motley: Ethiopian-American DJ and builder 
+        working between New York and Addis Ababa. Music and art sit at the center of how we build, 
+        so every site gets a beat, a texture and a point of view — not a template.
       </p>
-      <article className="about-card" style={{ maxWidth: "28rem", margin: "0" }}>
-        <div className="about-photo">
-          <span>Founder portrait<br/>(placeholder)</span>
-        </div>
-        <h3 className="about-name">Senai Motley</h3>
-        <p className="about-role">Founder · Design and Code</p>
-        <p className="about-bio">
-          A Slotted LLC company. New York and Addis Ababa.
-        </p>
-      </article>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", maxWidth: "60rem" }}>
+        <article className="about-card" style={{ margin: "0" }}>
+          <div className="about-photo">
+            <span>Founder portrait<br/>(placeholder)</span>
+          </div>
+          <h3 className="about-name">Senai Motley</h3>
+          <p className="about-role">Founder · Design and Code</p>
+          <p className="about-bio">
+            Ethiopian-American. Building AI-accelerated websites with motion and craft.
+          </p>
+        </article>
+        <article className="about-card" style={{ margin: "0" }}>
+          <div className="about-photo">
+            <span>Studio workspace<br/>(placeholder)</span>
+          </div>
+          <h3 className="about-name">The Studio</h3>
+          <p className="about-role">Creative Technology</p>
+          <p className="about-bio">
+            A Slotted LLC company. New York ⇄ Addis Ababa. Websites, apps, brand, AI tools.
+          </p>
+        </article>
+      </div>
     </section>
   );
 }
