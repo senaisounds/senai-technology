@@ -1,0 +1,56 @@
+TASTESKILL · INSPECT   http://localhost:4173
+
+MEASURED (first viewport listed)
+  hero headline   "SENAI ሰናይ"  2 words · 2 line(s) · 187.2px (13vw) · Panchang 700 · tracking -0.02em · leading 0.85
+  @768px          2 line(s) · 145.9px
+  @390px          2 line(s) · 74.1px
+  typefaces       Switzer 95%, Panchang 5%
+  sizes in use    12 / 14 / 16 / 17 / 18 / 19 / 22 / 26 / 29 / 37 / 43 / 48 / 56 / 96 / 173 / 187 px   body 17px / 1.6
+  colour          page #0a0d14 · sections #0a0d14 #e9edf3 · button #5a9bfc
+  page            9.1 screens · 415 words · 4 images · hero media 100% img
+  headings        22 · longest 2 line(s) · median 2 words
+
+FAIL — fix every one of these
+  [late-title] @1440px (+768, 390)  The title is not readable 1.2s after the page loaded (it has no size yet).
+      → Put the headline in the HTML, painted on the first frame; the load sequence only adds arrival and is settled by 1.2s (references/motion.md, "Load sequence in 1.2 seconds"). No preloader, no gate, no waiting for the load event.
+  [off-centre] @1440px  The page sits off-centre: its content comes to 29px from the left edge but only to 203px from the right, at 1440px.
+      → Give the page one pair of equal margins. Check the wrapper for a max-width without margin-inline: auto, a grid with an empty last column, or padding on one side only. If one side is meant to hold air, it must still be closed by something that reaches the margin (a picture, the navigation's last item, a figure).
+  [no-title] @1440px (+768, 390)  The page has no visible h1.
+      → Give the first screen a clear title in an h1 that says what this is (a name with what it does, the product with what it is for, the event with its date and place).
+  [covered-text] @1440px (+768, 390)  Large text lies under another element at some scroll position: "SENAI" (screen 10, 25% hidden)
+      → Nothing may sit on top of a headline or statement. Move the picture, shorten the pinned run, or raise the text above it (z-index) and give it a ground.
+  [empty-screens] @1440px  2 of 10 desktop screens are almost empty ground (under 20% of the screen holds text, a picture or a colour field): screens 3, 4.
+      → An empty screen is a rest only once per page. Elsewhere it means the section is underbuilt: set its content larger, give it the full information, put it on a colour field, or cut it.
+  [edge-text] @390px  1 text block(s) sit within 12px of the screen edge: "Good for:" (4px from the right)
+      → Keep text inside the page margin (16–20px). Only display type deliberately bled past the edge may touch it.
+
+WARN — fix, or be able to defend
+  [mixed-font-headline] @1440px (+768, 390)  1 headline(s) switch typeface or to italic mid-line (the "one italic serif word" move).
+      → Set the whole headline in one face. Emphasis comes from the words.
+  [size-count] @1440px (+768, 390)  16 different font sizes (12, 14, 16, 17, 18, 19, 22, 26, 29, 37, 43, 48, 56, 96, 173, 187).
+      → A page needs about five: display, heading, lead, body, small.
+  [no-footage] @1440px  No video anywhere on the page.
+      → Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject.
+  [blend-text] @1440px (+768, 390)  3 text element(s) use mix-blend-mode difference or exclusion.
+      → Over anything but black, white or grey, blended text takes random hues (blue on orange, lilac on green) that jurors read as a glitch. Use a solid ink chosen for the ground, or keep the blended text over neutral grounds only.
+  [small-text] @1440px (+768, 390)  1 text block(s) under 13px.
+      → Nothing meant to be read goes below 13px.
+  [still-page] @1440px  Little motion: 15 element(s) moved while the page loaded and scrolled.
+      → Give every section an entrance for its parts (not one fade of the whole block) and add one moving picture: a looping clip or a slow move on a photograph.
+  [lopsided] @768px  A section keeps its content on one side and leaves 365px of the width empty: "Questions".
+      → Fill the other side with what the section has (its picture, a second column, the figure), or defend the void in one sentence.
+
+LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:
+  desktop 1440px  .taste-skill/inspect/desktop-fold.jpg
+                  .taste-skill/inspect/desktop-page-01.jpg
+                  .taste-skill/inspect/desktop-page-02.jpg
+                  .taste-skill/inspect/desktop-page-03.jpg
+  tablet 768px    .taste-skill/inspect/tablet-fold.jpg
+                  .taste-skill/inspect/tablet-page-01.jpg
+                  .taste-skill/inspect/tablet-page-02.jpg
+  mobile 390px    .taste-skill/inspect/mobile-fold.jpg
+                  .taste-skill/inspect/mobile-page-01.jpg
+                  .taste-skill/inspect/mobile-page-02.jpg
+
+report: .taste-skill/inspect/report.json
+RESULT: 6 FAIL, 7 WARN — not done.
