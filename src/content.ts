@@ -83,7 +83,7 @@ export const PROCESS = [
   { n: "04", title: "Launch", body: "Domain, analytics and a walkthrough. Then we keep iterating together if you want to." },
 ];
 
-export type Art = "site" | "openslot" | "local" | "cafe" | "assistant";
+export type Art = "site" | "openslot" | "local" | "cafe" | "assistant" | "dj";
 
 /**
  * One entry per project. Real projects fill every field; placeholders set `status: "placeholder"` and are badged
@@ -145,6 +145,25 @@ export const WORK: CaseStudy[] = [
     linkLabel: "openslot.me",
     art: "openslot",
     tone: { bg: "#0d0b1c", mid: "#3b5bff", high: "#e7b75f" },
+  },
+  {
+    slug: "nora-flux",
+    title: "NORA FLUX",
+    kind: "DJ / artist site · Signature showcase",
+    year: "2026",
+    status: "live",
+    summary:
+      "A sound-first artist world: you choose to enter with sound, then a WebGL field pulses with a live mix. Tour dates peel open; releases orbit in 3D.",
+    role: ["Art direction", "Development", "WebGL", "Web Audio"],
+    services: ["Signature site", "Audio-reactive 3D", "Booking"],
+    brief: "Show what the Signature tier looks like for a DJ — not a template, a night you can walk into.",
+    approach:
+      "An opt-in audio gate, a Three.js signal field driven by a Web Audio analyser, page-peel tickets and an orbiting mix gallery. Audio never autoplays; reduced-motion visitors get a still field.",
+    outcome: "Live concept at /work/dj. Fictional artist; the craft is real.",
+    href: "/work/dj",
+    linkLabel: "Enter the showcase",
+    art: "dj",
+    tone: { bg: "#0A0B08", mid: "#D6FF3D", high: "#E8E2D4" },
   },
   {
     slug: "open-slot-local",

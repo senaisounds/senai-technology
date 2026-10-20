@@ -11,12 +11,14 @@ import { ChatWidget } from "./components/ChatWidget";
 
 // the /check tool isn't needed on the homepage, so it stays off the critical path
 const CheckPage = lazy(() => import("./components/CheckPage").then((m) => ({ default: m.CheckPage })));
+const DJShowcase = lazy(() => import("./pages/DJShowcase").then((m) => ({ default: m.DJShowcase })));
 
 export function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/check" element={<Suspense fallback={null}><CheckPage /></Suspense>} />
+      <Route path="/work/dj" element={<Suspense fallback={<div style={{ minHeight: "100svh", background: "#0a0b08" }} />}><DJShowcase /></Suspense>} />
     </Routes>
   );
 }
@@ -476,7 +478,7 @@ function Work() {
         label="Selected work"
         id="work-title"
         title={<>The tracklist, <em>so far.</em></>}
-        lede="Two real projects, plus open slots for what we build next. Anything marked placeholder is a concept, not client work."
+        lede="Two studio projects, one Signature showcase, plus open slots for what we build next. Anything marked placeholder is a concept, not client work."
       />
       <ol className="tracklist" data-reveal>
         {WORK.map((w, i) => (
@@ -518,7 +520,7 @@ function Work() {
 }
 
 function CaseStudyBlock({ c, i }: { c: CaseStudy; i: number }) {
-  const external = c.href?.startsWith("http");
+  const external = Boolean(c.href?.startsWith("http"));
   return (
     <article id={`case-${c.slug}`} className="case" style={{ ["--bg" as string]: c.tone.bg }} aria-labelledby={`case-${c.slug}-title`}>
       <div className="case-art" data-reveal>
@@ -545,12 +547,22 @@ function CaseStudyBlock({ c, i }: { c: CaseStudy; i: number }) {
           {c.approach && <p><span>Approach</span>{c.approach}</p>}
           {c.outcome && <p><span>Outcome</span>{c.outcome}</p>}
         </div>
-        {c.href && (
-          <a className="case-link" href={c.href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+        {c.href && (external ? (
+          <a className="case-link" href={c.href} target="_blank" rel="noopener noreferrer">
             <Roll>{c.linkLabel || "Visit"}</Roll>
-            <span aria-hidden>{external ? "↗" : "↑"}</span>
+            <span aria-hidden>↗</span>
           </a>
-        )}
+        ) : c.href.startsWith("#") ? (
+          <a className="case-link" href={c.href}>
+            <Roll>{c.linkLabel || "Visit"}</Roll>
+            <span aria-hidden>↑</span>
+          </a>
+        ) : (
+          <Link className="case-link" to={c.href}>
+            <Roll>{c.linkLabel || "Visit"}</Roll>
+            <span aria-hidden>→</span>
+          </Link>
+        ))}
       </div>
     </article>
   );

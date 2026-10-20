@@ -31,6 +31,14 @@ const FIELDS: Record<string, (u: number, v: number) => number> = {
     }, 0);
     return Math.max(cup, handle, steam * 0.85, 0.03);
   },
+  dj: (u, v) => {
+    const r = Math.hypot(u, v);
+    const a = Math.atan2(v, u);
+    const rings = 0.5 + 0.5 * Math.cos(r * 22 - a * 2);
+    const spoke = 0.5 + 0.5 * Math.cos(a * 8 + r * 3);
+    const core = smooth(0.22, 0.04, r);
+    return Math.max(rings * spoke * smooth(1.35, 0.15, r) * 0.85, core);
+  },
   assistant: (u, v) => {
     const bubble = (x: number, y: number, w: number, h: number) => {
       const qx = Math.abs(u - x) - w + 0.12, qy = Math.abs(v - y) - h + 0.12;
