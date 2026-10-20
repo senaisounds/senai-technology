@@ -21,7 +21,7 @@ Includes:
 - Search + social previews set up
 - Domain and hosting setup
 
-### Studio
+### Studio (Recommended)
 **A multi-page site with a real identity.**
 Best for: Growing brands, shops, practices
 
@@ -67,21 +67,33 @@ All tiers include:
 - **Easy to find**: Titles, descriptions and social cards set up for search and sharing
 - **Clean handover**: A walkthrough at launch so you know how everything fits together
 
+## Pricing and payments
+
+Every tier is quoted per project after a short brief; we reply to every enquiry within two business days.
+- Clients in the United States pay by card or invoice through Stripe.
+- Clients in Ethiopia pay locally in birr through Chapa.
+
+## FAQ
+
+- **How much does a website cost?** Every project is quoted after a short brief, because scope varies a lot. The three tiers tell you what each level includes.
+- **What does "AI-built" mean?** AI-accelerated workflows for drafts, code and imagery; every detail is then reviewed and finished by hand.
+- **How long does it take?** It depends on the tier and your content. Launch is the quickest; you get a timeline with the quote.
+- **Can I update the site myself?** Studio and Signature include a simple way to update content, and every site ends with a walkthrough.
+
 ## Portfolio
 
 ### Senai Technology (Live - 2026)
 **Studio website · WebGL, React**
-The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.
+The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath and the word ሰናይ hidden in the pixels. Raw WebGL2, no Three.js. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.
 
 ### OpenSlot (Shipped)
 **Mobile app · iOS**
 An event and performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; on the App Store.
 Link: https://openslot.me
 
-### NORA FLUX DJ/Artist Site (Showcase - 2026)
-**Music website · Concept** (`/work/dj`)
-A premium showcase for DJs and electronic music artists featuring beat-synced visuals, interactive track player, tour dates, photo gallery, EPK section, and booking form. Demonstrates the 'Signature' tier craft.
-This is a placeholder concept, not a real client project.
+### NORA FLUX (Live Signature showcase - 2026)
+**DJ / artist site · Three.js, Web Audio** (`/work/dj`)
+A sound-first concept world for a fictional DJ. Opt-in audio gate, audio-reactive WebGL field, synthesized mix (never autoplayed), page-peel tour dates, orbiting mix gallery, press kit and booking. Demonstrates Signature-tier craft. Not a real artist.
 
 ### Local service website (Concept)
 **Website · Concept**
@@ -114,22 +126,21 @@ Installations, live visuals and web toys for launches, venues and performances.
 
 ## Routes
 
-- `/` - Main homepage with offer, process, work, studio, and contact sections
-- `/check` - Website quality check tool - free website audit and recommendations
-- `/work/dj` - DJ/artist showcase demonstrating Signature tier capabilities
+- `/` — Main homepage
+- `/check` — Free website quality check
+- `/work/dj` — NORA FLUX DJ/artist Signature showcase
 
 ## Technology
 
-Built with:
-- React 19 + TypeScript
-- Vite for build tooling
-- React Router for client-side routing
-- Custom WebGL hero with liquid raymarching and dithering
-- Lenis for smooth scroll
-- Vercel AI SDK for chat assistant
-- Canvas-based visualizations and animations
-- Responsive design with mobile-first approach
-- Reduced-motion accessibility
+We specialize in:
+- React and modern web frameworks
+- WebGL and 3D for the web (raw WebGL2, Three.js where a project needs it)
+- AI/ML integration and AI-accelerated workflows
+- Mobile development (iOS/Android)
+- Motion design and animation
+- Performance optimization
+
+The studio site is React 19 + Vite + React Router, with a raw WebGL2 dithered hero, Lenis, and a Vercel AI SDK assistant. The NORA FLUX showcase lazy-loads Three.js and a Web Audio engine only on `/work/dj`.
 
 ## Contact
 

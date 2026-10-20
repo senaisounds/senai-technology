@@ -1,4 +1,4 @@
-# Senai Technology — homepage v0.2
+# Senai Technology — homepage v0.3
 
 Homepage for **Senai Technology**, the creative technology studio of Senai Motley (a Slotted LLC company, New York ⇄ Addis Ababa).
 The site is its own portfolio piece for the first offer: premium, animated, AI-built websites.
@@ -17,41 +17,56 @@ Node 20.19+ (Vite 8). `npm run shots` uses `playwright-core` with the system Chr
 (override with `CHROME_PATH=...`) and SwiftShader software WebGL. The hero detects software GL and renders a still frame there,
 so captures show the still frame (with the lens) rather than the animation.
 
+## Art direction: "Liner notes"
+
+The site is laid out like a record sleeve and its insert. Dark **sleeve** sections (hero, work, process, contact, footer) alternate with warm
+**paper** sections (intro, pricing, studio, FAQ), with one berbere-orange band for the free website check. Cormorant Garamond sets display type,
+Instrument Sans the body, Geist Mono the catalogue-style labels (SNY—001, track numbers, 92 BPM). The accent is `#ff5a1f` on dark and a deeper
+`#b8390c` on paper, so accent text keeps AA contrast. Surfaces swap through CSS custom properties: `.paper` redefines `--ink`, `--mute`, `--line`
+and `--accent-text`, and tier cards reset them back to the dark set.
+
 ## Page sections
 
 | # | Section | Where | Notes |
 |---|---------|-------|-------|
-| 1 | **Hero, "Websites with a pulse."** | `src/lib/heroGL.ts`, `App.tsx` `Hero` | Raw WebGL2, two passes. A cluster of smooth-unioned metaballs is raymarched into a low-res buffer, then composited at screen res through a 3-tone ordered (Bayer 8×8) dither. A pointer-driven lens shows the smooth render underneath, slightly magnified; when idle it drifts on its own. One blob follows the cursor, and the form pulses at 92 BPM. A HUD shows real boot stages (context → shaders → first frame), plus live New York / Addis Ababa clocks. |
-| 2 | Ticker | `App.tsx` `Ticker` | CSS marquee, pauses on hover, static when reduced motion is on. |
-| 3 | **01 Offer: AI-built websites** | `TIERS`, `INCLUDED` in `src/content.ts` | Three scopes (Launch / Studio / Signature), each "Quoted per project". No prices. "Start with …" pre-selects the project type in the contact form. Dithered icons (`DitherIcon.tsx`) scan in when seen and replay on hover. Mobile: swipeable scroll-snap row. |
-| 4 | **02 Process** | `PROCESS` | Light section. The rail fills with scroll and lights each step. |
-| 5 | **03 Work** | `WORK`, `DitherArt.tsx` | Sticky stacking cards. Each card's art is a one-time dithered render; hovering opens a lens onto a smooth layer (the hero interaction, in CSS). Real: this site and **OpenSlot** (openslot.me). Three **placeholders**, badged and stamped "Placeholder · concept". |
-| 6 | **04 Studio** | `ALSO` | About line, ሰናይ in Ge'ez script, and the other five services. |
-| 7 | **05 Contact** | `App.tsx` `Contact` | Project-type chips, name / email / project, and a copy-email button. Submitting opens a prefilled `mailto:` to the **placeholder** `hello@senaitechnology.com`. |
-| 8 | Footer | `App.tsx` `Footer` | "© 2026 Senai Technology, a Slotted LLC company" |
+| 1 | **Hero, "Websites with a pulse."** | `src/lib/heroGL.ts`, `HeroPoster.tsx`, `App.tsx` `Hero` | Raw WebGL2 raymarch through a 3-tone Bayer dither, with a pointer lens and ሰናይ hidden in the pixels (revealed around the pointer and as the hero scrolls away). `HeroPoster` paints a still dithered frame of the same layout first; it is also the fallback when WebGL2 is missing or fails. Fine pointers start the shader in the first idle period; touch devices start it on the first interaction, so shader compilation never competes with first paint on a phone. HUD: boot stages, 92 BPM. |
+| 2 | Intro | `Intro` | Paper. Manifesto line plus a facts list (base, offer, pricing, payments, reply time). |
+| 3 | **01 Work** | `WORK` (`CaseStudy`) in `src/content.ts`, `DitherArt.tsx` | A tracklist index of every entry, then a full case-study block per real project (role, scope, brief, approach, outcome, link) and an "Open slots" grid for placeholders, badged and stamped as placeholders. Add `images` to an entry to swap the generated dither art for real screenshots. |
+| 4 | **02 Pricing** | `TIERS`, `INCLUDED`, `PAYMENTS`, `ALSO` | Paper. Launch / Studio / Signature, each "Quoted per project". Studio is recommended: badge, accent frame, raised on desktop, first on phones, the only filled CTA, and pre-selected in the contact form. Dither / ASCII tier textures and icons are kept. Below: what every site includes, local payments (Stripe for the US, Chapa for Ethiopia), and services beyond websites. |
+| 5 | **03 Process** | `PROCESS` | Four beats; the rail fills with scroll and lights each step's beat. |
+| 6 | **04 Studio** | `Studio` | Paper. ሰናይ in Ge'ez script, the studio statement, and a founder card with a marked **placeholder** portrait. |
+| 7 | **05 FAQ** | `FAQ` | Paper. Exclusive `<details name="faq">` accordion (animated where `::details-content` is supported). Mirrored as FAQPage JSON-LD in `index.html`. |
+| 8 | Website check band | `CheckBand` | Orange band with a URL field that opens `/check?url=…` prefilled. |
+| 9 | **06 Contact** | `Contact` | Project-type chips, name / email / project, copy-email, and a three-step "what happens next". Submitting opens a prefilled `mailto:` to the **placeholder** `hello@senaitechnology.com`. |
+| 10 | Footer | `Footer` | Index, tools, contact with live NYC / ADD clocks, liner-note colophon, giant Senai / ሰናይ wordmark. |
 
 ## Stack
 
 Vite 8 · React 19 · TypeScript 5 · raw WebGL2 (no three.js) · Lenis (smooth scroll). Scroll reveals use one IntersectionObserver plus CSS (`[data-reveal]`).
-Fonts are self-hosted in `public/fonts` and preloaded: the Latin subsets of Instrument Sans (variable, width axis), Instrument Serif italic and Geist Mono.
+Fonts are self-hosted in `public/fonts` and preloaded: the Latin subsets of Instrument Sans (variable, width axis), Instrument Serif italic and Geist Mono,
+plus Cormorant Garamond 600 for display headlines only (a static instance subset to ASCII + typographic punctuation with kerning only, about 9 KB).
+Its `@font-face` pins ascent/descent, and three `local()` fallback faces (Times New Roman / Liberation Serif, Noto Serif, DejaVu Serif) carry
+`size-adjust` and metric overrides measured against the site's own headlines, so the swap doesn't shift layout.
+Microsoft's Michelangelus was the first choice, but its EULA grants no distribution rights and Microsoft's font FAQ forbids self-hosting or WOFF2 conversion.
 Noto Sans Ethiopic is subset to the three glyphs of ሰናይ (`senai-geez.woff2`, about 2 KB).
 
 ## Performance and accessibility
 
-- The headline is plain HTML, so it paints first. The hero shader compiles in `requestIdleCallback`, off the critical path.
+- The headline is plain HTML, so it paints first. A still dithered poster (`HeroPoster`, a 2D canvas at 1/3 resolution) fills the hero immediately. On fine pointers the shader compiles in `requestIdleCallback`; on touch devices it waits for the first interaction.
+- Lenis is loaded with a dynamic import, only for fine pointers without reduced motion (touch scrolling is native).
 - The raymarch runs at 0.5× CSS resolution (0.38× on mobile). If frames run slow, it steps down automatically. The DPR is capped at 1.5.
-- Shaders compile with `KHR_parallel_shader_compile` where available. On software GL (SwiftShader, llvmpipe, `failIfMajorPerformanceCaveat`), the hero renders one still frame and re-renders only on pointer moves.
-- The hero pauses when off-screen or when the tab is hidden. Work art and icons are drawn once; icons animate for 0.9 s only when revealed or hovered.
-- No WebGL2 → a CSS dithered fallback.
-- **`prefers-reduced-motion`:** Lenis is off. The hero renders a single still frame (the lens only follows the pointer), with no beat or drift.
-  Icons draw in their final state, and the ticker, reveals and transitions are disabled.
+- Shaders compile with `KHR_parallel_shader_compile` where available. On software GL (SwiftShader, llvmpipe, `failIfMajorPerformanceCaveat`), the hero renders one still frame and re-renders only on pointer moves. It compiles the composite without the hidden word there, since the extra shader work costs a long task per frame on a CPU rasteriser.
+- The hero pauses when off-screen or when the tab is hidden. Work art, tier textures and icons are drawn once; icons animate for 0.9 s only when revealed or hovered.
+- No WebGL2, or a shader failure → the still poster stays.
+- **`prefers-reduced-motion`:** Lenis is off. The hero renders a single still frame (the lens and the hidden-word reveal only follow the pointer and scroll, without easing, and there is no idle hint), with no beat or drift. In the still frame the raymarch pass is cached and only redone on resize.
+  Icons draw in their final state, the tier lens stays put instead of following the pointer, hover lifts / press scales / arrow nudges are off, and reveals and transitions are disabled.
 - Semantic headings and landmarks, a skip link, visible focus states, keyboard-reachable chips, and an Escape-to-close mobile menu. Canvases are `aria-hidden`.
 
 ## Credits and licenses
 
 | Source | License | Used for |
 |--------|---------|----------|
-| Fonts: Instrument Sans, Instrument Serif, Geist Mono (files from Fontsource), Noto Sans Ethiopic (subset) | SIL OFL 1.1 | Type |
+| Fonts: Instrument Sans, Instrument Serif, Geist Mono (files from Fontsource), Noto Sans Ethiopic (subset), Cormorant Garamond (google/fonts, subset; license in `public/fonts/OFL-cormorant-garamond.txt`) | SIL OFL 1.1 | Type |
 | Bayer-matrix `bayer2/4/8` recursion | Common public-domain shader idiom | Ordered dither in `heroGL.ts` |
 
 Runtime deps: react, react-dom, lenis (all MIT).
@@ -67,7 +82,8 @@ The following environment variables can be configured for enhanced functionality
 
 - [ ] **Contact:** `hello@senaitechnology.com` is a placeholder (`src/content.ts`, `CONTACT_EMAIL`). The form has no
       backend; it builds a `mailto:` link. Wire up a form service or serverless endpoint.
-- [ ] Payments: this repo has no Stripe integration. If Stripe checkout / payment links exist, add them to the offer cards.
+- [ ] Payments: the site names Stripe (US) and Chapa (Ethiopia), but this repo has no checkout code. If payment links exist, add them to `PAYMENTS` in `src/content.ts`.
+- [ ] Replace the founder-portrait placeholder in the Studio section.
 - [ ] Replace placeholders with real case studies as they ship. Add real OpenSlot screenshots / App Store badge.
 - [ ] Review all offer copy (tier names, scopes, process), and confirm the ሰናይ spelling.
 - [ ] Add a real OG image and analytics (if wanted).

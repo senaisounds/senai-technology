@@ -7,7 +7,7 @@ interface CheckResult {
     score: number;
     hasPageSpeed: boolean;
     mobileScore?: number;
-  };
+  } | null;
   seo: {
     score: number;
     checks: {
@@ -37,7 +37,7 @@ type Stage = "input" | "loading" | "results" | "no-website" | "lead-form";
 
 export function CheckPage() {
   const [stage, setStage] = useState<Stage>("input");
-  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState(() => new URLSearchParams(window.location.search).get("url") ?? "");
   const [businessName, setBusinessName] = useState("");
   const [city, setCity] = useState("");
   const [result, setResult] = useState<CheckResult | null>(null);
@@ -245,7 +245,7 @@ export function CheckPage() {
             </div>
 
             <div className="results-sections">
-              {result.performance.hasPageSpeed && (
+              {result.performance && result.performance.hasPageSpeed && (
                 <div className="result-section">
                   <div className="section-header">
                     <h3>Performance & Mobile</h3>
@@ -264,11 +264,11 @@ export function CheckPage() {
                 </div>
               )}
 
-              {!result.performance.hasPageSpeed && (
+              {!result.performance && (
                 <div className="result-section">
                   <div className="section-header">
                     <h3>Performance & Mobile</h3>
-                    <div className="section-score muted">Not tested</div>
+                    <div className="section-score muted">Not measured</div>
                   </div>
                   <p className="section-desc">
                     PageSpeed check temporarily unavailable. Core score is based on SEO and AI-search readiness.

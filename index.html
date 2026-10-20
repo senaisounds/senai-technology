@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Senai Technology — AI-built websites with a pulse | Creative technology studio</title>
     <meta name="description" content="Senai Technology is a creative technology studio between New York and Addis Ababa. We design and build premium, animated, AI-accelerated websites, plus mobile apps, brand identity, motion and AI tools for businesses." />
-    <meta name="theme-color" content="#0b0a09" />
+    <meta name="theme-color" content="#0c0a08" />
     <link rel="canonical" href="https://senai-technology.vercel.app/" />
     
     <!-- Open Graph / Facebook -->
@@ -27,6 +27,7 @@
     
     <!-- Preload critical fonts -->
     <link rel="preload" href="/fonts/instrument-sans-wdth.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/cormorant-garamond-600.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossorigin />
     
@@ -59,6 +60,8 @@
         "addressRegion": "NY",
         "addressCountry": "US"
       },
+      "paymentAccepted": "Credit card (Stripe), Chapa",
+      "currenciesAccepted": "USD, ETB",
       "serviceType": [
         "AI-built Websites",
         "Web Development",
@@ -88,6 +91,62 @@
       }
     }
     </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does a website cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Every project is quoted after a short brief, because scope varies a lot. The three tiers tell you what each level includes; we reply to every enquiry within two business days."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do payments work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Clients in the United States pay by card or invoice through Stripe. Clients in Ethiopia pay locally in birr through Chapa."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does “AI-built” mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We use AI-accelerated workflows for drafts, code and imagery, which makes us faster. Every detail is then reviewed and finished by hand: motion, responsiveness, performance and accessibility."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does it take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It depends on the tier and your content. Launch is the quickest; you get a timeline together with the quote."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I update the site myself?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Studio and Signature include a simple way to update content, and every site ends with a walkthrough so you know how it all fits together."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Not sure which tier fits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Run the free website check to see where your current site stands, ask the assistant in the corner, or just write to us and we’ll recommend one."
+      }
+    }
+  ]
+}
+    </script>
     <style>
       /* Hide prerendered content once React hydrates */
       #root:not(:empty) + #prerender { display: none; }
@@ -97,7 +156,7 @@
         font-family: system-ui, -apple-system, sans-serif;
         line-height: 1.6;
         color: #f2ece1;
-        background: #0b0a09;
+        background: #0c0a08;
         padding: 1rem;
       }
       #prerender .skip { position: absolute; left: -9999px; }
@@ -131,7 +190,7 @@
         padding: 1.5rem;
         margin: 1.5rem 0;
       }
-      #prerender .tier.flagship { border-color: #ff5a1f; }
+      #prerender .tier.recommended { border-color: #ff5a1f; }
       #prerender .work-item {
         border-top: 1px solid rgba(242, 236, 225, 0.2);
         padding: 2rem 0;
@@ -146,32 +205,57 @@
       <header>
         <a href="#top" style="font-weight: 600;">Senai Technology</a>
         <nav>
-          <a href="#tiers">Tiers</a>
-          <a href="#process">Process</a>
           <a href="#work">Work</a>
-          <a href="#contact">Contact</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#process">Process</a>
+          <a href="#studio">Studio</a>
+          <a href="#faq">FAQ</a>
+          <a href="/check">Free site check</a>
         </nav>
       </header>
       <main id="main">
         <section id="top">
-          <p style="opacity: 0.7;">Creative technology studio · New York ⇄ Addis Ababa</p>
+          <p style="opacity: 0.7;">ሰናይ · Creative technology studio · New York ⇄ Addis Ababa</p>
           <h1>Websites with a pulse.</h1>
-          <p>AI-built, studio-grade. Premium animated sites that feel alive, plus mobile apps, brand identity, motion and AI tools for businesses.</p>
+          <p>AI-built, studio-grade websites with motion, polish and a point of view. The craft of a high-end studio, at the speed of AI.</p>
           <p>
             <a href="#contact" class="btn">Start a project →</a>
-            <a href="#tiers" class="btn" style="background: transparent; border: 1px solid #ff5a1f;">See the tiers</a>
+            <a href="/check" class="btn" style="background: transparent; border: 1px solid #ff5a1f;">Score your site free</a>
           </p>
         </section>
-        
-        <section id="tiers">
-          <p style="opacity: 0.7;">Three ways in</p>
-          <h2>Choose your tier</h2>
-          
+
+        <section>
+          <p>We make websites the way records get made: a strong idea, a rhythm you can feel, and hours of finishing by hand. AI does the heavy lifting so the craft gets the time.</p>
+          <ul>
+            <li>Based: New York ⇄ Addis Ababa</li>
+            <li>Pricing: quoted per project</li>
+            <li>Payments: Stripe (US) · Chapa (Ethiopia)</li>
+            <li>Reply: within two business days</li>
+          </ul>
+        </section>
+
+        <section id="work">
+          <h2>Selected work</h2>
+          <article class="work-item">
+            <h3>Senai Technology</h3>
+            <p><strong>Studio website</strong> — 2026 · Live</p>
+            <p>The site you’re on: our own portfolio piece, and a working demo of the Signature tier. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the smooth render and the word ሰናይ hidden in the pixels. Raw WebGL2, no Three.js.</p>
+          </article>
+          <article class="work-item">
+            <h3>OpenSlot</h3>
+            <p><strong>Mobile app · iOS</strong> — Past project · Shipped</p>
+            <p>An event and performance app for iPhone, designed and built by Senai Motley, on the App Store. Venues set up a night in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap.</p>
+            <p><a href="https://openslot.me" target="_blank" rel="noopener">openslot.me ↗</a></p>
+          </article>
+          <p>Open slots (placeholder concepts, not client work): local service website, café &amp; bakery website, AI booking assistant.</p>
+        </section>
+
+        <section id="pricing">
+          <h2>Pricing: three ways in. Studio is the sweet spot.</h2>
           <div class="tier">
             <h3>Launch</h3>
             <p style="font-style: italic; opacity: 0.8;">One sharp page, live fast.</p>
-            <p><strong>Best for:</strong> New businesses, launches, events</p>
-            <h4>Includes:</h4>
+            <p><strong>Good for:</strong> New businesses, launches, events</p>
             <ul>
               <li>A single long-scroll page with tasteful motion</li>
               <li>Mobile-first, responsive build</li>
@@ -180,108 +264,88 @@
               <li>Domain and hosting setup</li>
             </ul>
           </div>
-          
-          <div class="tier">
-            <h3>Studio</h3>
+          <div class="tier flagship">
+            <h3>Studio (recommended)</h3>
             <p style="font-style: italic; opacity: 0.8;">A multi-page site with a real identity.</p>
-            <p><strong>Best for:</strong> Growing brands, shops, practices</p>
-            <h4>Includes:</h4>
+            <p><strong>Good for:</strong> Growing brands, shops, practices</p>
             <ul>
-              <li>Everything in Launch</li>
+              <li>Everything in Launch, plus</li>
               <li>Multiple pages, shaped around your content</li>
               <li>Type, colour and art direction for the web</li>
               <li>Art-directed AI imagery</li>
               <li>Analytics and a simple way to update content</li>
             </ul>
           </div>
-          
-          <div class="tier flagship">
-            <h3>Signature ✨</h3>
+          <div class="tier">
+            <h3>Signature</h3>
             <p style="font-style: italic; opacity: 0.8;">A fully animated showcase, built to be remembered.</p>
-            <p><strong>Best for:</strong> Brands that want the wow</p>
-            <h4>Includes:</h4>
+            <p><strong>Good for:</strong> Brands that want the wow</p>
             <ul>
-              <li>Everything in Studio</li>
-              <li>Custom 3D / WebGL hero like the one above</li>
+              <li>Everything in Studio, plus</li>
+              <li>Custom 3D / WebGL hero</li>
               <li>Scroll-driven storytelling and micro-interactions</li>
               <li>Motion assets and AI-generated visuals</li>
               <li>Performance tuning for real phones</li>
             </ul>
           </div>
+          <p>Every tier is quoted per project. Clients in the United States pay through Stripe; clients in Ethiopia pay in birr through Chapa.</p>
+          <h3>Beyond websites</h3>
+          <ul>
+            <li>Mobile apps</li>
+            <li>Brand identity &amp; AI visuals</li>
+            <li>Video &amp; motion</li>
+            <li>AI tools for businesses</li>
+            <li>Interactive &amp; event experiences</li>
+          </ul>
         </section>
-        
+
         <section id="process">
-          <h2>How we work</h2>
-          
+          <h2>From brief to live, in four beats.</h2>
           <h4>01. Brief</h4>
           <p>A short call about the business, the audience and the feeling the site should leave behind.</p>
-          
           <h4>02. Direction</h4>
           <p>Type, colour and a motion concept, delivered as a clickable prototype you can react to early.</p>
-          
           <h4>03. Build</h4>
           <p>AI-accelerated build, hand-tuned details: motion, responsiveness, performance, accessibility.</p>
-          
           <h4>04. Launch</h4>
           <p>Domain, analytics and a walkthrough. Then we keep iterating together if you want to.</p>
         </section>
-        
-        <section id="work">
-          <h2>Selected work</h2>
-          
-          <article class="work-item">
-            <h3>Senai Technology</h3>
-            <p><strong>Studio website · WebGL, React</strong> — 2026</p>
-            <p>The site you're on. A raymarched liquid form rendered through an ordered dither, with a lens that reveals the real render underneath. Built AI-accelerated, tuned by hand, and it respects reduced-motion settings.</p>
-            <p><a href="#top">You're looking at it</a></p>
-          </article>
-          
-          <article class="work-item">
-            <h3>OpenSlot</h3>
-            <p><strong>Mobile app · iOS</strong> — Past project</p>
-            <p>An event and performance app for iPhone. Venues host open mics and DJ nights in minutes; performers discover comedy, music, poetry and DJ slots nearby and reserve with one tap. Designed and built by Senai Motley; on the App Store.</p>
-            <p><a href="https://openslot.me" target="_blank" rel="noopener">openslot.me ↗</a></p>
-          </article>
-        </section>
-        
+
         <section id="studio">
-          <h2>We also do</h2>
-          
-          <article>
-            <h4>Mobile apps</h4>
-            <p>iOS and Android, from first prototype to App Store release. We've shipped our own.</p>
-          </article>
-          
-          <article>
-            <h4>Brand identity & AI visuals</h4>
-            <p>Names, logos, type and colour systems, plus art-directed AI imagery that still looks like you.</p>
-          </article>
-          
-          <article>
-            <h4>Video & motion</h4>
-            <p>Launch films, social loops, product motion and 3D for the feed and the big screen.</p>
-          </article>
-          
-          <article>
-            <h4>AI tools for businesses</h4>
-            <p>Chatbots, booking assistants and quiet automations that give your team hours back.</p>
-          </article>
-          
-          <article>
-            <h4>Interactive & event experiences</h4>
-            <p>Installations, live visuals and web toys for launches, venues and performances.</p>
-          </article>
+          <h2>Rhythm in the motion. Texture in the pixels.</h2>
+          <p>Senai Technology is the creative technology company of Senai Motley: Ethiopian-American, working between New York and Addis Ababa. Music and art sit at the centre of how we build, so every site gets a beat, a texture and a point of view, not a template.</p>
         </section>
-        
+
+        <section id="faq">
+          <h2>Questions, answered.</h2>
+          <h3>How much does a website cost?</h3>
+          <p>Every project is quoted after a short brief, because scope varies a lot. The three tiers tell you what each level includes; we reply to every enquiry within two business days.</p>
+          <h3>How do payments work?</h3>
+          <p>Clients in the United States pay by card or invoice through Stripe. Clients in Ethiopia pay locally in birr through Chapa.</p>
+          <h3>What does “AI-built” mean?</h3>
+          <p>We use AI-accelerated workflows for drafts, code and imagery, which makes us faster. Every detail is then reviewed and finished by hand: motion, responsiveness, performance and accessibility.</p>
+          <h3>How long does it take?</h3>
+          <p>It depends on the tier and your content. Launch is the quickest; you get a timeline together with the quote.</p>
+          <h3>Can I update the site myself?</h3>
+          <p>Studio and Signature include a simple way to update content, and every site ends with a walkthrough so you know how it all fits together.</p>
+          <h3>Not sure which tier fits?</h3>
+          <p>Run the free website check to see where your current site stands, ask the assistant in the corner, or just write to us and we’ll recommend one.</p>
+        </section>
+
+        <section>
+          <h2>How does your site score?</h2>
+          <p><a href="/check">Run the free website check</a>: speed, search and AI-search readiness, in under a minute.</p>
+        </section>
+
         <section id="contact">
-          <h2>Start a project.</h2>
-          <p>Tell us what you're dreaming up — a site, an app, a brand, a film, an AI assistant or something that doesn't have a name yet.</p>
+          <h2>Let’s make something with a pulse.</h2>
+          <p>Tell us what you’re dreaming up: a site, an app, a brand, a film, an AI assistant or something that doesn’t have a name yet. We reply within two business days.</p>
           <p>Email: <a href="mailto:hello@senaitechnology.com">hello@senaitechnology.com</a></p>
         </section>
       </main>
       <footer>
         <p>© 2026 Senai Technology, a Slotted LLC company</p>
-        <p>New York · Addis Ababa</p>
+        <p>New York ⇄ Addis Ababa</p>
       </footer>
     </div>
     <noscript>Senai Technology — creative technology studio between New York and Addis Ababa. AI-built websites, mobile apps, brand identity and AI visuals, video and motion, AI tools for businesses, interactive experiences. Contact: hello@senaitechnology.com</noscript>
