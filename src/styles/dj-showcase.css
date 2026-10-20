@@ -42,7 +42,13 @@ html.dj-world body {
 }
 
 .dj-showcase a { color: inherit; }
-.dj-showcase button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.dj-showcase button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
 .dj-showcase :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
 
 .dj-skip {
@@ -140,7 +146,7 @@ html.dj-world body {
   padding: 14px 20px;
   min-height: 48px;
 }
-.dj-gate-hot {
+.dj-showcase .dj-gate-hot {
   background: var(--signal);
   color: var(--void);
 }
@@ -171,7 +177,8 @@ html.dj-world body {
   gap: 16px;
   align-items: center;
   padding: 14px clamp(16px, 3vw, 36px);
-  mix-blend-mode: difference;
+  background: rgba(10, 11, 8, 0.78);
+  backdrop-filter: blur(12px);
   pointer-events: none;
 }
 .dj-hud > * { pointer-events: auto; }
@@ -216,11 +223,10 @@ html.dj-world body {
   min-height: 0;
   border: 1px solid currentColor;
 }
-.dj-sound.on {
+.dj-showcase .dj-sound.on {
   background: var(--signal);
   color: var(--void);
   border-color: var(--signal);
-  mix-blend-mode: normal;
 }
 
 /* ---------- stage ---------- */
@@ -328,7 +334,7 @@ html.dj-world body {
   gap: 14px 20px;
   margin-top: 12px;
 }
-.dj-play {
+.dj-showcase .dj-play {
   background: var(--signal);
   color: var(--void);
   min-width: 88px;
@@ -346,7 +352,7 @@ html.dj-world body {
   padding: 10px 12px;
   border: 1px solid var(--line);
 }
-.dj-stems button.on {
+.dj-showcase .dj-stems button.on {
   border-color: var(--signal);
   color: var(--void);
   background: var(--signal);
@@ -398,6 +404,7 @@ html.dj-world body {
   display: block;
   text-align: left;
   perspective: 1400px;
+  background: #efe8d6;
 }
 .dj-ticket-face {
   width: 100%;
@@ -412,7 +419,7 @@ html.dj-world body {
   min-height: 112px;
   padding: 18px 72px 18px 22px;
 }
-.dj-ticket-face {
+.dj-showcase .dj-ticket-face {
   position: relative;
   z-index: 2;
   background: #f4efe3;
@@ -492,6 +499,7 @@ html.dj-world body {
   height: min(68vh, 620px);
   margin: 28px 0 24px;
   perspective: 1600px;
+  transform: rotateX(10deg);
   transform-style: preserve-3d;
   touch-action: pan-y;
   cursor: grab;
@@ -631,7 +639,7 @@ html.dj-world body {
   gap: 10px;
   margin-top: 20px;
 }
-.dj-press-files button,
+.dj-showcase .dj-press-files button,
 .dj-press-files a {
   background: var(--void);
   color: var(--paper);
@@ -702,7 +710,7 @@ html.dj-world body {
   outline: none;
   border-bottom-color: var(--signal);
 }
-.dj-send {
+.dj-showcase .dj-send {
   grid-column: 1 / -1;
   justify-self: start;
   background: var(--signal);
@@ -760,8 +768,6 @@ html.dj-world body {
 @media (max-width: 900px) {
   .dj-hud {
     grid-template-columns: 1fr auto;
-    mix-blend-mode: normal;
-    background: linear-gradient(to bottom, rgba(10, 11, 8, 0.86), transparent);
   }
   .dj-hud-nav { display: none; }
   .dj-press-grid { grid-template-columns: 1fr; }
@@ -776,6 +782,9 @@ html.dj-world body {
 @media (max-width: 768px) {
   .dj-showcase { cursor: auto; }
   .dj-hud-mark em { display: none; }
+  .dj-stage-world { min-height: 56svh; }
+  .dj-wave { height: 44px; }
+  .dj-orbit { transform: none; }
   .dj-word { font-size: clamp(52px, 22vw, 120px); }
   .dj-form { grid-template-columns: 1fr; }
   .dj-orbit {

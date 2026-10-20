@@ -38,18 +38,18 @@ uniform float uTime;
 varying float vH;
 varying vec2 vUv;
 void main() {
-  float grid = abs(fract(vUv.x * 36.0) - 0.5) * abs(fract(vUv.y * 36.0) - 0.5);
-  float line = smoothstep(0.22, 0.02, grid);
-  vec3 ink = vec3(0.04, 0.043, 0.03);
+  float gx = abs(fract(vUv.x * 28.0) - 0.5);
+  float gy = abs(fract(vUv.y * 28.0) - 0.5);
+  float line = smoothstep(0.045, 0.012, min(gx, gy));
+  vec3 ink = vec3(0.035, 0.036, 0.028);
   vec3 lime = vec3(0.84, 1.0, 0.24);
   vec3 heat = vec3(1.0, 0.23, 0.12);
   vec3 ice = vec3(0.49, 0.91, 0.97);
-  float peak = smoothstep(0.15, 1.1, vH);
-  vec3 col = mix(ink, lime, line * 0.55 + peak * 0.65);
-  col = mix(col, heat, smoothstep(0.55, 1.3, vH));
-  col = mix(col, ice, smoothstep(0.8, 1.6, vH) * 0.35);
-  float fog = smoothstep(0.0, 1.0, length(vUv - 0.5) * 1.6);
-  col = mix(col, vec3(0.04, 0.043, 0.03), fog * 0.55);
+  float peak = smoothstep(0.35, 1.4, vH);
+  vec3 col = ink + lime * line * 0.18 + lime * peak * 0.28 + heat * smoothstep(0.8, 1.6, vH) * 0.35;
+  col += ice * smoothstep(1.1, 1.8, vH) * 0.15;
+  float fog = smoothstep(0.15, 1.0, length(vUv - 0.5) * 1.45);
+  col = mix(col, vec3(0.03, 0.031, 0.025), fog);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -70,7 +70,7 @@ export function createSignalField(
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x0a0b08, 0.055);
+  scene.fog = new THREE.FogExp2(0x0a0b08, 0.085);
 
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 80);
   camera.position.set(0, 3.4, 11);
@@ -99,15 +99,15 @@ export function createSignalField(
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
 
-  const count = mobile ? 64 : 120;
-  const geo = new THREE.BoxGeometry(0.045, 1, 0.045);
+  const count = mobile ? 40 : 72;
+  const geo = new THREE.BoxGeometry(0.03, 1, 0.03);
   geo.translate(0, 0.5, 0);
   const mat = new THREE.MeshStandardMaterial({
-    color: 0xd6ff3d,
+    color: 0x1c1e14,
     emissive: 0xd6ff3d,
-    emissiveIntensity: 0.55,
-    metalness: 0.1,
-    roughness: 0.35,
+    emissiveIntensity: 0.28,
+    metalness: 0.15,
+    roughness: 0.45,
   });
   const needles = new THREE.InstancedMesh(geo, mat, count);
   needles.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -116,7 +116,7 @@ export function createSignalField(
   const dummy = new THREE.Object3D();
   const bases: { x: number; z: number; r: number }[] = [];
   for (let i = 0; i < count; i++) {
-    const ring = i < count * 0.55 ? 4.2 : 6.4;
+    const ring = i < count * 0.55 ? 5.1 : 7.4;
     const a = (i / (i < count * 0.55 ? count * 0.55 : count * 0.45)) * Math.PI * 2 + (i % 2) * 0.08;
     const x = Math.cos(a) * ring;
     const z = Math.sin(a) * ring;
@@ -190,14 +190,14 @@ export function createSignalField(
     for (let i = 0; i < count; i++) {
       const b = bases[i];
       const band = live.bands[i % 32] || 0;
-      const h = 0.25 + (soundOn ? band : idle * (0.4 + (i % 7) * 0.08)) * 3.4 + live.bass * 0.6;
+      const h = 0.18 + (soundOn ? band : idle * (0.35 + (i % 7) * 0.06)) * 2.4 + live.bass * 0.45;
       dummy.position.set(b.x, 0.02, b.z);
       dummy.scale.set(1, h, 1);
       dummy.updateMatrix();
       needles.setMatrixAt(i, dummy.matrix);
     }
     needles.instanceMatrix.needsUpdate = true;
-    mat.emissiveIntensity = 0.35 + live.bass * 1.1;
+    mat.emissiveIntensity = 0.2 + live.bass * 0.85;
 
     disc.rotation.z = time * (0.35 + live.mid * 0.8);
     disc.scale.setScalar(1 + live.bass * 0.18);
@@ -208,8 +208,8 @@ export function createSignalField(
     rim.intensity = 3 + live.high * 10;
 
     angle += dt * (0.08 + live.mid * 0.05);
-    const rad = 10.2 - live.bass * 0.8;
-    const elev = 3.2 + ptrY * 0.6;
+    const rad = 9.2 - live.bass * 0.55;
+    const elev = 2.4 + ptrY * 0.45;
     camera.position.set(Math.sin(angle + ptrX * 0.35) * rad, elev, Math.cos(angle + ptrX * 0.35) * rad);
     camera.lookAt(0, 0.55, 0);
 
