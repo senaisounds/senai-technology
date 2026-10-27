@@ -2,8 +2,14 @@ import { useMemo, useState, type FormEvent } from "react";
 import { lazy, Suspense } from "react";
 import { Floorplan } from "./Floorplan";
 import {
+  BUILD_PHASES,
+  CAMERA_PRESETS,
   DIASPORA_CITIES,
   FLOORS,
+  LIGHT_MODES,
+  MEP_SPECS,
+  ORIENT,
+  PLAN_ROOMS,
   STATUS_HEX,
   STATUS_LABEL,
   floorStatus,
@@ -11,8 +17,10 @@ import {
   passSerial,
   splitMilestone,
   unitsOnFloor,
+  type CameraPreset,
   type Currency,
   type DiasporaCity,
+  type LightMode,
   type Project,
   type Unit,
   type VaultLead,
@@ -41,14 +49,55 @@ export function TowerTab({
   onReserve: (lead: VaultLead) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [preset, setPreset] = useState<CameraPreset>("orbit");
+  const [light, setLight] = useState<LightMode>("night");
+  const [humans, setHumans] = useState(true);
   const units = useMemo(() => unitsOnFloor(floor), [floor]);
+  const rooms = PLAN_ROOMS[unit.plan];
 
   return (
     <div className="rx-tower">
       <div className="rx-tower-stage">
         <div className="rx-tower-hud">
-          <p>01 · 3D Pre-Sale Tower</p>
-          <p>Drag to orbit · tap a floor</p>
+          <p>01 · Miami-in-Addis flagship</p>
+          <p>Drag 360° · pinch zoom · tap a floor</p>
+        </div>
+        <div className="rx-viewports" role="group" aria-label="Camera and lighting">
+          <div className="rx-vp-row">
+            {CAMERA_PRESETS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={preset === p.id ? "on" : ""}
+                aria-pressed={preset === p.id}
+                title={p.hint}
+                onClick={() => setPreset(p.id)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <div className="rx-vp-row">
+            {LIGHT_MODES.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                className={light === m.id ? "on" : ""}
+                aria-pressed={light === m.id}
+                onClick={() => setLight(m.id)}
+              >
+                {m.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              className={humans ? "on" : ""}
+              aria-pressed={humans}
+              onClick={() => setHumans((v) => !v)}
+            >
+              1.78m figure
+            </button>
+          </div>
         </div>
         <Suspense fallback={<div className="rx-gl-ph" aria-hidden />}>
           <TowerCanvas
@@ -56,6 +105,9 @@ export function TowerTab({
             mobile={mobile}
             reduced={reduced}
             active
+            preset={preset}
+            light={light}
+            humans={humans}
             onSelect={(n) => {
               setFloor(n);
               const next = unitsOnFloor(n)[0];
@@ -122,6 +174,38 @@ export function TowerTab({
           </div>
           <h3>{unit.name}</h3>
           <p className="rx-terrace">{unit.terrace}</p>
+          <ul className="rx-rooms" aria-label="Room-by-room">
+            {rooms.map((r) => (
+              <li key={r.id}>
+                <b>{r.name}</b>
+                <span>{r.sqm} m²</span>
+                <em>{r.dim}</em>
+              </li>
+            ))}
+          </ul>
+          <ul className="rx-mep" aria-label="MEP specifications">
+            {MEP_SPECS.map((s) => (
+              <li key={s.id}>
+                <b>{s.label}</b>
+                {s.value}
+              </li>
+            ))}
+          </ul>
+          <div className="rx-orient" aria-label="Sun path and orientation">
+            <p>
+              {ORIENT.facing} · sunrise {ORIENT.sunrise} · sunset {ORIENT.sunset} · {ORIENT.ridge}
+            </p>
+            <p>{ORIENT.note}</p>
+          </div>
+          <ol className="rx-build" aria-label="Construction milestones">
+            {BUILD_PHASES.map((p) => (
+              <li key={p.id}>
+                <span>{p.label}</span>
+                <i style={{ width: `${p.pct}%` }} />
+                <em>{p.pct}%</em>
+              </li>
+            ))}
+          </ol>
           <p className="rx-price">
             <b>{formatMoney(unit.usd, project.currency)}</b>
             <span>{project.currency === "USD" ? "Diaspora USD" : "Local ETB"}</span>

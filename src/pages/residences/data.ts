@@ -1,7 +1,91 @@
 export type Currency = "USD" | "ETB";
 export type Availability = "available" | "reserved" | "sold";
 export type PlanKind = "studio1" | "garden2" | "exec2" | "corner3" | "penthouse";
+export type CameraPreset = "orbit" | "street" | "sky" | "cutaway" | "balcony";
+export type LightMode = "day" | "golden" | "night";
 export type DiasporaCity = "Washington, DC" | "London" | "Frankfurt" | "Dubai" | "Addis Ababa";
+
+export type RoomSpec = { id: string; name: string; sqm: number; dim: string };
+
+export const PLAN_ROOMS: Record<PlanKind, RoomSpec[]> = {
+  studio1: [
+    { id: "salon", name: "Great room", sqm: 28, dim: "6.4 × 4.4 m" },
+    { id: "kitchen", name: "Kitchen", sqm: 10, dim: "3.4 × 2.9 m" },
+    { id: "br", name: "Bedroom", sqm: 16, dim: "4.2 × 3.8 m" },
+    { id: "bath", name: "Stone wet room", sqm: 6, dim: "2.4 × 2.5 m" },
+    { id: "juliet", name: "Juliet balcony", sqm: 4, dim: "3.2 × 1.2 m" },
+  ],
+  garden2: [
+    { id: "patio", name: "Garden patio", sqm: 18, dim: "9.0 × 2.0 m" },
+    { id: "salon", name: "Living / dining salon", sqm: 30, dim: "6.8 × 4.4 m" },
+    { id: "kitchen", name: "Chef's kitchen", sqm: 14, dim: "4.0 × 3.5 m" },
+    { id: "master", name: "Primary suite", sqm: 22, dim: "5.0 × 4.4 m" },
+    { id: "br2", name: "Bedroom 2", sqm: 14, dim: "4.0 × 3.5 m" },
+  ],
+  exec2: [
+    { id: "salon", name: "Living / dining salon", sqm: 34, dim: "7.2 × 4.7 m" },
+    { id: "kitchen", name: "Chef's kitchen", sqm: 14, dim: "4.0 × 3.5 m" },
+    { id: "master", name: "Primary suite", sqm: 24, dim: "5.2 × 4.6 m" },
+    { id: "br2", name: "Bedroom 2", sqm: 15, dim: "4.0 × 3.8 m" },
+    { id: "terrace", name: "West wrap balcony", sqm: 14, dim: "7.0 × 2.0 m" },
+  ],
+  corner3: [
+    { id: "salon", name: "Living / dining salon", sqm: 42, dim: "8.4 × 5.0 m" },
+    { id: "kitchen", name: "Chef's kitchen", sqm: 16, dim: "4.2 × 3.8 m" },
+    { id: "master", name: "Primary suite", sqm: 28, dim: "5.6 × 5.0 m" },
+    { id: "br2", name: "Bedroom 2", sqm: 16, dim: "4.0 × 4.0 m" },
+    { id: "br3", name: "Bedroom 3", sqm: 14, dim: "3.8 × 3.7 m" },
+    { id: "terrace", name: "Wrap-around terrace", sqm: 22, dim: "11.0 × 2.0 m" },
+  ],
+  penthouse: [
+    { id: "great", name: "Sky great room", sqm: 72, dim: "12.0 × 6.0 m" },
+    { id: "kitchen", name: "Chef kitchen", sqm: 24, dim: "6.0 × 4.0 m" },
+    { id: "master", name: "Primary wing", sqm: 42, dim: "7.2 × 5.8 m" },
+    { id: "br2", name: "Bedroom 2", sqm: 18, dim: "4.6 × 3.9 m" },
+    { id: "br3", name: "Bedroom 3", sqm: 16, dim: "4.2 × 3.8 m" },
+    { id: "br4", name: "Bedroom 4 / study", sqm: 16, dim: "4.2 × 3.8 m" },
+    { id: "pool", name: "Infinity terrace", sqm: 48, dim: "12.0 × 4.0 m" },
+  ],
+};
+
+export const MEP_SPECS = [
+  { id: "hvac", label: "HVAC", value: "VRF + highland fresh-air" },
+  { id: "glazing", label: "Glazing", value: "Low-E cyan / obsidian IGU" },
+  { id: "power", label: "Power", value: "Generator + solar crown" },
+  { id: "water", label: "Water", value: "Dual pump · 3.4 psi" },
+  { id: "lift", label: "Lifts", value: "2 traction · destination" },
+  { id: "fire", label: "Life safety", value: "Pressurized stair + sprinkler" },
+] as const;
+
+export const BUILD_PHASES = [
+  { id: "ground", label: "Groundbreaking", pct: 100 },
+  { id: "podium", label: "Podium & lagoon", pct: 100 },
+  { id: "core", label: "Core & structure", pct: 74 },
+  { id: "glass", label: "Curtain wall", pct: 41 },
+  { id: "sky", label: "Sky pool / handover", pct: 12 },
+] as const;
+
+export const CAMERA_PRESETS: { id: CameraPreset; label: string; hint: string }[] = [
+  { id: "orbit", label: "Orbit 360°", hint: "Drag · pinch zoom" },
+  { id: "street", label: "Street Arrival", hint: "Porte-cochère" },
+  { id: "sky", label: "Sky Terrace", hint: "Infinity pool" },
+  { id: "cutaway", label: "Floor X-Ray", hint: "Cutaway rooms" },
+  { id: "balcony", label: "Balcony POV", hint: "Resident view" },
+];
+
+export const LIGHT_MODES: { id: LightMode; label: string }[] = [
+  { id: "day", label: "Day" },
+  { id: "golden", label: "Golden Hour" },
+  { id: "night", label: "Addis Night" },
+];
+
+export const ORIENT = {
+  facing: "South-west",
+  sunrise: "06:21",
+  sunset: "18:38",
+  ridge: "Entoto",
+  note: "Primary wrap terrace takes Entoto ridge + Bole dusk.",
+} as const;
 
 export const RX = {
   obsidian: "#0B0B0D",
