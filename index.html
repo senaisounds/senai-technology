@@ -6,22 +6,22 @@
     <title>Senai Technology — AI-built websites with a pulse | Creative technology studio</title>
     <meta name="description" content="Senai Technology is a creative technology studio between New York and Addis Ababa. We design and build premium, animated, AI-accelerated websites, plus mobile apps, brand identity, motion and AI tools for businesses." />
     <meta name="theme-color" content="#0c0a08" />
-    <link rel="canonical" href="https://senai-technology.vercel.app/" />
+    <link rel="canonical" href="https://senaitechnology.com/" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://senai-technology.vercel.app/" />
+    <meta property="og:url" content="https://senaitechnology.com/" />
     <meta property="og:title" content="Senai Technology — Websites with a pulse" />
     <meta property="og:description" content="AI-built websites, studio-grade. A creative technology studio between New York and Addis Ababa. A Slotted LLC company." />
-    <meta property="og:image" content="https://senai-technology.vercel.app/og-image.png" />
+    <meta property="og:image" content="https://senaitechnology.com/og-image.png" />
     <meta property="og:site_name" content="Senai Technology" />
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://senai-technology.vercel.app/" />
+    <meta name="twitter:url" content="https://senaitechnology.com/" />
     <meta name="twitter:title" content="Senai Technology — Websites with a pulse" />
     <meta name="twitter:description" content="AI-built websites, studio-grade. A creative technology studio between New York and Addis Ababa. A Slotted LLC company." />
-    <meta name="twitter:image" content="https://senai-technology.vercel.app/og-image.png" />
+    <meta name="twitter:image" content="https://senaitechnology.com/og-image.png" />
     
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     
@@ -38,9 +38,9 @@
       "@type": "ProfessionalService",
       "name": "Senai Technology",
       "description": "Creative technology studio between New York and Addis Ababa. We design and build premium, animated, AI-accelerated websites, plus mobile apps, brand identity, motion and AI tools for businesses.",
-      "url": "https://senai-technology.vercel.app",
-      "logo": "https://senai-technology.vercel.app/favicon.svg",
-      "image": "https://senai-technology.vercel.app/og-image.png",
+      "url": "https://senaitechnology.com",
+      "logo": "https://senaitechnology.com/favicon.svg",
+      "image": "https://senaitechnology.com/og-image.png",
       "email": "hello@senaitechnology.com",
       "areaServed": [
         {
@@ -147,7 +147,14 @@
   ]
 }
     </script>
+    <!-- Hide the homepage prerender on /check and /work/dj before first paint.
+         Crawlers fetching / still see the full prerendered HTML (no class, no hide). -->
+    <script>
+      if (location.pathname !== "/") document.documentElement.classList.add("not-home");
+    </script>
     <style>
+      /* Hide homepage prerender immediately on non-root routes (no flash before React) */
+      html.not-home #prerender { display: none; }
       /* Hide prerendered content once React hydrates */
       #root:not(:empty) + #prerender { display: none; }
       
