@@ -33,11 +33,10 @@ const CORNER = 0.42;
 const OBSIDIAN = 0x0b0b0d;
 const PAPER = 0xf4f1ea;
 const GOLD = 0xffd400;
-const BRONZE = 0x8a6234;
-const CHAMPAGNE = 0xc4a36a;
-const CYAN_GLASS = 0x6ec8d4;
-const OBS_GLASS = 0x15202a;
-const POOL = 0x2ad4c8;
+const BRONZE = 0x6a4a28;
+const CHAMPAGNE = 0xb8924a;
+const GLASS_TINT = 0x15222c;
+const POOL = 0x1ec8c0;
 
 function hexNum(hex: string): number {
   return parseInt(hex.slice(1), 16);
@@ -107,32 +106,32 @@ function facadeMap(seed: number, night: boolean): THREE.CanvasTexture {
   c.width = 512;
   c.height = 256;
   const ctx = c.getContext("2d")!;
-  ctx.fillStyle = night ? "#0c141a" : "#1a2a32";
+  ctx.fillStyle = night ? "#071016" : "#121c22";
   ctx.fillRect(0, 0, 512, 256);
   let s = seed + 31;
   const rnd = () => {
     s = (s * 1664525 + 1013904223) >>> 0;
     return (s & 0xffff) / 0xffff;
   };
-  const cols = 10;
-  const rows = 3;
+  const cols = 12;
+  const rows = 2;
   const gw = 512 / cols;
   const gh = 256 / rows;
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
-      const lit = night ? rnd() > 0.22 : rnd() > 0.62;
+      const lit = night ? rnd() > 0.28 : rnd() > 0.7;
       if (lit) {
-        const warm = 0.45 + rnd() * 0.5;
-        ctx.fillStyle = `rgba(255, ${Math.round(190 + rnd() * 40)}, ${Math.round(120 + rnd() * 40)}, ${warm})`;
+        const warm = 0.55 + rnd() * 0.4;
+        ctx.fillStyle = `rgba(255, ${Math.round(176 + rnd() * 36)}, ${Math.round(88 + rnd() * 36)}, ${warm})`;
       } else {
-        ctx.fillStyle = night ? "rgba(40, 90, 110, 0.28)" : "rgba(180, 220, 230, 0.18)";
+        ctx.fillStyle = night ? "rgba(28, 72, 88, 0.55)" : "rgba(70, 110, 124, 0.35)";
       }
-      ctx.fillRect(x * gw + 5, y * gh + 6, gw - 10, gh - 12);
+      ctx.fillRect(x * gw + 3, y * gh + 8, gw - 6, gh - 16);
     }
   }
-  ctx.fillStyle = night ? "rgba(196, 163, 106, 0.35)" : "rgba(30, 24, 16, 0.35)";
+  ctx.fillStyle = night ? "rgba(12, 10, 8, 0.85)" : "rgba(18, 16, 14, 0.55)";
   for (let x = 0; x <= cols; x++) ctx.fillRect(x * gw - 1, 0, 2, 256);
-  for (let y = 0; y <= rows; y++) ctx.fillRect(0, y * gh - 1, 512, 2);
+  ctx.fillRect(0, 126, 512, 4);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
@@ -253,6 +252,7 @@ type FloorRig = {
   glass: THREE.MeshStandardMaterial;
   edge: THREE.MeshStandardMaterial;
   led: THREE.MeshStandardMaterial;
+  core: THREE.MeshStandardMaterial;
 };
 
 export function createTower(
@@ -316,51 +316,56 @@ export function createTower(
   const rim = new THREE.DirectionalLight(0x3a5a78, 0.55);
   rim.position.set(-10, 5, -12);
   scene.add(rim);
-  const lobby = new THREE.PointLight(0xffc56a, 22, 9, 2);
+  const lobby = new THREE.PointLight(0xffc56a, 7, 6, 2);
   lobby.position.set(0, 1.05, 2.4);
   scene.add(lobby);
-  const poolL = new THREE.PointLight(0x2ad4c8, 16, 7, 2);
+  const poolL = new THREE.PointLight(0x2ad4c8, 6, 5, 2);
   poolL.position.set(2.4, 0.4, 1.1);
   scene.add(poolL);
-  const porte = new THREE.PointLight(0xffd08a, 20, 8, 2);
+  const porte = new THREE.PointLight(0xffd08a, 5, 5, 2);
   porte.position.set(0, 1.55, 3.4);
   scene.add(porte);
 
-  const stone = new THREE.MeshStandardMaterial({ color: 0x16141a, roughness: 0.88, metalness: 0.08 });
-  const plaza = new THREE.MeshStandardMaterial({ color: 0x1a1816, roughness: 0.42, metalness: 0.22 });
+  const plaza = new THREE.MeshStandardMaterial({ color: 0x2a2620, roughness: 0.38, metalness: 0.28 });
   const bronze = new THREE.MeshStandardMaterial({
-    color: BRONZE,
+    color: 0x2a2118,
     emissive: CHAMPAGNE,
-    emissiveIntensity: 0.35,
-    metalness: 0.78,
-    roughness: 0.28,
-  });
-  const champagne = new THREE.MeshStandardMaterial({
-    color: 0x3a2e20,
-    emissive: CHAMPAGNE,
-    emissiveIntensity: 0.55,
-    metalness: 0.62,
+    emissiveIntensity: 0.16,
+    metalness: 0.72,
     roughness: 0.32,
   });
-  const water = new THREE.MeshStandardMaterial({
+  const champagne = new THREE.MeshStandardMaterial({
+    color: 0x1c1812,
+    emissive: CHAMPAGNE,
+    emissiveIntensity: 0.22,
+    metalness: 0.55,
+    roughness: 0.38,
+  });
+  const water = new THREE.MeshBasicMaterial({
     color: POOL,
-    emissive: 0x1498a0,
-    emissiveIntensity: 0.85,
-    roughness: 0.06,
-    metalness: 0.28,
     transparent: true,
-    opacity: 0.88,
+    opacity: 0.92,
   });
   const railGlass = new THREE.MeshStandardMaterial({
-    color: 0xc8eef2,
+    color: 0x9ad4dc,
     transparent: true,
-    opacity: 0.22,
-    roughness: 0.05,
-    metalness: 0.18,
+    opacity: 0.18,
+    roughness: 0.06,
+    metalness: 0.2,
+  });
+  const edgeGlow = new THREE.MeshStandardMaterial({
+    color: BRONZE,
+    emissive: CHAMPAGNE,
+    emissiveIntensity: 0.85,
+    metalness: 0.7,
+    roughness: 0.24,
   });
   const leafPlanter = new THREE.MeshStandardMaterial({ color: 0x1a4a32, roughness: 0.7, metalness: 0.04 });
 
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(28, 72), stone);
+  const ground = new THREE.Mesh(
+    new THREE.CircleGeometry(28, 72),
+    new THREE.MeshStandardMaterial({ color: 0x1c1a18, roughness: 0.82, metalness: 0.08 }),
+  );
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
@@ -400,7 +405,11 @@ export function createTower(
   ridge.rotation.y = 0.18;
   scene.add(ridge);
 
-  const podium = new THREE.Mesh(makePlate(6.05, 4.85, 0.55, PODIUM_H, segs), new THREE.MeshStandardMaterial({ color: 0x1c1914, roughness: 0.48, metalness: 0.28 }));
+  const podium = new THREE.Mesh(
+    makePlate(5.4, 3.55, 0.42, PODIUM_H, segs),
+    new THREE.MeshBasicMaterial({ color: 0x141210 }),
+  );
+  podium.position.set(0, 0, -0.55);
   podium.castShadow = true;
   podium.receiveShadow = true;
   scene.add(podium);
@@ -408,13 +417,13 @@ export function createTower(
   const lobbyGlass = new THREE.Mesh(
     new THREE.BoxGeometry(2.7, 1.05, 0.1),
     new THREE.MeshStandardMaterial({
-      color: 0xffe2b0,
+      color: 0x3a2a16,
       emissive: 0xffb347,
-      emissiveIntensity: 0.95,
+      emissiveIntensity: 0.4,
       transparent: true,
-      opacity: 0.7,
-      roughness: 0.1,
-      metalness: 0.35,
+      opacity: 0.62,
+      roughness: 0.16,
+      metalness: 0.28,
     }),
   );
   lobbyGlass.position.set(0, 0.78, 2.38);
@@ -427,8 +436,11 @@ export function createTower(
   colR.position.x = 1.55;
   scene.add(colL, colR);
 
-  const canopy = new THREE.Mesh(makePlate(4.4, 2.15, 0.28, 0.07, segs), bronze);
-  canopy.position.set(0, 1.62, 3.05);
+  const canopy = new THREE.Mesh(
+    makePlate(3.9, 1.85, 0.22, 0.05, segs),
+    new THREE.MeshStandardMaterial({ color: 0x1a1612, metalness: 0.62, roughness: 0.35 }),
+  );
+  canopy.position.set(0, 1.62, 3.15);
   scene.add(canopy);
   const canopyLip = new THREE.Mesh(
     new THREE.BoxGeometry(4.1, 0.02, 0.06),
@@ -442,18 +454,20 @@ export function createTower(
   scene.add(steps);
 
   const car1 = makeCar(0x0e1014);
+  car1.scale.setScalar(1.15);
   car1.position.set(-0.85, 0, 3.55);
   car1.rotation.y = 0.18;
-  const car2 = makeCar(0x6a1a1a);
+  const car2 = makeCar(0xc4a36a);
+  car2.scale.setScalar(1.15);
   car2.position.set(1.15, 0, 3.85);
   car2.rotation.y = -0.35;
   scene.add(car1, car2);
 
-  const lagoon = new THREE.Mesh(makePlate(2.15, 1.35, 0.55, 0.06, segs), water);
-  lagoon.position.set(2.55, 0.04, 0.35);
+  const lagoon = new THREE.Mesh(makePlate(2.6, 1.55, 0.62, 0.07, segs), water);
+  lagoon.position.set(2.85, 0.05, 0.55);
   scene.add(lagoon);
-  const lagoonDeck = new THREE.Mesh(makePlate(2.55, 1.7, 0.6, 0.03, segs), champagne);
-  lagoonDeck.position.set(2.55, 0.01, 0.35);
+  const lagoonDeck = new THREE.Mesh(makePlate(3.05, 1.95, 0.66, 0.03, segs), champagne);
+  lagoonDeck.position.set(2.85, 0.01, 0.55);
   scene.add(lagoonDeck);
 
   const cabanaA = makeCabana();
@@ -473,6 +487,7 @@ export function createTower(
   ];
   palmSpots.forEach(([x, y, z]) => {
     const p = makePalm();
+    p.scale.setScalar(1.35);
     p.position.set(x, y, z);
     scene.add(p);
   });
@@ -497,48 +512,71 @@ export function createTower(
     const y = floorBase(n);
 
     const edge = new THREE.MeshStandardMaterial({
-      color: 0x2a2218,
+      color: 0x1a1612,
       emissive: CHAMPAGNE,
-      emissiveIntensity: 0.7,
-      metalness: 0.7,
-      roughness: 0.26,
+      emissiveIntensity: 0.12,
+      metalness: 0.48,
+      roughness: 0.42,
     });
-    const deck = new THREE.MeshStandardMaterial({ color: 0x2a241c, roughness: 0.48, metalness: 0.22 });
+    const deck = new THREE.MeshStandardMaterial({ color: 0x1a1612, roughness: 0.52, metalness: 0.2 });
     const tex = facadeMap(n * 97, true);
     const glass = new THREE.MeshStandardMaterial({
       map: tex,
-      color: CYAN_GLASS,
-      emissive: OBS_GLASS,
+      color: GLASS_TINT,
+      emissive: 0xffb060,
       emissiveMap: tex,
-      emissiveIntensity: 1.05,
-      roughness: 0.08,
-      metalness: 0.38,
+      emissiveIntensity: 0.72,
+      roughness: 0.1,
+      metalness: 0.46,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.94,
     });
     glassMats.push(glass);
 
-    const bodyW = w * 0.78;
-    const bodyD = d * 0.72;
-    const slab = new THREE.Mesh(makePlate(w + 0.62, d + 0.62, r + 0.12, SLAB_T, segs), edge);
+    const bodyW = w * 0.93;
+    const bodyD = d * 0.9;
+    const slab = new THREE.Mesh(makePlate(w + 0.3, d + 0.3, r + 0.05, 0.03, segs), edge);
     slab.position.y = 0;
     slab.castShadow = true;
     group.add(slab);
 
-    const inner = new THREE.Mesh(makePlate(bodyW + 0.08, bodyD + 0.08, r * 0.72, SLAB_T * 0.7, segs), deck);
-    inner.position.y = SLAB_T * 0.15;
+    const inner = new THREE.Mesh(makePlate(bodyW + 0.04, bodyD + 0.04, r * 0.7, 0.02, segs), deck);
+    inner.position.y = 0.01;
     group.add(inner);
 
-    const shell = new THREE.Mesh(new RoundedBoxGeometry(bodyW, GLASS_H, bodyD, 3, r * 0.55), glass);
-    shell.position.y = SLAB_T + GLASS_H / 2;
+    const darkGlass = new THREE.MeshStandardMaterial({
+      color: 0x0c161c,
+      metalness: 0.58,
+      roughness: 0.08,
+      transparent: true,
+      opacity: 0.82,
+    });
+    const shell = new THREE.Mesh(new RoundedBoxGeometry(bodyW, GLASS_H, bodyD, 3, r * 0.5), darkGlass);
+    shell.position.y = 0.03 + GLASS_H / 2;
     group.add(shell);
+    const faceH = GLASS_H * 0.9;
+    const faceY = 0.03 + GLASS_H / 2;
+    const facades: Array<[number, number, number, number]> = [
+      [0, bodyD / 2 + 0.012, 0, bodyW * 0.86],
+      [0, -(bodyD / 2 + 0.012), Math.PI, bodyW * 0.86],
+      [bodyW / 2 + 0.012, 0, Math.PI / 2, bodyD * 0.86],
+      [-(bodyW / 2 + 0.012), 0, -Math.PI / 2, bodyD * 0.86],
+    ];
+    facades.forEach(([x, z, rot, width]) => {
+      const pane = new THREE.Mesh(new THREE.PlaneGeometry(width, faceH), glass);
+      pane.position.set(x, faceY, z);
+      pane.rotation.y = rot;
+      pane.userData.floor = n;
+      group.add(pane);
+      pickables.push(pane);
+    });
 
-    const loop = roundedLoop(w + 0.58, d + 0.58, r + 0.1, 0.2, segs);
-    const rail = new THREE.Mesh(new THREE.TubeGeometry(loop, mobile ? 48 : 80, 0.012, 5, true), railGlass);
+    const loop = roundedLoop(w + 0.28, d + 0.28, r + 0.04, 0.2, segs);
+    const rail = new THREE.Mesh(new THREE.TubeGeometry(loop, mobile ? 48 : 80, 0.01, 5, true), railGlass);
     group.add(rail);
     const shoe = new THREE.Mesh(
-      new THREE.TubeGeometry(roundedLoop(w + 0.58, d + 0.58, r + 0.1, 0.03, segs), mobile ? 48 : 80, 0.016, 5, true),
-      bronze,
+      new THREE.TubeGeometry(roundedLoop(w + 0.28, d + 0.28, r + 0.04, 0.02, segs), mobile ? 48 : 80, 0.018, 5, true),
+      edgeGlow,
     );
     group.add(shoe);
 
@@ -584,17 +622,14 @@ export function createTower(
     }
 
     if (n === 12) {
-      const amenity = new THREE.Mesh(makePlate(w + 1.15, d + 1.35, 0.55, 0.05, segs), deck);
+      const amenity = new THREE.Mesh(makePlate(w + 0.85, d + 1.05, 0.48, 0.04, segs), deck);
       amenity.position.y = F2F;
       group.add(amenity);
-      const skyPool = new THREE.Mesh(makePlate(1.55, 0.62, 0.28, 0.045, segs), water);
-      skyPool.position.set(0.28, F2F + 0.05, 0.18);
+      const skyPool = new THREE.Mesh(makePlate(2.55, 1.15, 0.36, 0.06, segs), water);
+      skyPool.position.set(0.15, F2F + 0.06, 0.12);
       group.add(skyPool);
-      const lip = new THREE.Mesh(
-        new THREE.BoxGeometry(1.55, 0.018, 0.05),
-        new THREE.MeshStandardMaterial({ color: POOL, emissive: POOL, emissiveIntensity: 1.2, roughness: 0.1 }),
-      );
-      lip.position.set(0.28, F2F + 0.055, 0.5);
+      const lip = new THREE.Mesh(new THREE.BoxGeometry(2.55, 0.025, 0.08), new THREE.MeshBasicMaterial({ color: 0x5cffee }));
+      lip.position.set(0.15, F2F + 0.08, 0.7);
       group.add(lip);
       const pergola = new THREE.MeshStandardMaterial({ color: PAPER, metalness: 0.45, roughness: 0.28 });
       for (let i = 0; i < 5; i++) {
@@ -619,7 +654,7 @@ export function createTower(
     shell.userData.floor = n;
     scene.add(group);
     pickables.push(slab, shell);
-    floors.push({ n, group, pick: slab, interiors, glass, edge, led });
+    floors.push({ n, group, pick: slab, interiors, glass, edge, led, core: darkGlass });
   }
 
   const skyPoolLight = new THREE.PointLight(0x2ad4c8, 18, 6, 2);
@@ -648,11 +683,11 @@ export function createTower(
   const presetPose = (p: CameraPreset, floor: number) => {
     const y = floorBase(floor) + F2F * 0.45;
     const { d } = plateSize(floor);
-    if (p === "street") return { pos: new THREE.Vector3(0.55, 1.35, 9.6), tgt: new THREE.Vector3(0, 1.05, 2.2) };
-    if (p === "sky") return { pos: new THREE.Vector3(3.6, floorBase(12) + 2.4, 5.8), tgt: new THREE.Vector3(0.2, floorBase(12) + F2F, 0.15) };
-    if (p === "cutaway") return { pos: new THREE.Vector3(6.4, y + 0.35, 5.2), tgt: new THREE.Vector3(0, y, 0) };
-    if (p === "balcony") return { pos: new THREE.Vector3(-0.15, y + 0.12, d / 2 + 0.72), tgt: new THREE.Vector3(-2.8, y - 0.05, 4.6) };
-    return { pos: new THREE.Vector3(9.2, 6.4, 10.4), tgt: new THREE.Vector3(0, 4.4, 0) };
+    if (p === "street") return { pos: new THREE.Vector3(4.2, 1.55, 6.6), tgt: new THREE.Vector3(0, 1.15, 1.4) };
+    if (p === "sky") return { pos: new THREE.Vector3(4.4, floorBase(12) + 2.8, 4.6), tgt: new THREE.Vector3(0.2, floorBase(12) + F2F + 0.04, 0.1) };
+    if (p === "cutaway") return { pos: new THREE.Vector3(5.6, y + 0.55, 4.4), tgt: new THREE.Vector3(0, y + 0.2, 0) };
+    if (p === "balcony") return { pos: new THREE.Vector3(-0.1, y + 0.16, d / 2 + 0.55), tgt: new THREE.Vector3(-2.4, y + 0.02, 3.8) };
+    return { pos: new THREE.Vector3(8.4, 5.8, 9.6), tgt: new THREE.Vector3(0, 4.6, 0) };
   };
 
   const flyTo = (p: CameraPreset, floor: number) => {
@@ -662,7 +697,8 @@ export function createTower(
     camTo.copy(pose.pos);
     tgtTo.copy(pose.tgt);
     fly = 0;
-    controls.autoRotate = p === "orbit" && !reduced;
+    controls.enabled = false;
+    controls.autoRotate = false;
     if (p === "balcony") {
       controls.minDistance = 0.7;
       controls.maxDistance = 5.5;
@@ -693,14 +729,18 @@ export function createTower(
       const above = f.n > selected;
       f.interiors.visible = xray && on;
       if (xray) {
-        f.group.visible = !above;
-        f.glass.opacity = on ? 0.14 : 0.45;
+        f.group.visible = true;
+        f.glass.opacity = on ? 0.1 : above ? 0.12 : 0.55;
+        f.core.opacity = on ? 0.08 : above ? 0.1 : 0.7;
         f.glass.transparent = true;
-        f.group.position.x = on ? 0.18 : 0;
+        f.group.position.x = on ? 0.14 : 0;
+        f.group.scale.setScalar(above ? 0.985 : 1);
       } else {
         f.group.visible = true;
-        f.glass.opacity = 0.92;
-        f.group.position.x = on ? 0.06 : 0;
+        f.glass.opacity = 0.94;
+        f.core.opacity = 0.82;
+        f.group.position.x = on ? 0.04 : 0;
+        f.group.scale.setScalar(1);
       }
     });
   };
@@ -709,7 +749,7 @@ export function createTower(
     floors.forEach((f) => {
       const on = f.n === selected;
       const hot = f.n === hover;
-      f.edge.emissiveIntensity = on ? 1.15 : hot ? 0.9 : 0.62;
+      f.edge.emissiveIntensity = on ? 0.28 : hot ? 0.2 : 0.12;
       f.led.emissiveIntensity = on ? 1.25 : hot ? 0.95 : 0.7;
     });
     applyCutaway();
@@ -730,16 +770,17 @@ export function createTower(
       key.position.set(12, 18, 8);
       rim.color.set(0x88aacc);
       rim.intensity = 0.7;
-      lobby.intensity = 6;
-      poolL.intensity = 7;
-      porte.intensity = 5;
-      skyPoolLight.intensity = 6;
-      water.emissiveIntensity = 0.35;
-      champagne.emissiveIntensity = 0.18;
-      bronze.emissiveIntensity = 0.12;
+      lobby.intensity = 3;
+      poolL.intensity = 3;
+      porte.intensity = 2;
+      skyPoolLight.intensity = 3;
+      water.opacity = 0.8;
+      champagne.emissiveIntensity = 0.08;
+      bronze.emissiveIntensity = 0.06;
+      edgeGlow.emissiveIntensity = 0.28;
       glassMats.forEach((m) => {
-        m.emissiveIntensity = 0.18;
-        m.color.set(0x9ad4dc);
+        m.emissiveIntensity = 0.12;
+        m.color.set(0x1c2a32);
       });
     } else if (mode === "golden") {
       renderer.setClearColor(0x2a1a10, 1);
@@ -754,16 +795,17 @@ export function createTower(
       key.position.set(14, 7, 4);
       rim.color.set(0x4a3058);
       rim.intensity = 0.45;
-      lobby.intensity = 16;
-      poolL.intensity = 12;
-      porte.intensity = 14;
-      skyPoolLight.intensity = 12;
-      water.emissiveIntensity = 0.7;
-      champagne.emissiveIntensity = 0.85;
-      bronze.emissiveIntensity = 0.55;
+      lobby.intensity = 6;
+      poolL.intensity = 5;
+      porte.intensity = 5;
+      skyPoolLight.intensity = 5;
+      water.opacity = 0.9;
+      champagne.emissiveIntensity = 0.28;
+      bronze.emissiveIntensity = 0.2;
+      edgeGlow.emissiveIntensity = 0.7;
       glassMats.forEach((m) => {
-        m.emissiveIntensity = 0.62;
-        m.color.set(0xffc898);
+        m.emissiveIntensity = 0.48;
+        m.color.set(0x2a2018);
       });
     } else {
       renderer.setClearColor(OBSIDIAN, 1);
@@ -778,16 +820,17 @@ export function createTower(
       key.position.set(10, 16, 7);
       rim.color.set(0x3a5a78);
       rim.intensity = 0.55;
-      lobby.intensity = 22;
-      poolL.intensity = 16;
-      porte.intensity = 20;
-      skyPoolLight.intensity = 18;
-      water.emissiveIntensity = 0.95;
-      champagne.emissiveIntensity = 0.55;
-      bronze.emissiveIntensity = 0.35;
+      lobby.intensity = 7;
+      poolL.intensity = 6;
+      porte.intensity = 5;
+      skyPoolLight.intensity = 6;
+      water.opacity = 0.94;
+      champagne.emissiveIntensity = 0.22;
+      bronze.emissiveIntensity = 0.16;
+      edgeGlow.emissiveIntensity = 0.85;
       glassMats.forEach((m) => {
-        m.emissiveIntensity = 1.05;
-        m.color.set(CYAN_GLASS);
+        m.emissiveIntensity = 0.72;
+        m.color.set(GLASS_TINT);
       });
     }
   };
@@ -823,7 +866,13 @@ export function createTower(
     drag = 0;
     lastX = e.clientX;
     lastY = e.clientY;
-    fly = 1;
+    if (fly < 1) {
+      fly = 1;
+      controls.target.copy(tgtTo);
+      controls.enabled = true;
+    } else {
+      fly = 1;
+    }
   };
   const onPointerMove = (e: PointerEvent) => {
     if (pointerDown) {
@@ -864,17 +913,24 @@ export function createTower(
   const tick = (t: number) => {
     if (!paused) {
       if (fly < 1) {
-        fly = Math.min(1, fly + 0.038);
+        fly = Math.min(1, fly + 0.045);
         const k = 1 - (1 - fly) ** 3;
         camera.position.lerpVectors(camFrom, camTo, k);
-        controls.target.lerpVectors(tgtFrom, tgtTo, k);
+        const look = tgtFrom.clone().lerp(tgtTo, k);
+        camera.lookAt(look);
+        if (fly >= 1) {
+          controls.target.copy(tgtTo);
+          controls.enabled = true;
+          controls.autoRotate = preset === "orbit" && !reduced;
+        }
+      } else {
+        controls.update();
       }
-      controls.update();
       const pulse = 0.82 + Math.sin(t * 0.002) * 0.18;
       if (lightMode === "night") {
-        lobby.intensity = 20 * pulse;
-        porte.intensity = 18 * pulse;
-        water.emissiveIntensity = 0.82 + Math.sin(t * 0.003) * 0.16;
+        lobby.intensity = 6.5 * pulse;
+        porte.intensity = 5 * pulse;
+        water.opacity = 0.86 + Math.sin(t * 0.003) * 0.08;
       }
       renderer.render(scene, camera);
     }
