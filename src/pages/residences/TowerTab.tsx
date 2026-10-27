@@ -157,10 +157,7 @@ export function TowerTab({
           unit={unit}
           currency={project.currency}
           onClose={() => setOpen(false)}
-          onIssue={(lead) => {
-            onReserve(lead);
-            setOpen(false);
-          }}
+          onIssue={onReserve}
         />
       )}
     </div>

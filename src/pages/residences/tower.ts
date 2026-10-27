@@ -64,10 +64,10 @@ export function createTower(
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.22;
   if (!mobile) {
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
   }
 
   const scene = new THREE.Scene();
@@ -75,10 +75,10 @@ export function createTower(
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 120);
   const orbit = {
-    az: 0.72,
-    pol: 1.18,
-    dist: mobile ? 16.4 : 14.2,
-    target: new THREE.Vector3(0, 3.4, 0),
+    az: 0.95,
+    pol: 1.08,
+    dist: mobile ? 13.6 : 11.8,
+    target: new THREE.Vector3(0, 2.85, 0),
   };
 
   const applyCam = () => {
@@ -169,82 +169,93 @@ export function createTower(
 
   const floors: { group: THREE.Group; mats: THREE.MeshStandardMaterial[] }[] = [];
   const pickables: THREE.Object3D[] = [];
-  const concrete = new THREE.MeshStandardMaterial({ color: 0x222018, roughness: 0.55, metalness: 0.22 });
-  const rail = new THREE.MeshStandardMaterial({ color: PAPER, roughness: 0.25, metalness: 0.55 });
+  const concrete = new THREE.MeshStandardMaterial({ color: 0x1a1814, roughness: 0.48, metalness: 0.28 });
+  const deckMat = new THREE.MeshStandardMaterial({ color: 0x2a241c, roughness: 0.6, metalness: 0.18 });
+  const rail = new THREE.MeshStandardMaterial({ color: PAPER, roughness: 0.22, metalness: 0.62 });
 
   for (let n = 1; n <= FLOORS; n++) {
     const group = new THREE.Group();
-    const y = 1.2 + (n - 0.5) * 0.52;
-    const inset = n >= 12 ? 0.28 : n >= 8 ? 0.08 : 0;
-    const w = 3.15 - inset;
-    const d = 2.45 - inset * 0.6;
+    const y = 1.28 + (n - 0.5) * 0.56;
+    const inset = n >= 12 ? 0.22 : n >= 8 ? 0.06 : 0;
+    const w = 3.05 - inset;
+    const d = 2.35 - inset * 0.5;
     const status = floorStatus(n);
     const accent = hexNum(STATUS_HEX[status]);
 
-    const slab = new THREE.Mesh(new THREE.BoxGeometry(w, 0.46, d), concrete);
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(w, 0.5, d), concrete);
     slab.castShadow = true;
     slab.receiveShadow = true;
     group.add(slab);
 
-    const tex = windowMap(n * 97, 0.62 + (n % 3) * 0.08);
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(w + 0.08, 0.035, d + 0.08), deckMat);
+    plate.position.y = -0.24;
+    group.add(plate);
+
+    const tex = windowMap(n * 97, 0.78);
     const glass = new THREE.MeshStandardMaterial({
       map: tex,
-      color: 0xf2e6c8,
-      emissive: 0xffb56a,
+      color: 0xffe7bf,
+      emissive: 0xffb056,
       emissiveMap: tex,
-      emissiveIntensity: 0.55,
-      roughness: 0.18,
-      metalness: 0.35,
+      emissiveIntensity: 1.15,
+      roughness: 0.12,
+      metalness: 0.42,
     });
-    const face = new THREE.Mesh(new THREE.PlaneGeometry(w - 0.18, 0.32), glass);
-    face.position.set(0, 0.02, d / 2 + 0.012);
-    group.add(face);
-    const faceB = face.clone();
-    faceB.position.z = -(d / 2 + 0.012);
-    faceB.rotation.y = Math.PI;
-    group.add(faceB);
+    const fw = w - 0.16;
+    const fd = d - 0.16;
+    const faceH = 0.34;
+    const faces: Array<[number, number, number, number]> = [
+      [0, 0.02, d / 2 + 0.01, 0],
+      [0, 0.02, -(d / 2 + 0.01), Math.PI],
+      [w / 2 + 0.01, 0.02, 0, Math.PI / 2],
+      [-(w / 2 + 0.01), 0.02, 0, -Math.PI / 2],
+    ];
+    faces.forEach(([x, fy, z, rot], i) => {
+      const g = new THREE.Mesh(new THREE.PlaneGeometry(i < 2 ? fw : fd, faceH), glass);
+      g.position.set(x, fy, z);
+      g.rotation.y = rot;
+      group.add(g);
+    });
 
     const balcMat = new THREE.MeshStandardMaterial({
-      color: accent,
+      color: 0x3a3428,
       emissive: accent,
-      emissiveIntensity: 0.22,
-      metalness: 0.45,
-      roughness: 0.35,
+      emissiveIntensity: 0.18,
+      metalness: 0.35,
+      roughness: 0.42,
     });
-    const balc = new THREE.Mesh(new THREE.BoxGeometry(w * 0.42, 0.045, 0.42), balcMat);
-    balc.position.set(-w * 0.22, -0.14, d / 2 + 0.2);
+    const balc = new THREE.Mesh(new THREE.BoxGeometry(w * 0.28, 0.03, 0.28), balcMat);
+    balc.position.set(-w * 0.28, -0.16, d / 2 + 0.16);
     group.add(balc);
     const balc2 = balc.clone();
-    balc2.position.x = w * 0.22;
+    balc2.position.x = w * 0.28;
     group.add(balc2);
 
-    const trim = new THREE.Mesh(new THREE.BoxGeometry(w + 0.04, 0.03, d + 0.04), rail);
-    trim.position.y = 0.23;
-    group.add(trim);
+    const led = new THREE.Mesh(
+      new THREE.BoxGeometry(0.045, 0.42, 0.045),
+      new THREE.MeshStandardMaterial({ color: accent, emissive: accent, emissiveIntensity: 0.7, roughness: 0.2 }),
+    );
+    led.position.set(w / 2 + 0.03, 0, d / 2 + 0.03);
+    group.add(led);
 
     if (n === 12) {
-      const deck = new THREE.Mesh(
-        new THREE.BoxGeometry(w + 0.7, 0.05, d + 0.85),
-        new THREE.MeshStandardMaterial({ color: 0x2c261c, roughness: 0.5, metalness: 0.2 }),
-      );
-      deck.position.y = 0.28;
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(w + 0.55, 0.045, d + 0.7), deckMat);
+      deck.position.y = 0.3;
       group.add(deck);
       const pool = new THREE.Mesh(
-        new THREE.BoxGeometry(0.9, 0.04, 0.42),
-        new THREE.MeshStandardMaterial({ color: 0x7ad4c8, emissive: 0x2a8f86, emissiveIntensity: 0.55, roughness: 0.1 }),
+        new THREE.BoxGeometry(0.95, 0.035, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0x7ad4c8, emissive: 0x2a8f86, emissiveIntensity: 0.7, roughness: 0.08 }),
       );
-      pool.position.set(0.55, 0.33, 0.15);
+      pool.position.set(0.5, 0.34, 0.2);
       group.add(pool);
       for (let i = 0; i < 5; i++) {
-        const slat = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.03, 0.06), rail);
-        slat.position.set(-0.55, 0.62, -0.45 + i * 0.14);
+        const slat = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.025, 0.05), rail);
+        slat.position.set(-0.5, 0.66, -0.4 + i * 0.13);
         group.add(slat);
       }
-      const postL = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.4, 0.05), rail);
-      postL.position.set(-1.2, 0.48, -0.2);
-      const postR = postL.clone();
-      postR.position.x = 0.1;
-      group.add(postL, postR);
+      const postL = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.38, 0.045), rail);
+      postL.position.set(-1.15, 0.5, -0.18);
+      group.add(postL, postL.clone().translateX(1.25));
     }
 
     group.position.y = y;
@@ -252,7 +263,7 @@ export function createTower(
     scene.add(group);
     pickables.push(slab);
     slab.userData.floor = n;
-    floors.push({ group, mats: [balcMat] });
+    floors.push({ group, mats: [balcMat, led.material as THREE.MeshStandardMaterial] });
   }
 
   const ray = new THREE.Raycaster();
@@ -273,12 +284,12 @@ export function createTower(
       const n = i + 1;
       const on = n === floor;
       const hot = n === hov;
-      f.group.position.x = on ? 0.08 : 0;
-      f.mats.forEach((m) => {
-        m.emissiveIntensity = on ? 0.55 : hot ? 0.4 : 0.2;
+      f.group.position.x = on ? 0.12 : 0;
+      f.mats.forEach((m, i) => {
+        m.emissiveIntensity = i === 1 ? (on ? 1.15 : hot ? 0.9 : 0.65) : on ? 0.42 : hot ? 0.3 : 0.16;
       });
     });
-    orbit.target.y = 1.2 + (floor - 0.5) * 0.52;
+    orbit.target.y = 1.28 + (floor - 0.5) * 0.56;
   };
   paint(selected, null);
 

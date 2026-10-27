@@ -99,7 +99,7 @@ export function ConciergeTab({
       [...msgs, user].map((m) => ({ role: m.role, content: m.content })),
       project,
     );
-    if (api && !/starter \/ launch|nora flux|care plan is \$150/i.test(api)) {
+    if (api && local.lang !== "am" && !/starter \/ launch|nora flux|care plan is \$150/i.test(api)) {
       setMsgs((m) => m.map((row) => (row.id === aid ? { ...row, content: api } : row)));
     }
     setBusy(false);

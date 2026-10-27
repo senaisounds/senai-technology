@@ -97,10 +97,10 @@ export function ResidencesShowcase() {
           </label>
           <fieldset>
             <legend>Currency</legend>
-            <button type="button" className={project.currency === "USD" ? "on" : ""} onClick={() => patch({ currency: "USD" })}>
+            <button type="button" aria-label="USD Diaspora" className={project.currency === "USD" ? "on" : ""} onClick={() => patch({ currency: "USD" })}>
               {EN.currencyDia}
             </button>
-            <button type="button" className={project.currency === "ETB" ? "on" : ""} onClick={() => patch({ currency: "ETB" })}>
+            <button type="button" aria-label="ETB Local" className={project.currency === "ETB" ? "on" : ""} onClick={() => patch({ currency: "ETB" })}>
               {AM.currencyLocal}
             </button>
           </fieldset>
@@ -109,7 +109,15 @@ export function ResidencesShowcase() {
 
       <nav className="rx-tabs" aria-label="Showcase modes">
         {TABS.map((t) => (
-          <button key={t.id} type="button" className={tab === t.id ? "on" : ""} onClick={() => setTab(t.id)}>
+          <button
+            key={t.id}
+            type="button"
+            className={tab === t.id ? "on" : ""}
+            onClick={() => {
+              setTab(t.id);
+              setCustom(false);
+            }}
+          >
             <b>{t.n}</b>
             <span>{mobile ? t.short : t.en}</span>
           </button>

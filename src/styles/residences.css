@@ -104,8 +104,8 @@ html.rx-world body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.rx-hud-right { display: flex; align-items: center; gap: 8px; }
-.rx-clock { font-family: var(--mono); font-size: 10px; color: var(--mute); letter-spacing: 0.08em; }
+.rx-hud-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.rx-clock { font-family: var(--mono); font-size: 10px; color: var(--mute); letter-spacing: 0.08em; white-space: nowrap; }
 .rx-pill {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -584,6 +584,7 @@ html.rx-world body {
 @media (max-width: 430px) {
   .rx-hud { grid-template-columns: 1fr auto; }
   .rx-hud-mid { grid-column: 1 / -1; }
+  .rx-clock { display: none; }
   .rx-tabs span { font-size: 11px; }
   .rx-floors { flex-direction: row; inset: auto 8px 8px; top: auto; max-width: calc(100% - 16px); }
 }
