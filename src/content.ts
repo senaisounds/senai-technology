@@ -83,7 +83,7 @@ export const PROCESS = [
   { n: "04", title: "Launch", body: "Domain, analytics and a walkthrough. Then we keep iterating together if you want to." },
 ];
 
-export type Art = "site" | "openslot" | "local" | "cafe" | "assistant" | "dj";
+export type Art = "site" | "openslot" | "local" | "cafe" | "assistant" | "dj" | "residences";
 
 /**
  * One entry per project. Real projects fill every field; placeholders set `status: "placeholder"` and are badged
@@ -164,6 +164,25 @@ export const WORK: CaseStudy[] = [
     linkLabel: "Enter the showcase",
     art: "dj",
     tone: { bg: "#0A0B08", mid: "#D6FF3D", high: "#E8E2D4" },
+  },
+  {
+    slug: "addis-crown-residences",
+    title: "Addis Crown Residences",
+    kind: "Developer pitch · Signature showcase",
+    year: "2026",
+    status: "live",
+    summary:
+      "A 60-second phone-handoff for Addis apartment developers: interactive 3D pre-sale tower, bilingual AI concierge, diaspora 30/40/30, and Prop Desk building OS.",
+    role: ["Art direction", "Development", "WebGL", "Product"],
+    services: ["Signature site", "Sales OS", "Prop Desk"],
+    brief: "Hand Senai’s phone to a Bole developer. The page has to feel like a finished sales and property OS, not a deck.",
+    approach:
+      "Query-customizable project header, Twelve-storey Three.js inventory with gold/amber/emerald availability, instant EN/Amharic concierge wired to /api/chat, and a Prop Desk chair + Telegram resident preview.",
+    outcome: "Live concept at /work/residences. Developer wears the public crown; Senai Technology + Prop Desk power the stack.",
+    href: "/work/residences",
+    linkLabel: "Open the residences pitch",
+    art: "residences",
+    tone: { bg: "#0B0B0D", mid: "#FFD400", high: "#F4F1EA" },
   },
   {
     slug: "open-slot-local",

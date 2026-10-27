@@ -39,6 +39,12 @@ const FIELDS: Record<string, (u: number, v: number) => number> = {
     const core = smooth(0.22, 0.04, r);
     return Math.max(rings * spoke * smooth(1.35, 0.15, r) * 0.85, core);
   },
+  residences: (u, v) => {
+    const tower = Math.abs(u) < 0.2 && v > -0.55 && v < 0.62 ? 0.82 : 0;
+    const podium = Math.abs(u) < 0.38 && v > -0.82 && v < -0.5 ? 0.55 : 0;
+    const windows = tower * (0.35 + 0.65 * smooth(0.08, 0.02, Math.abs(Math.sin(u * 28) * Math.sin((v + 0.2) * 18))));
+    return Math.max(tower * 0.7, podium, windows, 0.04);
+  },
   assistant: (u, v) => {
     const bubble = (x: number, y: number, w: number, h: number) => {
       const qx = Math.abs(u - x) - w + 0.12, qy = Math.abs(v - y) - h + 0.12;

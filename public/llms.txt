@@ -96,6 +96,11 @@ Link: https://openslot.me
 URL: https://senaitechnology.com/work/dj
 A sound-first concept world for a fictional DJ. Opt-in audio gate, audio-reactive WebGL field, synthesized mix (never autoplayed), page-peel tour dates, orbiting mix gallery, press kit and booking. Demonstrates Signature-tier craft. Not a real artist.
 
+### Addis Crown Residences (Live Signature showcase - 2026)
+**Developer pitch · Three.js, bilingual AI, Prop Desk**
+URL: https://senaitechnology.com/work/residences
+A phone-first developer pitch for Addis Ababa apartment buildings. Interactive 12-storey pre-sale tower with gold/amber/emerald inventory, bilingual EN/Amharic sales concierge, diaspora 30/40/30 payments, and a Prop Desk (propdesk.et · @etpropdeskbot) building OS. Query params customize project name, neighborhood, and developer. Developer wears the public crown; Senai Technology + Prop Desk power the stack.
+
 ### Local service website (Concept)
 **Website · Concept**
 Placeholder concept, not a client project: a fast, photo-led site with instant quote requests and seasonal service pages for a local business.
@@ -147,6 +152,7 @@ An interactive playground with four zero-onboarding experiments:
 - https://senaitechnology.com/lab — Interactive Lab & Live Hero Generator
 - https://senaitechnology.com/check — Free website quality check: paste a URL to score speed, search, and AI-search readiness in under a minute. No sign-up. Also reachable from the homepage check band.
 - https://senaitechnology.com/work/dj — NORA FLUX DJ/artist Signature showcase: sound-first WebGL world (opt-in audio, never autoplayed). Fictional artist; the craft is a live demo of the Signature tier.
+- https://senaitechnology.com/work/residences — Addis apartment developer pitch: 3D pre-sale tower, bilingual AI concierge, diaspora 30/40/30, Prop Desk building OS.
 
 ## Technology
 
@@ -158,7 +164,7 @@ We specialize in:
 - Motion design and animation
 - Performance optimization
 
-The studio site is React 19 + Vite + React Router, with a raw WebGL2 dithered hero, Lenis, and a Vercel AI SDK assistant. The NORA FLUX showcase lazy-loads Three.js and a Web Audio engine only on `/work/dj`.
+The studio site is React 19 + Vite + React Router, with a raw WebGL2 dithered hero, Lenis, and a Vercel AI SDK assistant. The NORA FLUX showcase lazy-loads Three.js and a Web Audio engine only on `/work/dj`. The Residences pitch lazy-loads Three.js on `/work/residences`.
 
 ## Contact
 
@@ -167,6 +173,7 @@ The studio site is React 19 + Vite + React Router, with a raw WebGL2 dithered he
 - Lab playground: https://senaitechnology.com/lab
 - Free website check: https://senaitechnology.com/check
 - NORA FLUX showcase: https://senaitechnology.com/work/dj
+- Residences pitch: https://senaitechnology.com/work/residences
 
 © 2026 Senai Technology, a Slotted LLC company
 New York ⇄ Addis Ababa
