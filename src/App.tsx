@@ -12,11 +12,12 @@ import { ChatWidget } from "./components/ChatWidget";
 // the /check tool isn't needed on the homepage, so it stays off the critical path
 const CheckPage = lazy(() => import("./components/CheckPage").then((m) => ({ default: m.CheckPage })));
 const DJShowcase = lazy(() => import("./pages/DJShowcase").then((m) => ({ default: m.DJShowcase })));
+const ResidencesShowcase = lazy(() => import("./pages/ResidencesShowcase").then((m) => ({ default: m.ResidencesShowcase })));
 const LabPage = lazy(() => import("./pages/LabPage").then((m) => ({ default: m.LabPage })));
 
 function ChatHost() {
   const { pathname } = useLocation();
-  if (pathname.startsWith("/work/dj")) return null;
+  if (pathname.startsWith("/work/")) return null;
   return <ChatWidget />;
 }
 
@@ -27,6 +28,7 @@ export function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/check" element={<Suspense fallback={null}><CheckPage /></Suspense>} />
         <Route path="/work/dj" element={<Suspense fallback={<div style={{ minHeight: "100svh", background: "#0a0b08" }} />}><DJShowcase /></Suspense>} />
+        <Route path="/work/residences" element={<Suspense fallback={<div style={{ minHeight: "100svh", background: "#0b0b0d" }} />}><ResidencesShowcase /></Suspense>} />
         <Route path="/lab" element={<Suspense fallback={<div style={{ minHeight: "100svh", background: "#09090b" }} />}><LabPage /></Suspense>} />
       </Routes>
       <ChatHost />

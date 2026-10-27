@@ -19,6 +19,7 @@ Live on the site:
 - Homepage + contact: https://senaitechnology.com/#contact
 - Free website grader: https://senaitechnology.com/check
 - NORA FLUX DJ Signature showcase: https://senaitechnology.com/work/dj
+- Residences developer pitch: https://senaitechnology.com/work/residences — 3D pre-sale tower, bilingual AI, diaspora 30/40/30, Prop Desk OS
 - /lab playground: Live WebGL Hero Generator, Motion Timeline, Studio Pass tear, 16-step Ethio-electronic sequencer
 Email: hello@senaitechnology.com. Bilingual English and Amharic.
 
@@ -36,6 +37,29 @@ function lastUser(messages: ChatMsg[]) {
     if (messages[i]?.role === "user" && messages[i]?.content) return String(messages[i].content);
   }
   return "";
+}
+
+function residencesConcierge(text: string): string {
+  const q = text.toLowerCase();
+  const am = ETHIOPIC.test(text);
+  if (/30\s*\/\s*40\s*\/\s*30|milestone|diaspora/.test(q)) {
+    return "Diaspora buyers use a 30/40/30 USD plan via Slotted LLC · Stripe / USD Wire: 30% to reserve, 40% at structure, 30% at keys. Local buyers run the same steps in ETB through Chapa or an Ethiopian bank. Open the tower at /work/residences and issue a VIP pass on 10A, 8A, 11A or 12A.";
+  }
+  if (/3-?bed|8-11|8–11|floor/.test(q)) {
+    return "Floors 8–11 still have 3-bedrooms open: 8A (164 m², $298k), 10A (168 m², $312k), 11A (176 m², $338k). 9A is reserved. 12A sky penthouse is $585k. Tab 01 on /work/residences is the live inventory.";
+  }
+  if (am || /birr|etb|chapa/.test(q)) {
+    return "Two rails: diaspora USD 30/40/30 (Stripe / USD Wire) and local ETB via Chapa or bank milestone. After handover the building runs on Prop Desk (propdesk.et · @etpropdeskbot).";
+  }
+  if (/prop.?desk|meter|dues|telegram/.test(q)) {
+    return "Prop Desk is the building OS after handover: 96.4% dues collection, ETB slip OCR, water/electric meter billing, generator + pump telemetry, bilingual resident chat at @etpropdeskbot. Drive it on tab 03 of /work/residences.";
+  }
+  if (/partner|commission|8,?500|2,?500/.test(q)) {
+    return "Developer wears the public crown. Option A: $8,500 Signature build + $350/mo retainer + per-unit Prop Desk license. Option B (recommended): $2,500 mobilization + 2.5%–3.5% on units reserved through the funnel + Prop Desk OS at handover.";
+  }
+  return am
+    ? "Addis Crown Residences at /work/residences — 3D tower, EN/Amharic sales agent, 30/40/30 USD or Chapa birr, Prop Desk after handover. Senai Technology + Prop Desk power the stack."
+    : "The Residences pitch at /work/residences is a live 3D pre-sale + bilingual concierge + Prop Desk OS. Developer brand stays public; Senai Technology locks the leads. Ask for floors, 30/40/30, or the partnership options.";
 }
 
 function concierge(text: string): string {
@@ -66,8 +90,12 @@ function concierge(text: string): string {
       : "Yes — we work in English and Amharic, between New York and Addis Ababa. Ethiopia clients pay in birr through Chapa. The Ge'ez Senai mark is on the homepage hero and in /lab. What should we build?";
   }
 
+  if (/residence|apartment|prop.?desk|diaspora|30\s*\/\s*40\s*\/\s*30|bole/.test(q)) {
+    return residencesConcierge(text);
+  }
+
   if (/\bdj\b|nora|flux|showcase|\/work/.test(q)) {
-    return "NORA FLUX at /work/dj is a live Signature-tier sample: opt-in sound, audio-reactive WebGL, peel-open dates. Fictional artist, real craft. If you want that energy for a real act or brand, Signature ($8,500, about 4–6 weeks) is the lane.";
+    return "Two live Signature samples: NORA FLUX at /work/dj (sound-first DJ world) and Residences at /work/residences (Addis apartment pre-sale + Prop Desk OS). Fictional clients, real craft. Signature is $8,500, about 4–6 weeks.";
   }
 
   if (/\blab\b|playground|shader|sequencer|ticket|hero generator|dither|webgl/.test(q)) {
@@ -117,6 +145,7 @@ export default async function handler(req: Request) {
   try {
     const body = (await req.json()) as {
       messages?: ChatMsg[];
+      source?: string;
       capturedLead?: { name: string; email: string; need: string };
     };
     const messages = Array.isArray(body.messages) ? body.messages : [];
@@ -137,6 +166,9 @@ export default async function handler(req: Request) {
     }
 
     const userText = lastUser(messages);
+    if (body.source === "residences") {
+      return json({ reply: residencesConcierge(userText) });
+    }
     const openaiKey = process.env.OPENAI_API_KEY;
     const addisKey = process.env.ADDIS_AI_API_KEY || process.env.ADDIS_API_KEY;
 

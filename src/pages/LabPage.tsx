@@ -77,6 +77,7 @@ export function LabPage() {
           <Link to="/">Home</Link>
           <Link to="/check">Website check</Link>
           <Link to="/work/dj">NORA FLUX</Link>
+          <Link to="/work/residences">Residences</Link>
           <a href="mailto:hello@senaitechnology.com">hello@senaitechnology.com</a>
         </p>
       </footer>

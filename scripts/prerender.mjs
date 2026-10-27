@@ -36,6 +36,13 @@ const ROUTES = [
     canonical: "https://senaitechnology.com/work/dj",
     description: "Signature-tier DJ showcase. Opt-in audio, never autoplayed.",
   },
+  {
+    dir: "work/residences",
+    title: "Addis Crown Residences — developer pitch · Senai Technology",
+    canonical: "https://senaitechnology.com/work/residences",
+    description:
+      "Interactive 3D pre-sale tower, bilingual AI concierge, diaspora 30/40/30 payments, and Prop Desk building OS for Addis Ababa apartment developers.",
+  },
 ];
 
 for (const route of ROUTES) {

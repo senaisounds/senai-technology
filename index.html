@@ -147,7 +147,7 @@
   ]
 }
     </script>
-    <!-- Hide the homepage prerender on /check, /work/dj and /lab before first paint.
+    <!-- Hide the homepage prerender on /check, /work/* and /lab before first paint.
          Crawlers fetching / still see the full prerendered HTML (no class, no hide). -->
     <script>
       if (location.pathname !== "/") document.documentElement.classList.add("not-home");
