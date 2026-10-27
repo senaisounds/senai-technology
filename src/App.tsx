@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import { useInView, useIsMobile, useMagnetic, usePrefersReducedMotion, useSectionProgress } from "./lib/hooks";
 import { createHero, type Hero as HeroGL } from "./lib/heroGL";
 import { ALSO, COLORS, CONTACT_EMAIL, FAQ, INCLUDED, NAV, PAYMENTS, PROCESS, PROJECT_TYPES, TIERS, WORK, type CaseStudy } from "./content";
@@ -12,14 +12,25 @@ import { ChatWidget } from "./components/ChatWidget";
 // the /check tool isn't needed on the homepage, so it stays off the critical path
 const CheckPage = lazy(() => import("./components/CheckPage").then((m) => ({ default: m.CheckPage })));
 const DJShowcase = lazy(() => import("./pages/DJShowcase").then((m) => ({ default: m.DJShowcase })));
+const LabPage = lazy(() => import("./pages/LabPage").then((m) => ({ default: m.LabPage })));
+
+function ChatHost() {
+  const { pathname } = useLocation();
+  if (pathname.startsWith("/work/dj")) return null;
+  return <ChatWidget />;
+}
 
 export function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/check" element={<Suspense fallback={null}><CheckPage /></Suspense>} />
-      <Route path="/work/dj" element={<Suspense fallback={<div style={{ minHeight: "100svh", background: "#0a0b08" }} />}><DJShowcase /></Suspense>} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/check" element={<Suspense fallback={null}><CheckPage /></Suspense>} />
+        <Route path="/work/dj" element={<Suspense fallback={<div style={{ minHeight: "100svh", background: "#0a0b08" }} />}><DJShowcase /></Suspense>} />
+        <Route path="/lab" element={<Suspense fallback={<div style={{ minHeight: "100svh", background: "#09090b" }} />}><LabPage /></Suspense>} />
+      </Routes>
+      <ChatHost />
+    </>
   );
 }
 
@@ -84,7 +95,6 @@ function HomePage() {
         <Contact reduced={reduced} projectType={projectType} setProjectType={setProjectType} />
       </main>
       <Footer />
-      <ChatWidget />
     </>
   );
 }
@@ -270,6 +280,9 @@ function Nav() {
         ))}
       </nav>
       <div className="nav-right">
+        <Link to="/lab" className="nav-lab">
+          <Roll>Lab</Roll>
+        </Link>
         <Link to="/check" className="nav-check">
           <Roll>Free site check</Roll>
         </Link>
@@ -295,6 +308,7 @@ function Nav() {
             <span>Start a project</span>
             <span className="btn-arrow" aria-hidden><span>→</span></span>
           </a>
+          <Link to="/lab" className="menu-check" onClick={() => setOpen(false)}>Lab playground →</Link>
           <Link to="/check" className="menu-check" onClick={() => setOpen(false)}>Free website check →</Link>
           <Clocks />
         </div>
@@ -498,6 +512,15 @@ function Work() {
           <CaseStudyBlock key={c.slug} c={c} i={i} />
         ))}
       </div>
+      <aside className="lab-callout" data-reveal>
+        <p className="label"><span className="label-n">Lab</span><span className="label-line" aria-hidden />Interactive playground</p>
+        <h3>Play the tools we actually use.</h3>
+        <p>Live WebGL hero generator, Motion2Code timeline, holographic studio pass, and a 16-step Tizita sequencer — zero onboarding.</p>
+        <Link to="/lab" className="btn btn-primary">
+          <Roll>Enter the Lab</Roll>
+          <span className="btn-arrow" aria-hidden><span>→</span><span>→</span></span>
+        </Link>
+      </aside>
       <div className="slots">
         <h3 className="slots-title" data-reveal>Open slots</h3>
         <ul className="slots-grid">
@@ -743,7 +766,8 @@ function Studio() {
           <p className="studio-body">
             Senai Technology is the creative technology company of Senai Motley: Ethiopian-American, working between
             New York and Addis Ababa. Music and art sit at the centre of how we build, so every site gets a beat, a
-            texture and a point of view, not a template.
+            texture and a point of view, not a template. The interactive Lab — hero generator, motion scrubber, studio
+            pass, pulse sequencer — lives at <Link to="/lab" className="draw">/lab</Link>.
           </p>
           <figure className="founder">
             <div className="founder-photo" role="img" aria-label="Placeholder for a founder portrait">
@@ -824,29 +848,43 @@ function CheckBand() {
 /* ---------------------------------------------------------------- contact */
 
 function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; projectType: string; setProjectType: (t: string) => void }) {
-  const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [who, setWho] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const data = new FormData(form);
     const name = String(data.get("name") || "").trim();
     const email = String(data.get("email") || "").trim();
-    const project = String(data.get("project") || "").trim();
-    // TODO(Senai): no backend yet, so this opens the visitor's mail client.
-    // Swap for a form service / serverless endpoint and the real inbox before launch.
-    const subject = `New project enquiry: ${projectType} (${name || "Senai Technology site"})`;
-    const body = `Name: ${name}\nEmail: ${email}\nProject type: ${projectType}\n\nProject:\n${project}`;
+    const business = String(data.get("business") || "").trim();
+    const city = String(data.get("city") || "").trim();
+    const budget = String(data.get("budget") || "").trim();
+    const message = String(data.get("project") || "").trim();
     setWho(name || "friend");
     setState("sending");
-    window.setTimeout(
-      () => {
-        window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        setState("sent");
-      },
-      reduced ? 0 : 750,
-    );
+    try {
+      const res = await fetch("/api/submit-lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          business,
+          city,
+          budget: budget || projectType,
+          message: [projectType, message].filter(Boolean).join(" — "),
+          source: "contact-form",
+        }),
+      });
+      if (!res.ok) throw new Error("submit failed");
+      if (!reduced) await new Promise((r) => window.setTimeout(r, 400));
+      setState("sent");
+      form.reset();
+    } catch {
+      setState("error");
+    }
   };
 
   const copy = async () => {
@@ -908,6 +946,26 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
               <input name="email" type="email" autoComplete="email" required placeholder="you@company.com" />
             </label>
           </div>
+          <div className="form-row">
+            <label>
+              <span>Business</span>
+              <input name="business" autoComplete="organization" placeholder="Studio, shop, practice…" />
+            </label>
+            <label>
+              <span>City</span>
+              <input name="city" autoComplete="address-level2" placeholder="New York, Addis Ababa…" />
+            </label>
+          </div>
+          <label>
+            <span>Budget</span>
+            <select name="budget" defaultValue="">
+              <option value="">Not sure yet</option>
+              <option value="Starter $2,500">Starter · $2,500</option>
+              <option value="Growth $4,800">Growth · $4,800</option>
+              <option value="Signature $8,500">Signature · $8,500</option>
+              <option value="Care Plan $150/mo">Care Plan · $150/mo</option>
+            </select>
+          </label>
           <label>
             <span>Project</span>
             <textarea name="project" rows={4} required placeholder="What should we build together?" />
@@ -915,14 +973,19 @@ function Contact({ reduced, projectType, setProjectType }: { reduced: boolean; p
           <button type="submit" className={`submit is-${state}`} disabled={state === "sending"}>
             <span className="submit-fill" aria-hidden />
             <span className="submit-label">
-              {state === "sending" ? "Preparing your email…" : state === "sent" ? "Ready in your mail app ✓" : "Send it"}
+              {state === "sending" ? "Sending…" : state === "sent" ? "Got it ✓" : state === "error" ? "Try again" : "Send it"}
             </span>
             <span className="submit-arrow" aria-hidden>→</span>
           </button>
           <p className="form-note" role="status">
             {state === "sent"
-              ? `Thanks, ${who}. Your mail app should open with the message ready to send.`
-              : "Submitting opens your email app with everything filled in."}
+              ? `Got it, ${who} — we'll reply within 1 business day at your email.`
+              : state === "error"
+                ? `We couldn't send just now. Email ${CONTACT_EMAIL} directly.`
+                : "We reply within one business day. No mailbox popup required."}
+          </p>
+          <p className="form-note">
+            Or write directly: <a className="draw" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           </p>
         </form>
       </div>
@@ -947,6 +1010,7 @@ function Footer() {
         <div className="footer-col">
           <h2 className="footer-h">Tools</h2>
           <ul>
+            <li><Link to="/lab" className="draw">Lab playground</Link></li>
             <li><Link to="/check" className="draw">Free website check</Link></li>
             <li><a href="/llms.txt" className="draw">llms.txt</a></li>
             <li><a href="https://openslot.me" className="draw" target="_blank" rel="noopener noreferrer">OpenSlot ↗</a></li>

@@ -24,6 +24,7 @@ uniform float uScale;
 uniform vec3 uAccent;
 uniform vec3 uGold;
 uniform vec3 uCool;
+uniform float uGoo;
 out vec4 o;
 
 float smin(float a, float b, float k) {
@@ -41,10 +42,10 @@ float map(vec3 p) {
       sin(t * (0.7 + fi * 0.13) + fi * 1.7) * 1.15,
       cos(t * (0.9 + fi * 0.11) + fi * 2.3) * 0.95,
       sin(t * (0.5 + fi * 0.17) + fi) * 0.6);
-    d = smin(d, length(q - c) - (0.36 + 0.12 * sin(fi * 3.1)), 0.75);
+    d = smin(d, length(q - c) - (0.36 + 0.12 * sin(fi * 3.1)), uGoo);
   }
   d *= uScale;
-  d = smin(d, length(p - uFollow) - 0.3 * uScale, 0.7 * uScale);
+  d = smin(d, length(p - uFollow) - 0.3 * uScale, uGoo * 0.933333 * uScale);
   d += sin(p.x * 5.0 + uTime * 1.1) * sin(p.y * 4.0 + uTime * 0.9) * sin(p.z * 5.0 + uTime * 0.7) * 0.022;
   return d;
 }
@@ -108,6 +109,7 @@ uniform vec4 uReveal;
 uniform vec3 uInk;
 uniform vec3 uAccent;
 uniform float uFade;
+uniform float uRefract;
 out vec4 o;
 
 float bayer2(vec2 a) { a = floor(a); return fract(a.x / 2.0 + a.y * a.y * 0.75); }
@@ -136,7 +138,7 @@ void main() {
 
   float dist = length(fc - uLens.xy);
   float m = uLens.z > 0.5 ? 1.0 - smoothstep(uLens.z - 1.5, uLens.z + 0.5, dist) : 0.0;
-  vec2 lp = uLens.xy + (fc - uLens.xy) * 0.86;
+  vec2 lp = uLens.xy + (fc - uLens.xy) * uRefract;
   vec4 clean = texture(uScene, lp / uRes);
   clean.rgb = clean.rgb / (1.0 + clean.rgb * 0.35);
 #ifdef REVEAL
@@ -149,6 +151,22 @@ void main() {
 }`;
 
 export type HeroColors = { ink: string; accent: string; gold: string; cool: string };
+export type HeroLiveParams = {
+  speed: number;
+  goo: number;
+  dither: number;
+  lens: number;
+  refract: number;
+  watermark: number;
+};
+export const DEFAULT_HERO_LIVE: HeroLiveParams = {
+  speed: 1,
+  goo: 0.75,
+  dither: 3,
+  lens: 1,
+  refract: 0.86,
+  watermark: 1,
+};
 export type HeroOptions = {
   colors: HeroColors;
   mobile: boolean;
@@ -271,6 +289,7 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     { timeout: 2500 },
   );
   const C = { ink: rgb(opts.colors.ink), accent: rgb(opts.colors.accent), gold: rgb(opts.colors.gold), cool: rgb(opts.colors.cool) };
+  const live: HeroLiveParams = { ...DEFAULT_HERO_LIVE };
 
   let w = 0, h = 0, sw = 0, sh = 0, dpr = 1;
   let quality = software ? 0.34 : opts.mobile ? 0.38 : 0.5;
@@ -322,7 +341,7 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     if (!ready) return;
     const dt = last ? Math.min((now - last) / 1000, 0.05) : 0.016;
     last = now;
-    if (!still) time += dt;
+    if (!still) time += dt * live.speed;
 
     const L = layout();
     const idle = now - ptr.lastMove > 2600;
@@ -340,12 +359,12 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     const cw = canvas.clientWidth, ch = canvas.clientHeight;
     let lx: number, ly: number, lr: number;
     if (ptr.active && !idle) {
-      lx = ptr.x; ly = ptr.y; lr = opts.mobile ? 92 : 150;
+      lx = ptr.x; ly = ptr.y; lr = (opts.mobile ? 92 : 150) * live.lens;
     } else {
       const ax = (L.cx / 2.5 / 2) * ch + cw / 2, ay = ch / 2 - (L.cy / 2.5 / 2) * ch;
       lx = ax + Math.sin(time * 0.45) * ch * 0.16 * (opts.mobile ? 0.8 : 1);
       ly = ay + Math.sin(time * 0.7 + 1) * ch * 0.1;
-      lr = opts.mobile ? 72 : 110;
+      lr = (opts.mobile ? 72 : 110) * live.lens;
     }
     const lk = first || still ? 1 : 1 - Math.pow(0.0005, dt);
     lens.x += (lx - lens.x) * lk;
@@ -384,6 +403,7 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
       gl!.uniform3fv(scene.u.uAccent, C.accent);
       gl!.uniform3fv(scene.u.uGold, C.gold);
       gl!.uniform3fv(scene.u.uCool, C.cool);
+      gl!.uniform1f(scene.u.uGoo, live.goo);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
     }
 
@@ -394,16 +414,17 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
     gl!.bindTexture(gl!.TEXTURE_2D, tex);
     gl!.uniform1i(comp.u.uScene, 0);
     gl!.uniform2f(comp.u.uRes, w, h);
-    gl!.uniform1f(comp.u.uCell, Math.max(2, Math.round(3 * dpr * (1 + scroll * 2.5))));
+    gl!.uniform1f(comp.u.uCell, Math.max(2, Math.round(live.dither * dpr * (1 + scroll * 2.5))));
     gl!.uniform3f(comp.u.uLens, lens.x * dpr, h - lens.y * dpr, lens.r * dpr * (1 - scroll));
     gl!.activeTexture(gl!.TEXTURE1);
     gl!.bindTexture(gl!.TEXTURE_2D, maskTex);
     gl!.uniform1i(comp.u.uMask, 1);
     gl!.uniform4f(comp.u.uMaskRect, (mx - mw / 2) * dpr, h - (my + mw / 4) * dpr, mw * dpr, (mw / 2) * dpr);
-    gl!.uniform4f(comp.u.uReveal, lens.x * dpr, h - lens.y * dpr, reveal.r * dpr, reveal.amount);
+    gl!.uniform4f(comp.u.uReveal, lens.x * dpr, h - lens.y * dpr, reveal.r * dpr, reveal.amount * live.watermark);
     gl!.uniform3fv(comp.u.uInk, C.ink);
     gl!.uniform3fv(comp.u.uAccent, C.accent);
     gl!.uniform1f(comp.u.uFade, 1 - scroll * 0.85);
+    gl!.uniform1f(comp.u.uRefract, live.refract);
     gl!.drawArrays(gl!.TRIANGLES, 0, 3);
 
     if (first) {
@@ -464,6 +485,24 @@ export function createHero(canvas: HTMLCanvasElement, opts: HeroOptions) {
       if (next === scroll) return;
       scroll = next;
       if (!running) renderOnce();
+    },
+    setParams(next: Partial<HeroLiveParams>) {
+      Object.assign(live, next);
+      sceneDirty = true;
+      if (!running) renderOnce();
+    },
+    setColors(next: HeroColors) {
+      C.ink = rgb(next.ink);
+      C.accent = rgb(next.accent);
+      C.gold = rgb(next.gold);
+      C.cool = rgb(next.cool);
+      sceneDirty = true;
+      if (!running) renderOnce();
+    },
+    setWatermarkText(text: string) {
+      const sample = text || "ሰናይ";
+      const geez = /[\u1200-\u137F]/.test(sample);
+      paintMask(sample, geez ? '700 200px "Senai Geez"' : '700 180px "Instrument Sans Variable", sans-serif');
     },
     destroy() {
       destroyed = true;

@@ -131,9 +131,20 @@ Chatbots, booking assistants and quiet automations that give your team hours bac
 ### Interactive & Event Experiences
 Installations, live visuals and web toys for launches, venues and performances.
 
+## Lab playground
+
+URL: https://senaitechnology.com/lab
+
+An interactive playground with four zero-onboarding experiments:
+1. Live WebGL Hero & Dither Generator (palette presets, Space to cycle, WCAG contrast, shader export)
+2. Deterministic Motion Timeline Scrubber — NYC ↔ ADDIS SIGNAL ROUTING (6.00s / 360 frames)
+3. Tactile Studio Pass with perforated stub tear and priority code SENAI-LAB-VIP
+4. 16-step Ethio-electronic pulse sequencer (Tizita lead, sub, kebero, hat)
+
 ## Routes
 
 - https://senaitechnology.com/ — Main homepage
+- https://senaitechnology.com/lab — Interactive Lab & Live Hero Generator
 - https://senaitechnology.com/check — Free website quality check: paste a URL to score speed, search, and AI-search readiness in under a minute. No sign-up. Also reachable from the homepage check band.
 - https://senaitechnology.com/work/dj — NORA FLUX DJ/artist Signature showcase: sound-first WebGL world (opt-in audio, never autoplayed). Fictional artist; the craft is a live demo of the Signature tier.
 
@@ -153,6 +164,7 @@ The studio site is React 19 + Vite + React Router, with a raw WebGL2 dithered he
 
 - Email: hello@senaitechnology.com
 - Website: https://senaitechnology.com
+- Lab playground: https://senaitechnology.com/lab
 - Free website check: https://senaitechnology.com/check
 - NORA FLUX showcase: https://senaitechnology.com/work/dj
 

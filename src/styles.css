@@ -213,11 +213,13 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 .nav-links a:is(:hover, :focus-visible):not(.on)::after { scale: 1; }
 .nav-pill { position: absolute; top: 5px; bottom: 5px; left: 0; border-radius: 999px; background: var(--ink); transition: transform 0.6s var(--ease), width 0.6s var(--ease), opacity 0.3s; }
 .nav-right { justify-self: end; display: flex; align-items: center; gap: 8px; }
-.nav-cta, .nav-check { display: inline-flex; padding: 11px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap; text-decoration: none; border: 1px solid transparent; transition: background 0.4s, color 0.4s, border-color 0.4s, translate 0.35s var(--ease), scale 0.2s var(--ease); }
+.nav-cta, .nav-check, .nav-lab { display: inline-flex; padding: 11px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap; text-decoration: none; border: 1px solid transparent; transition: background 0.4s, color 0.4s, border-color 0.4s, translate 0.35s var(--ease), scale 0.2s var(--ease); }
 .nav-cta { background: var(--accent); color: #0c0a08; }
 .nav-cta:hover { background: var(--ink); translate: 0 -2px; }
 .nav-check { background: rgba(21, 18, 15, 0.7); border-color: var(--line); color: var(--ink); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .nav-check:hover { border-color: var(--ink); }
+.nav-lab { background: rgba(21, 18, 15, 0.7); border-color: rgba(231, 183, 95, 0.55); color: var(--gold); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.nav-lab:hover { background: var(--gold); color: #0c0a08; }
 .nav-light :is(.logo, .nav-links, .nav-menu, .nav-check) { background: rgba(12, 10, 8, 0.9); }
 .nav-menu { display: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-2); background: rgba(21, 18, 15, 0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); cursor: pointer; place-items: center; transition: scale 0.2s var(--ease), border-color 0.3s; }
 .nav-menu:hover { border-color: var(--ink); }
@@ -312,6 +314,24 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 .case-notes span { display: block; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-text); margin-bottom: 2px; }
 .case-link { display: inline-flex; gap: 8px; margin-top: 26px; font-weight: 600; text-decoration: none; color: var(--accent-text); }
 
+.lab-callout {
+  margin: clamp(64px, 10vh, 120px) 0 0;
+  padding: clamp(28px, 4vw, 44px);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(80% 120% at 100% 0, rgba(255, 90, 31, 0.18), transparent 55%),
+    var(--bg-2);
+}
+.lab-callout h3 {
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.lab-callout p { margin: 0 0 22px; max-width: 38em; color: var(--ink-2); }
 .slots { margin-top: clamp(80px, 13vh, 150px); }
 .slots-title { margin: 0 0 22px; font-family: var(--mono); font-weight: 400; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); }
 .slots-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
@@ -514,8 +534,8 @@ details[open] .faq-x::after { rotate: 0deg; }
 .form label { display: grid; }
 .form label > span { transition: color 0.3s, translate 0.45s var(--ease); }
 .form label:focus-within > span { color: var(--accent-text); translate: 3px 0; }
-.form input:not([type="radio"]), .form textarea { font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; outline: none; resize: vertical; transition: border-color 0.25s, background 0.25s, box-shadow 0.35s var(--ease); }
-.form input:not([type="radio"]):focus, .form textarea:focus { border-color: var(--accent); background: var(--bg-3); box-shadow: 0 0 0 4px rgba(255, 90, 31, 0.14); }
+.form input:not([type="radio"]), .form textarea, .form select { font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; outline: none; resize: vertical; transition: border-color 0.25s, background 0.25s, box-shadow 0.35s var(--ease); }
+.form input:not([type="radio"]):focus, .form textarea:focus, .form select:focus { border-color: var(--accent); background: var(--bg-3); box-shadow: 0 0 0 4px rgba(255, 90, 31, 0.14); }
 .form :is(input, textarea):user-invalid { border-color: var(--gold); animation: shake 0.4s var(--ease); }
 @keyframes shake { 25% { translate: -3px 0; } 60% { translate: 2px 0; } }
 .submit { position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 18px 22px 18px 26px; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 600; font-size: 16px; cursor: pointer; transition: color 0.3s, scale 0.2s var(--ease); }
@@ -543,7 +563,7 @@ details[open] .faq-x::after { rotate: 0deg; }
 .footer-row a { text-decoration: none; color: var(--ink-2); }
 
 /* ---------- link micro interactions ---------- */
-:is(.btn, .nav-cta, .nav-check, .nav-links a, .nav-menu, .chip, .copy, .tier-cta):active { scale: 0.96; }
+:is(.btn, .nav-cta, .nav-check, .nav-lab, .nav-links a, .nav-menu, .chip, .copy, .tier-cta):active { scale: 0.96; }
 .submit:active { scale: 0.985; }
 /* underline draws: hidden ones grow from the left, resting ones wipe out and redraw */
 :is(.draw, .case-link .roll, .contact-email a) {
@@ -585,6 +605,7 @@ a:is(:hover, :focus-visible) .nudge-up { translate: 0 -3px; }
 @media (max-width: 900px) {
   .nav { grid-template-columns: 1fr auto; }
   .nav-links { display: none; }
+  .nav-lab { display: none; }
   .nav-menu { display: grid; }
   .sec-head, .intro-grid, .studio-grid, .faq-grid, .contact-inner, .check-band { grid-template-columns: 1fr; }
   .sec-head { align-items: start; }
