@@ -22,7 +22,7 @@ User-agent: ClaudeBot
 Allow: /
 
 # Sitemaps
-Sitemap: https://senai-technology.vercel.app/sitemap.xml
+Sitemap: https://senaitechnology.com/sitemap.xml
 
 # Additional resources for AI
 # See /llms.txt for structured information about this site

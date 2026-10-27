@@ -92,7 +92,8 @@ An event and performance app for iPhone. Venues host open mics and DJ nights in 
 Link: https://openslot.me
 
 ### NORA FLUX (Live Signature showcase - 2026)
-**DJ / artist site · Three.js, Web Audio** (`/work/dj`)
+**DJ / artist site · Three.js, Web Audio**
+URL: https://senaitechnology.com/work/dj
 A sound-first concept world for a fictional DJ. Opt-in audio gate, audio-reactive WebGL field, synthesized mix (never autoplayed), page-peel tour dates, orbiting mix gallery, press kit and booking. Demonstrates Signature-tier craft. Not a real artist.
 
 ### Local service website (Concept)
@@ -106,6 +107,12 @@ Placeholder concept, not a client project: a warm, editorial site with pre-order
 ### AI booking assistant (Concept)
 **AI tool · Concept**
 Placeholder concept, not a client project: a friendly assistant that answers questions, checks availability and books appointments over web chat and SMS.
+
+## Free website check
+
+URL: https://senaitechnology.com/check
+
+A public tool that scores an existing site for speed (PageSpeed when available), search (title, description, headings, Open Graph, structured data, robots, sitemap), and AI-search readiness (`llms.txt`, readable text, JSON-LD). No account required. Visitors without a site yet can still leave a brief so we can recommend a tier.
 
 ## Additional Services
 
@@ -126,9 +133,9 @@ Installations, live visuals and web toys for launches, venues and performances.
 
 ## Routes
 
-- `/` — Main homepage
-- `/check` — Free website quality check
-- `/work/dj` — NORA FLUX DJ/artist Signature showcase
+- https://senaitechnology.com/ — Main homepage
+- https://senaitechnology.com/check — Free website quality check: paste a URL to score speed, search, and AI-search readiness in under a minute. No sign-up. Also reachable from the homepage check band.
+- https://senaitechnology.com/work/dj — NORA FLUX DJ/artist Signature showcase: sound-first WebGL world (opt-in audio, never autoplayed). Fictional artist; the craft is a live demo of the Signature tier.
 
 ## Technology
 
@@ -145,7 +152,9 @@ The studio site is React 19 + Vite + React Router, with a raw WebGL2 dithered he
 ## Contact
 
 - Email: hello@senaitechnology.com
-- Website: https://senai-technology.vercel.app
+- Website: https://senaitechnology.com
+- Free website check: https://senaitechnology.com/check
+- NORA FLUX showcase: https://senaitechnology.com/work/dj
 
 © 2026 Senai Technology, a Slotted LLC company
 New York ⇄ Addis Ababa
