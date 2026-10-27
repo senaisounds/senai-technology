@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import { streamText } from "ai";
-import { notifyLead, type LeadPayload } from "../lib/leads.ts";
+import { notifyLead, type LeadPayload } from "../lib/leads";
 
 export const config = { runtime: "edge" };
 
