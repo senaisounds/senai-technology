@@ -20,7 +20,7 @@ export function StudioPass() {
     let raf = 0;
     const step = () => {
       setStub((s) => {
-        const vy = s.vy + 0.55;
+        const vy = s.vy + 0.28;
         const vx = s.vx * 0.992;
         const vr = s.vr * 0.994;
         return { x: s.x + vx, y: s.y + vy, r: s.r + vr, vx, vy, vr };
@@ -99,6 +99,7 @@ export function StudioPass() {
             <p className="lab-pass-brand">SENAI TECHNOLOGY</p>
             <p className="lab-pass-sub">LAB PASS #049 · NEW YORK × ADDIS ABABA</p>
             <p className="lab-pass-ge" lang="am">ሰናይ</p>
+            <p className="lab-pass-serial">SNY-LAB-049 · HOLO / FOIL</p>
             <div className="lab-pass-meta">
               <span>ADMIT ONE</span>
               <span>SIDE A</span>

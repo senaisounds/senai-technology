@@ -87,13 +87,13 @@ export function MotionScrubber() {
             </g>
           )}
           {layers.vectors && (
-            <g fill="none" stroke="#ff5a1f" strokeWidth="1.4">
+            <g fill="none" stroke="#ff5a1f" strokeWidth="2.2">
               <path
                 d={`M ${state.nyc.x} ${state.nyc.y} C 360 120, 600 400, ${state.add.x} ${state.add.y}`}
-                strokeOpacity={0.55 + state.lock * 0.4}
+                strokeOpacity={0.7 + state.lock * 0.3}
               />
-              <circle cx={state.nyc.x} cy={state.nyc.y} r={10 + state.resolve * 4} fill="#ff5a1f" stroke="none" />
-              <circle cx={state.add.x} cy={state.add.y} r={10 + state.resolve * 4} fill="#f4b961" stroke="none" />
+              <circle cx={state.nyc.x} cy={state.nyc.y} r={12 + state.resolve * 4} fill="#ff5a1f" stroke="none" />
+              <circle cx={state.add.x} cy={state.add.y} r={12 + state.resolve * 4} fill="#f4b961" stroke="none" />
               <text x={state.nyc.x - 28} y={state.nyc.y - 18} fill="#f2ece1" fontSize="11" fontFamily="Geist Mono Variable, monospace">NYC</text>
               <text x={state.add.x - 18} y={state.add.y - 18} fill="#f2ece1" fontSize="11" fontFamily="Geist Mono Variable, monospace">ADD</text>
               {state.packets.map((p) => (
