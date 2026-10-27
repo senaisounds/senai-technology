@@ -1,72 +1,60 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { notifyLead, type LeadPayload } from "../lib/leads.ts";
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_WINDOW_MS = 60000;
-const RATE_LIMIT_MAX = 3;
+export const config = { runtime: "edge" };
 
-function checkRateLimit(ip: string): boolean {
+const rate = new Map<string, { count: number; resetAt: number }>();
+const WINDOW_MS = 60_000;
+const MAX = 8;
+
+function allow(ip: string) {
   const now = Date.now();
-  const record = rateLimitMap.get(ip);
-  if (!record || now > record.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+  const rec = rate.get(ip);
+  if (!rec || now > rec.resetAt) {
+    rate.set(ip, { count: 1, resetAt: now + WINDOW_MS });
     return true;
   }
-  if (record.count >= RATE_LIMIT_MAX) {
-    return false;
-  }
-  record.count++;
+  if (rec.count >= MAX) return false;
+  rec.count++;
   return true;
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 
-  const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0] || "unknown";
-  if (!checkRateLimit(ip)) {
-    return res.status(429).json({ error: "Too many requests" });
-  }
+const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export default async function handler(req: Request) {
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!allow(ip)) return json({ error: "Too many requests" }, 429);
 
   try {
-    const { name, email, websiteUrl, score } = req.body;
+    const body = (await req.json()) as Partial<LeadPayload>;
+    const name = String(body.name || "").trim();
+    const email = String(body.email || "").trim();
+    if (!name || !email) return json({ error: "Name and email are required" }, 400);
+    if (!EMAIL_OK.test(email)) return json({ error: "Invalid email format" }, 400);
 
-    if (!name || !email) {
-      return res.status(400).json({ error: "Name and email are required" });
-    }
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-      return res.status(400).json({ error: "Invalid email format" });
-    }
-
-    const leadData = {
+    const source = String(body.source || "website-check-tool");
+    const lead: LeadPayload = {
       name,
       email,
-      websiteUrl: websiteUrl || "No website yet",
-      score: score || "N/A",
-      submittedAt: new Date().toISOString(),
-      source: "website-check-tool",
+      source,
+      need: body.need ? String(body.need) : undefined,
+      message: body.message ? String(body.message) : body.need ? String(body.need) : undefined,
+      business: body.business ? String(body.business) : undefined,
+      city: body.city ? String(body.city) : undefined,
+      budget: body.budget ? String(body.budget) : undefined,
+      websiteUrl: body.websiteUrl ? String(body.websiteUrl) : undefined,
+      score: body.score,
+      timestamp: new Date().toISOString(),
     };
 
-    console.log("Lead captured:", JSON.stringify(leadData, null, 2));
-
-    const webhookUrl = process.env.LEAD_WEBHOOK_URL;
-    if (webhookUrl) {
-      try {
-        await fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(leadData),
-        });
-      } catch (webhookError) {
-        console.error("Webhook delivery failed:", webhookError);
-      }
-    }
-
-    return res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("Submit lead error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    await notifyLead(lead);
+    return json({ success: true });
+  } catch (err) {
+    console.error("Submit lead error:", err);
+    return json({ error: "Internal server error" }, 500);
   }
 }

@@ -8,6 +8,50 @@ type Message = {
   content: string;
 };
 
+function assistantTextFromJson(data: unknown): string {
+  if (!data || typeof data !== "object") return "";
+  const d = data as Record<string, unknown>;
+  if (typeof d.reply === "string" && d.reply.trim()) return d.reply;
+  if (typeof d.message === "string" && d.message.trim()) return d.message;
+  if (typeof d.content === "string" && d.content.trim()) return d.content;
+  return "";
+}
+
+function consumeStreamLine(line: string, acc: string): string {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed === "data: [DONE]" || trimmed === "[DONE]") return acc;
+  if (trimmed.startsWith("data: ")) {
+    const data = trimmed.slice(6);
+    if (data === "[DONE]") return acc;
+    try {
+      const parsed = JSON.parse(data) as Record<string, unknown>;
+      const choice = (parsed.choices as { delta?: { content?: string } }[] | undefined)?.[0];
+      if (choice?.delta?.content) return acc + choice.delta.content;
+      if (typeof parsed.content === "string") return acc + parsed.content;
+      if (typeof parsed.reply === "string") return acc + parsed.reply;
+      if (typeof parsed.text === "string") return acc + parsed.text;
+      if (typeof parsed === "string") return acc + parsed;
+    } catch {
+      return acc + data;
+    }
+    return acc;
+  }
+  if (/^[0-9a-z]:/.test(trimmed)) {
+    const payload = trimmed.slice(trimmed.indexOf(":") + 1);
+    try {
+      const parsed = JSON.parse(payload);
+      if (typeof parsed === "string") return acc + parsed;
+      if (parsed && typeof parsed === "object" && typeof (parsed as { text?: string }).text === "string") {
+        return acc + (parsed as { text: string }).text;
+      }
+    } catch {
+      return acc + payload.replace(/^"|"$/g, "");
+    }
+    return acc;
+  }
+  return acc + (acc && !acc.endsWith("\n") && trimmed ? (trimmed.startsWith("{") ? acc : trimmed) : trimmed);
+}
+
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [chatState, setChatState] = useState<ChatState>("chat");
@@ -21,31 +65,24 @@ export function ChatWidget() {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
+    if (isOpen) messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isOpen]);
+
+  const writeAssistant = (id: string, content: string) => {
+    setMessages((prev) => prev.map((msg) => (msg.id === id ? { ...msg, content } : msg)));
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input.trim(),
-    };
-
+    const userMessage: Message = { id: Date.now().toString(), role: "user", content: input.trim() };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
     setError(null);
 
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: "",
-    };
+    const assistantMessage: Message = { id: `${Date.now()}-a`, role: "assistant", content: "" };
     setMessages((prev) => [...prev, assistantMessage]);
 
     try {
@@ -54,65 +91,72 @@ export function ChatWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          messages: [...messages, userMessage].map((m) => ({ role: m.role, content: m.content })),
         }),
         signal: abortControllerRef.current.signal,
       });
 
+      const ct = (response.headers.get("content-type") || "").toLowerCase();
+
+      if (ct.includes("application/json")) {
+        const data: unknown = await response.json().catch(() => ({}));
+        const text = assistantTextFromJson(data);
+        if (text) {
+          writeAssistant(assistantMessage.id, text);
+        } else {
+          writeAssistant(
+            assistantMessage.id,
+            "Senai Technology — New York ⇄ Addis. Starter $2,500, Growth $4,800, Signature $8,500, Care $150/mo. Email hello@senaitechnology.com or play /lab.",
+          );
+        }
+        return;
+      }
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to get response");
+        throw new Error("Failed to get response");
       }
 
       const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
       if (!reader) throw new Error("No response body");
+      const decoder = new TextDecoder();
+      let accumulated = "";
+      let rawMode = ct.includes("text/plain") || ct.includes("text/event-stream") === false;
 
-      let accumulatedContent = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n").filter((line) => line.trim());
+        if (!chunk) continue;
 
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            if (data === "[DONE]") continue;
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.choices?.[0]?.delta?.content) {
-                accumulatedContent += parsed.choices[0].delta.content;
-              } else if (parsed.content) {
-                accumulatedContent += parsed.content;
-              } else if (typeof parsed === "string") {
-                accumulatedContent += parsed;
-              }
-            } catch {
-              accumulatedContent += data;
-            }
-          } else if (line.startsWith("0:")) {
-            const content = line.slice(3, -1);
-            accumulatedContent += content;
+        const looksSse = chunk.includes("data:") || /^[0-9a-z]:/m.test(chunk);
+        if (rawMode && !looksSse) {
+          accumulated += chunk;
+        } else {
+          rawMode = false;
+          for (const line of chunk.split(/\r?\n/)) {
+            if (!line.trim()) continue;
+            const next = consumeStreamLine(line, accumulated);
+            accumulated = next === accumulated && !line.startsWith("data:") && !/^[0-9a-z]:/.test(line.trim())
+              ? accumulated + line
+              : next;
           }
         }
+        writeAssistant(assistantMessage.id, accumulated);
+      }
 
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantMessage.id ? { ...msg, content: accumulatedContent } : msg
-          )
+      if (!accumulated.trim()) {
+        writeAssistant(
+          assistantMessage.id,
+          "Senai Technology builds sites with a pulse — Starter $2,500, Growth $4,800, Signature $8,500. Ask about /lab, /check, or email hello@senaitechnology.com.",
         );
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Something went wrong. Please try again.";
-      setError(errorMessage);
-      setMessages((prev) => prev.filter((msg) => msg.id !== assistantMessage.id));
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      writeAssistant(
+        assistantMessage.id,
+        "The studio concierge is still here — write hello@senaitechnology.com or tell me what you want to build (Starter $2,500 / Growth $4,800 / Signature $8,500).",
+      );
+      setError(err instanceof Error ? err.message : null);
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
@@ -122,13 +166,15 @@ export function ChatWidget() {
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch("/api/chat", {
+      await fetch("/api/submit-lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [],
-          capturedLead: leadData,
-        }),
+        body: JSON.stringify({ ...leadData, source: "chat_assistant" }),
+      });
+      void fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [], capturedLead: leadData }),
       });
       setLeadSubmitted(true);
       setTimeout(() => {
@@ -140,9 +186,7 @@ export function ChatWidget() {
     }
   };
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleChat = () => setIsOpen(!isOpen);
 
   return (
     <>
@@ -170,7 +214,7 @@ export function ChatWidget() {
               <span className="chat-header-dot" />
               <div>
                 <div className="chat-header-title">Senai Technology</div>
-                <div className="chat-header-status">AI Assistant · Usually replies instantly</div>
+                <div className="chat-header-status">Studio concierge · Usually replies instantly</div>
               </div>
             </div>
             <button className="chat-close" onClick={toggleChat} aria-label="Close chat">
@@ -189,9 +233,9 @@ export function ChatWidget() {
                       <span className="chat-welcome-dot" />
                     </div>
                     <p>
-                      Hi! I'm here to help you learn about Senai Technology. What would you like to know?
+                      Hi — Senai Technology, New York ⇄ Addis. Ask about Starter $2,500, Growth $4,800, Signature $8,500, /lab, or /check.
                       <br />
-                      <em>(We build AI websites, mobile apps, brands, and more!)</em>
+                      <em>The concierge always answers, even without an API key.</em>
                     </p>
                   </div>
                 )}
@@ -209,21 +253,11 @@ export function ChatWidget() {
                     </div>
                   </div>
                 )}
-                {error && (
+                {error && !messages.some((m) => m.role === "assistant" && m.content) && (
                   <div className="chat-error">
                     <p>
-                      {error.includes("AI_NOT_CONFIGURED") || error.includes("not fully set up") ? (
-                        <>
-                          The chat isn't fully set up yet. Please{" "}
-                          <a href="#contact" onClick={toggleChat}>
-                            use our contact form
-                          </a>{" "}
-                          or email{" "}
-                          <a href="mailto:hello@senaitechnology.com">hello@senaitechnology.com</a>!
-                        </>
-                      ) : (
-                        error
-                      )}
+                      Write <a href="mailto:hello@senaitechnology.com">hello@senaitechnology.com</a> or use the{" "}
+                      <a href="/#contact" onClick={toggleChat}>contact form</a>.
                     </p>
                   </div>
                 )}
@@ -231,18 +265,14 @@ export function ChatWidget() {
               </div>
 
               <div className="chat-footer">
-                <button
-                  className="chat-lead-btn"
-                  onClick={() => setChatState("lead-capture")}
-                  type="button"
-                >
+                <button className="chat-lead-btn" onClick={() => setChatState("lead-capture")} type="button">
                   I'm ready to start a project →
                 </button>
                 <form onSubmit={handleSendMessage} className="chat-form">
                   <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask about our services..."
+                    placeholder="Ask about tiers, /lab, timelines…"
                     disabled={isLoading}
                     className="chat-input"
                   />
@@ -261,22 +291,16 @@ export function ChatWidget() {
                   <div className="chat-lead-success-icon">✓</div>
                   <h3>Thanks, {leadData.name}!</h3>
                   <p>
-                    We've received your info and will reach out within 2 business days. Check your email
-                    ({leadData.email}) for our reply.
+                    We received your info and will reach out within 1 business day at {leadData.email}.
                   </p>
-                  <a href="#contact" className="btn btn-primary" onClick={toggleChat}>
+                  <a href="/#contact" className="btn btn-primary" onClick={toggleChat}>
                     Book a discovery call
                   </a>
                 </div>
               ) : (
                 <>
                   <div className="chat-lead-header">
-                    <button
-                      className="chat-lead-back"
-                      onClick={() => setChatState("chat")}
-                      type="button"
-                      aria-label="Back to chat"
-                    >
+                    <button className="chat-lead-back" onClick={() => setChatState("chat")} type="button" aria-label="Back to chat">
                       ←
                     </button>
                     <h3>Start a project</h3>
@@ -314,9 +338,7 @@ export function ChatWidget() {
                     <button type="submit" className="btn btn-primary btn-block">
                       Submit & book a call →
                     </button>
-                    <p className="chat-lead-note">
-                      We'll reply within 2 business days and help you schedule a discovery call.
-                    </p>
+                    <p className="chat-lead-note">We’ll reply within 1 business day and help you schedule a discovery call.</p>
                   </form>
                 </>
               )}

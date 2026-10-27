@@ -147,7 +147,7 @@
   ]
 }
     </script>
-    <!-- Hide the homepage prerender on /check and /work/dj before first paint.
+    <!-- Hide the homepage prerender on /check, /work/dj and /lab before first paint.
          Crawlers fetching / still see the full prerendered HTML (no class, no hide). -->
     <script>
       if (location.pathname !== "/") document.documentElement.classList.add("not-home");
@@ -217,6 +217,7 @@
           <a href="#process">Process</a>
           <a href="#studio">Studio</a>
           <a href="#faq">FAQ</a>
+          <a href="/lab">Lab</a>
           <a href="/check">Free site check</a>
         </nav>
       </header>
@@ -342,6 +343,11 @@
         <section>
           <h2>How does your site score?</h2>
           <p><a href="/check">Run the free website check</a>: speed, search and AI-search readiness, in under a minute.</p>
+        </section>
+
+        <section>
+          <h2>Lab playground</h2>
+          <p><a href="/lab">Enter /lab</a> — live WebGL hero generator, motion timeline, studio pass tear, and a 16-step Tizita sequencer.</p>
         </section>
 
         <section id="contact">

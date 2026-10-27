@@ -125,6 +125,7 @@ export function DJShowcase() {
           <a href="#dates" onMouseEnter={() => audio?.hover("dates")}>Dates</a>
           <a href="#vault" onMouseEnter={() => audio?.hover("vault")}>Vault</a>
           <a href="#line" onMouseEnter={() => audio?.hover("line")}>Book</a>
+          <Link to="/lab" onMouseEnter={() => audio?.hover("studio")}>Lab</Link>
         </nav>
         <div className="dj-hud-meta">
           <span>{clock} local</span>
@@ -352,7 +353,7 @@ export function DJShowcase() {
 
       <footer className="dj-foot">
         <p>{ARTIST} is a fictional artist. The page is a Signature-tier sample — not a real booking.</p>
-        <p>© 2026 Senai Technology · audio never autoplays · reduced motion is honoured</p>
+        <p>© 2026 Senai Technology · audio never autoplays · reduced motion is honoured · <Link to="/lab">Lab</Link></p>
       </footer>
     </div>
   );

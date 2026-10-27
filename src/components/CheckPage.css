@@ -18,6 +18,13 @@
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line);
 }
+.check-nav-links { display: flex; align-items: center; gap: 12px; }
+.check-lab {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  text-decoration: none;
+}
 
 .btn-sm {
   min-height: 48px;

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "./CheckPage.css";
 
 interface CheckResult {
@@ -89,6 +90,7 @@ export function CheckPage() {
           email: leadEmail,
           websiteUrl: stage === "no-website" ? undefined : result?.url,
           score: stage === "no-website" ? undefined : result?.score,
+          source: "website-check-tool",
         }),
       });
 
@@ -124,9 +126,12 @@ export function CheckPage() {
           <span className="logo-word">Senai</span>
           <span className="logo-thin">Technology</span>
         </a>
-        <a href="/#contact" className="btn btn-ghost btn-sm">
-          Start a project
-        </a>
+        <div className="check-nav-links">
+          <Link to="/lab" className="check-lab">Lab</Link>
+          <a href="/#contact" className="btn btn-ghost btn-sm">
+            Start a project
+          </a>
+        </div>
       </nav>
 
       <main className="check-main">
@@ -513,7 +518,7 @@ export function CheckPage() {
       </main>
 
       <footer className="check-footer">
-        <p>© 2026 Senai Technology · <a href="/">Back to home</a></p>
+        <p>© 2026 Senai Technology · <a href="/">Home</a> · <Link to="/lab">Lab</Link></p>
       </footer>
     </div>
   );
