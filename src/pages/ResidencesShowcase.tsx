@@ -16,10 +16,13 @@ import {
   type Unit,
   type VaultLead,
 } from "./residences/data";
+import { KokebTwin } from "./residences/KokebTwin";
 import { PartnershipTab } from "./residences/PartnershipTab";
 import { PropDeskTab } from "./residences/PropDeskTab";
 import { TowerTab } from "./residences/TowerTab";
 import "../styles/residences.css";
+
+export type TwinMode = "concept" | "bim";
 
 export function ResidencesShowcase() {
   const reduced = usePrefersReducedMotion();
@@ -32,6 +35,15 @@ export function ResidencesShowcase() {
   const [leads, setLeads] = useState<VaultLead[]>(SEED_LEADS);
   const [custom, setCustom] = useState(false);
   const [clock, setClock] = useState(() => addisClock());
+  const model: TwinMode = params.get("model") === "bim" ? "bim" : "concept";
+
+  const setModel = (next: TwinMode) => {
+    const q = projectQuery(project);
+    if (next === "bim") q.set("model", "bim");
+    setParams(q, { replace: true });
+    setTab("tower");
+    setCustom(false);
+  };
 
   useEffect(() => {
     document.title = `${project.name} — Residences · Senai Technology`;
@@ -49,7 +61,9 @@ export function ResidencesShowcase() {
 
   const patch = (next: Partial<Project>) => {
     const merged = { ...project, ...next };
-    setParams(projectQuery(merged), { replace: true });
+    const q = projectQuery(merged);
+    if (model === "bim") q.set("model", "bim");
+    setParams(q, { replace: true });
   };
 
   const addLead = (lead: VaultLead) => {
@@ -124,8 +138,33 @@ export function ResidencesShowcase() {
         ))}
       </nav>
 
+      <div className="rx-modes" role="group" aria-label="3D model mode">
+        <p className="rx-kicker">3D mode</p>
+        <div className="rx-mode-row">
+          <button
+            type="button"
+            className={model === "concept" && tab === "tower" ? "on" : ""}
+            aria-pressed={model === "concept"}
+            onClick={() => setModel("concept")}
+          >
+            <b>Mode 1</b>
+            <span>{mobile ? "Miami concept tower" : "Miami-in-Addis Concept Tower (3D)"}</span>
+          </button>
+          <button
+            type="button"
+            className={model === "bim" && tab === "tower" ? "on" : ""}
+            aria-pressed={model === "bim"}
+            onClick={() => setModel("bim")}
+          >
+            <b>Mode 2</b>
+            <span>{mobile ? "Measured DWG BIM twin" : "Measured DWG & ProDesk BIM Twin (Interactive 3D)"}</span>
+          </button>
+        </div>
+      </div>
+
       <main id="rx-main" className="rx-main">
-        {tab === "tower" && (
+        {tab === "tower" && model === "bim" && <KokebTwin />}
+        {tab === "tower" && model === "concept" && (
           <TowerTab
             project={project}
             floor={floor}
@@ -148,6 +187,7 @@ export function ResidencesShowcase() {
         </p>
         <p>
           <Link to="/work/dj">NORA FLUX</Link>
+          <a href="/kokeb-3d.html#q=high">Kokeb 3D twin</a>
           <Link to="/lab">Lab</Link>
           <Link to="/#contact">Start a project</Link>
         </p>

@@ -117,7 +117,7 @@ html.rx-world body {
   text-transform: uppercase;
   background: rgba(244, 241, 234, 0.04);
 }
-.rx-pill.on, .rx-drawer button.on, .rx-tabs button.on, .rx-floors button.on, .rx-units button.on {
+.rx-pill.on, .rx-drawer button.on, .rx-tabs button.on, .rx-floors button.on, .rx-units button.on, .rx-mode-row button.on, .rx-bim-presets button.on {
   background: var(--gold);
   color: var(--obs);
   border-color: var(--gold);
@@ -198,6 +198,109 @@ html.rx-world body {
 .rx-tabs span {
   font-size: 12px;
   line-height: 1.2;
+}
+
+.rx-modes {
+  padding: 0 14px 14px;
+}
+.rx-mode-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.rx-mode-row button {
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  min-height: 64px;
+  padding: 12px 14px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #14120f;
+  text-align: left;
+}
+.rx-mode-row button b {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.rx-mode-row button.on {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+.rx-mode-row button span {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--paper);
+}
+.rx-mode-row button.on span { color: inherit; }
+
+.rx-bim { display: grid; gap: 12px; }
+.rx-bim-bar {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(244, 241, 234, 0.03);
+}
+.rx-bim-bar h2 {
+  margin: 0 0 8px;
+  font-family: var(--display);
+  font-size: clamp(26px, 4vw, 40px);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+.rx-bim-bar p { margin: 0; color: var(--mute); font-size: 14px; }
+.rx-bim-bar b { color: var(--paper); font-weight: 600; }
+.rx-bim-full {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--obs);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  width: fit-content;
+}
+.rx-bim-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rx-bim-presets button {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rx-bim-frame {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #0f1724;
+  min-height: 68svh;
+}
+.rx-bim-frame iframe {
+  display: block;
+  width: 100%;
+  height: min(78svh, 860px);
+  min-height: 420px;
+  border: 0;
+  background: #0f1724;
 }
 
 .rx-main { padding: 0 14px 32px; }
@@ -670,7 +773,9 @@ html.rx-world body {
 @media (min-width: 860px) {
   .rx-hud { padding: 16px 28px 10px; }
   .rx-drawer { grid-template-columns: repeat(4, 1fr); padding: 0 28px 16px; align-items: end; }
-  .rx-tabs, .rx-main, .rx-foot { padding-left: 28px; padding-right: 28px; }
+  .rx-tabs, .rx-main, .rx-foot, .rx-modes { padding-left: 28px; padding-right: 28px; }
+  .rx-mode-row { grid-template-columns: 1fr 1fr; }
+  .rx-bim-bar { grid-template-columns: 1fr auto; align-items: end; }
   .rx-tower { grid-template-columns: 1.15fr 0.85fr; align-items: start; }
   .rx-agent { grid-template-columns: 1.1fr 0.9fr; }
   .rx-chair { grid-template-columns: repeat(2, 1fr); }

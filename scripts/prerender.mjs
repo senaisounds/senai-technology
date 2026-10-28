@@ -45,6 +45,15 @@ const ROUTES = [
   },
 ];
 
+const kokebSrc = path.join(DIST, "kokeb-3d.html");
+if (fs.existsSync(kokebSrc)) {
+  const kokebDir = path.join(DIST, "work/kokeb-3d");
+  fs.mkdirSync(kokebDir, { recursive: true });
+  fs.copyFileSync(kokebSrc, path.join(DIST, "work/kokeb-3d.html"));
+  fs.copyFileSync(kokebSrc, path.join(kokebDir, "index.html"));
+  console.log("static https://senaitechnology.com/work/kokeb-3d");
+}
+
 for (const route of ROUTES) {
   let html = src
     .replace(/<html lang="en">/, '<html lang="en" class="not-home">')

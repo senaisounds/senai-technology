@@ -99,7 +99,7 @@ A sound-first concept world for a fictional DJ. Opt-in audio gate, audio-reactiv
 ### Addis Crown Residences (Live Signature showcase - 2026)
 **Developer pitch · Three.js, bilingual AI, Prop Desk**
 URL: https://senaitechnology.com/work/residences
-A phone-first developer pitch for Addis Ababa apartment buildings. Interactive 12-storey pre-sale tower with gold/amber/emerald inventory, bilingual EN/Amharic sales concierge, diaspora 30/40/30 payments, and a Prop Desk (propdesk.et · @etpropdeskbot) building OS. Query params customize project name, neighborhood, and developer. Developer wears the public crown; Senai Technology + Prop Desk power the stack.
+A phone-first developer pitch for Addis Ababa apartment buildings. Interactive 12-storey pre-sale tower with gold/amber/emerald inventory, bilingual EN/Amharic sales concierge, diaspora 30/40/30 payments, and a Prop Desk (propdesk.et · @etpropdeskbot) building OS. Query params customize project name, neighborhood, and developer. A second 3D mode embeds the measured Kokeb Apartments DWG/BIM twin (10 levels, 194 assets). Full-screen twin: https://senaitechnology.com/kokeb-3d.html. Developer wears the public crown; Senai Technology + Prop Desk power the stack.
 
 ### Local service website (Concept)
 **Website · Concept**
@@ -152,7 +152,8 @@ An interactive playground with four zero-onboarding experiments:
 - https://senaitechnology.com/lab — Interactive Lab & Live Hero Generator
 - https://senaitechnology.com/check — Free website quality check: paste a URL to score speed, search, and AI-search readiness in under a minute. No sign-up. Also reachable from the homepage check band.
 - https://senaitechnology.com/work/dj — NORA FLUX DJ/artist Signature showcase: sound-first WebGL world (opt-in audio, never autoplayed). Fictional artist; the craft is a live demo of the Signature tier.
-- https://senaitechnology.com/work/residences — Addis apartment developer pitch: 3D pre-sale tower, bilingual AI concierge, diaspora 30/40/30, Prop Desk building OS.
+- https://senaitechnology.com/work/residences — Addis apartment developer pitch: 3D pre-sale tower, bilingual AI concierge, diaspora 30/40/30, Prop Desk building OS. Add `?model=bim` for the measured Kokeb DWG twin.
+- https://senaitechnology.com/kokeb-3d.html — Standalone Kokeb Apartments interactive 3D BIM twin (Megenagna · AGT PLC). Also at /work/kokeb-3d.
 
 ## Technology
 

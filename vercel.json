@@ -5,6 +5,18 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/kokeb-3d",
+      "destination": "/kokeb-3d.html"
+    },
+    {
+      "source": "/work/kokeb-3d",
+      "destination": "/kokeb-3d.html"
+    },
+    {
+      "source": "/work/kokeb-3d.html",
+      "destination": "/kokeb-3d.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

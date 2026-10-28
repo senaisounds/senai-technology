@@ -1,6 +1,30 @@
 import { defineConfig, type PreviewServer, type ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from "node:fs";
+import path from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
+
+const KOKEB_PATHS = new Set(["/kokeb-3d", "/kokeb-3d.html", "/work/kokeb-3d", "/work/kokeb-3d.html"]);
+
+function kokebStatic() {
+  const file = path.resolve("public/kokeb-3d.html");
+  const attach = (server: ViteDevServer | PreviewServer) => {
+    server.middlewares.use((req, res, next) => {
+      const url = ((req.url ?? "").split("?")[0] ?? "").replace(/\/$/, "") || "/";
+      if (!KOKEB_PATHS.has(url)) {
+        next();
+        return;
+      }
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      fs.createReadStream(file).pipe(res);
+    });
+  };
+  return {
+    name: "kokeb-static",
+    configureServer: attach,
+    configurePreviewServer: attach,
+  };
+}
 
 async function handleApi(req: IncomingMessage, res: ServerResponse, next: () => void) {
   const url = req.url?.split("?")[0] ?? "";
@@ -54,7 +78,7 @@ function localApi() {
 }
 
 export default defineConfig({
-  plugins: [react(), localApi()],
+  plugins: [react(), kokebStatic(), localApi()],
   server: { port: 5173, strictPort: true },
   build: {
     chunkSizeWarningLimit: 2500,
