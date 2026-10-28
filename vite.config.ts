@@ -10,7 +10,7 @@ function kokebStatic() {
   const file = path.resolve("public/kokeb-3d.html");
   const attach = (server: ViteDevServer | PreviewServer) => {
     server.middlewares.use((req, res, next) => {
-      const url = (req.url ?? "").split("?")[0] ?? "";
+      const url = ((req.url ?? "").split("?")[0] ?? "").replace(/\/$/, "") || "/";
       if (!KOKEB_PATHS.has(url)) {
         next();
         return;
